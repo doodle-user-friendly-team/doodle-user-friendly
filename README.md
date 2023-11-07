@@ -1,21 +1,30 @@
 # Doodle User Friendly
-To build and run, activate virtual environment on doodle_env:
 
-- If on Linux/MacOS:
+To build and run, first install dependencies:
+
+- For Django:
+    
+    1. (First time) Create your virtual environment and activate it:
+        ```{bash}
+        python -m venv env
+        # On Linux/MacOS
+        source ./env/bin/activate
+        # On Windows
+        ./env/bin/Activate.ps1
+        ```
+    2. Install any new python dependency found on the `requirements.txt` file in your virtual environment:
+        ```{bash}
+        pip install -r requirements.txt
+        ```
+
+- For React:
+
     ```{bash}
-    source ./doodle_env/bin/activate
+    cd doodle_django/doodle_react/
+    npm install
     ```
 
-- If on Windows:
-    ```{bash}
-    ./doodle_env/bin/Activate.ps1
-    ```
-    If you don't have permission to activate Powershell scripts, run this command first:
-    ```{ps}
-    Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
-    ```
-
-Then start both django and react servers:
+Then start both Django and React servers:
 
 - For Django:
     
@@ -30,9 +39,12 @@ Then start both django and react servers:
     npm start
     ```
 
-    If you need to add new dependencies:
+## Reminder for Development 
 
-    ```{bash}
-    cd doodle_django/doodle_react/
-    npm install
-    ```
+If you need to add/update/remove python dependencies, please update the `requirements.txt` file:
+```{bash}
+#On Linux/MacOS
+pip freeze > requirements.txt
+#On Windows
+pip freeze | Out-File -FilePath requirements.txt
+```
