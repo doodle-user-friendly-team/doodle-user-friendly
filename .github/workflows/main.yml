@@ -4,9 +4,10 @@ on:
     workflow_dispatch:
     pull_request:
         branches: ["group_1"]
-#    push:
-#        branches:
-#            ["group_1"] 
+    push:
+        branches:
+            ["ci-cd"] 
+#            ["group_1"]
 jobs:
     test:
         runs-on: ubuntu-latest
