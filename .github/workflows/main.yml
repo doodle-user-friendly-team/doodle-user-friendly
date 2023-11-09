@@ -19,9 +19,10 @@ jobs:
               uses: actions/setup-node@v3
               with: 
                 cache: 'npm'
+                cache-dependency-path: doodle_django/doodle_react/package-lock.json
 
             - run: npm ci
-              working-directory: doodle_django/doodle_reacti
+              working-directory: doodle_django/doodle_react
 
             - uses: actions/setup-python@v3
             - name: Install Django dependencies
