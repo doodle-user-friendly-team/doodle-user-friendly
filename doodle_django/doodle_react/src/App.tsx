@@ -1,12 +1,11 @@
 import React from 'react';
-import {CalendarBaseComponent} from './UI/Calendar/Components/CalendarBase';
-import logo from './logo.svg';
 import './App.css';
+import {PlanningPanelComponent} from "./UI/PlanningPanel/Component/PlanningPanel";
 
 function App() {
   return (
     <div className="App">
-        <CalendarBaseComponent />
+        <PlanningPanelComponent />
     </div>
   );
 }

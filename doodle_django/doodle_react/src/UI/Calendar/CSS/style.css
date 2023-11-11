@@ -98,7 +98,6 @@
     overflow: auto;
     display: grid;
     grid-gap: 0.4rem;
-    margin: 0.4rem;
     padding: 0.4rem;
     border: 0.4px solid #ccc;
     border-radius: 0.4rem;
@@ -132,22 +131,6 @@
     width: 180px;
 }
 
-.box .polygon {
-    height: 16px;
-    left: 8px;
-    position: absolute;
-    top: 16px;
-    width: 16px;
-}
-
-.box .img {
-    height: 16px;
-    left: 156px;
-    position: absolute;
-    top: 16px;
-    width: 16px;
-}
-
 .box .text-wrapper {
     color: #000000;
     font-family: "Inter-Regular", Helvetica;
@@ -161,4 +144,52 @@
     text-align: center;
     top: 12px;
     width: 108px;
+}
+
+.month-text-wrapper {
+    color: #000000;
+    font-family: "Inter-Regular", Helvetica;
+    font-size: 16px;
+    font-weight: 400;
+    height: 24px;
+    left: 36px;
+    letter-spacing: -0.4px;
+    line-height: 8px;
+    position: absolute;
+    text-align: center;
+    top: 20px;
+    width: 108px;
+}
+
+.year-text-wrapper {
+    color: #000000;
+    font-family: "Inter-Regular", Helvetica;
+    font-size: 16px;
+    font-weight: 400;
+    height: 24px;
+    left: 36px;
+    letter-spacing: -0.4px;
+    line-height: 8px;
+    position: absolute;
+    text-align: center;
+    top: 20px;
+    width: 108px;
+}
+
+.pseudo-button-right{
+    height: 16px;
+    left: 156px;
+    position: absolute;
+    top: 16px;
+    width: 16px;
+    cursor: pointer;
+}
+
+.pseudo-button-left{
+    height: 16px;
+    left: 8px;
+    position: absolute;
+    top: 16px;
+    width: 16px;
+    cursor: pointer;
 }
