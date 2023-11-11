@@ -19,7 +19,7 @@ export function CalendarBaseComponent () {
     //array contains the day number and day name
     let remainingDays: ((string | number)[])[] = [];
     for (let i = day; i <= lastDay.getDate(); i++) {
-        remainingDays.push([i, dayName[(day + i + 1) % 7]]);
+        remainingDays.push([i, dayName[(day + i - 1) % 7]]);
     }
 
     return (
