@@ -29,15 +29,12 @@ export const FormComponent = () => {
     if (formData.name && formData.surname && formData.email) {
       console.log('Dati del modulo:', formData);
       setFormVisible(false)
-      setCalendarVisible(true);
+      setLabelVisible(true);
     } else {
       alert('Must complet all fields');
     }
   }
 
-  const handleShowLabel = () => {
-    setLabelVisible(true);
-  };
 
   return (
     <div className="container">
@@ -88,7 +85,7 @@ export const FormComponent = () => {
                   />
                 
                 <br />
-                <button type="submit" onClick={handleShowLabel}> Send </button>
+                <button type="submit"> Send </button>
               </form>
             </div>
           )}
