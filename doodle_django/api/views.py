@@ -22,14 +22,16 @@ def api_meetings(request):
 @api_view(['POST'])
 def api_meetings_create(request):
     data = request.data
+    # timeslots = data.pop("timeslots", None)
+    
     data["creation_date"] = now()
     data["passcode"] = get_random_string(5, allowed_chars=ascii_uppercase + digits)
-    serializer = MeetingSerializer(data=request.data)
+    serializer = MeetingSerializer(data=data)
 
     if serializer.is_valid():
         serializer.save()
         return Response(status=status.HTTP_201_CREATED)
-    return Response(status=status.HTTP_400_BAD_REQUEST)
+    return Response(status=status.HTTP_400_BAD_REQUEST, data=serializer.errors)
 
 @api_view(['POST'])
 def api_meetings_edit(request, meeting_id, meeting=None):

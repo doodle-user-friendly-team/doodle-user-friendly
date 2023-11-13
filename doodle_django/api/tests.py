@@ -152,7 +152,18 @@ class MeetingTests(APITestCase):
             'start_date': now() + timedelta(days=1),
             'end_date': now() + timedelta(days=5),
         }
-
+        {
+            "title": "TestMeeting",
+            "description ": "TestMeeting",
+            "description": "Test Description",
+            "location": "Test Location",
+            "video_conferencing": "True",
+            "duration": "01:00:00",
+            "deadline": "2023-12-22",
+            "location": "Test Location",
+            "video_conferencing": "True",
+            "video_type": ""
+        }
         self.client.post(url, data1, format='json')
 
         data2 = {
