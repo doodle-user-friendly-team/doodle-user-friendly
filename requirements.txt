@@ -11,3 +11,4 @@ sqlparse==0.4.4
 django-cors-headers==4.3.0
 requests==2.31.0
 coverage==7.3.2
+factory_boy==3.3.0

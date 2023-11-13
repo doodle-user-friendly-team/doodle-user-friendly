@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from django.utils.crypto import get_random_string
+from django.shortcuts import get_object_or_404
 
 from string import ascii_uppercase, digits
 
@@ -22,21 +23,33 @@ def api_meetings(request):
 @api_view(['POST'])
 def api_meetings_create(request):
     data = request.data
-    # timeslots = data.pop("timeslots", None)
+    timeslots = data.pop("timeslots", None)
+    timeslots_data = None
+    if timeslots:
+        timeslot_serializer = TimeSlotSerializer(timeslots, many=True)
+        if timeslot_serializer.is_valid():
+            timeslots_data = timeslot_serializer.data
     
     data["creation_date"] = now()
     data["passcode"] = get_random_string(5, allowed_chars=ascii_uppercase + digits)
-    serializer = MeetingSerializer(data=data)
+    meeting_serializer = MeetingSerializer(data=data)
 
-    if serializer.is_valid():
-        serializer.save()
+    if meeting_serializer.is_valid():
+        meeting_serializer.save()
         return Response(status=status.HTTP_201_CREATED)
-    return Response(status=status.HTTP_400_BAD_REQUEST, data=serializer.errors)
+    return Response(status=status.HTTP_400_BAD_REQUEST, data=meeting_serializer.errors)
 
-@api_view(['POST'])
+@api_view(['GET', 'POST'])
 def api_meetings_edit(request, meeting_id, meeting=None):
-    pass
-        
+    '''
+        Get single meeting (No editing)
+    '''
+    if request.method == 'GET':
+        meeting = get_object_or_404(Meeting, pk=meeting_id)
+        return Response(MeetingSerializer(meeting).data, status=status.HTTP_200_OK)
+    else:
+        return Response(status=status.HTTP_200_OK)
+
 @api_view(['POST'])
 def api_meetings_delete(request, meeting_id, meeting=None):
     pass
