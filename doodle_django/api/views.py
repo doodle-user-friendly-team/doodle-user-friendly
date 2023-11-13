@@ -18,7 +18,6 @@ def api_meetings(request):
         if 'title' in request.GET:
             meetings = Meeting.objects.filter(title__icontains=request.GET["title"]).order_by("title")
             return Response(MeetingSerializer(instance=meetings, many=True).data, status=status.HTTP_200_OK)
-    return Response(status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
 def api_meetings_create(request):
