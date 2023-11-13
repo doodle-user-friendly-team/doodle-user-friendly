@@ -20,7 +20,7 @@ class Meeting(models.Model):
     end_time_range = models.IntegerField()
     start_time_range = models.IntegerField()
     date = models.DateField()
-    
+
     #place = models.CharField(max_length=200)
     #description = models.CharField(max_length=200)
 
@@ -30,7 +30,7 @@ class TimeSlot(models.Model):
     user_id = models.ForeignKey(RegUser, on_delete=models.CASCADE)
     start_time = models.IntegerField()
     end_time = models.IntegerField()
-    
+
 class Vote(models.Model):
     timeslot_id = models.ForeignKey(TimeSlot, on_delete=models.CASCADE)
     user_id = models.ForeignKey(RegUser, on_delete=models.CASCADE)

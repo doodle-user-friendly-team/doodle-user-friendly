@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class DatabaseConfig(AppConfig):
+class DoodleConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'database'
+    name = 'doodle'
