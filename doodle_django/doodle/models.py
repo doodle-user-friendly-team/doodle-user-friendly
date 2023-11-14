@@ -1,37 +1,109 @@
 from django.db import models
 
-#python manage.py makemigrations doodle_database
-#python manage.py migrate doodle_database
-#pip3 install psycopg
-
-class User(models.Model):
-    user_id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=200)
-    email = models.CharField(max_length=200)
-
-class RegUser(models.Model):
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
-    password = models.CharField(max_length=200)
 class Meeting(models.Model):
-    id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=200)
-    duration = models.IntegerField()
-    time_limit = models.IntegerField()
-    end_time_range = models.IntegerField()
-    start_time_range = models.IntegerField()
-    date = models.DateField()
+    id = models.AutoField(
+        primary_key=True,
+        db_column="id"
+    )
+    name = models.CharField(
+        db_column="name",
+        max_length=100,
+        blank=False,
+        null=False
+    )
+    description = models.CharField(
+        db_column="description",
+        max_length=500,
+        blank=True,
+        null=True
+    )
 
-    #place = models.CharField(max_length=200)
-    #description = models.CharField(max_length=200)
+
+class SchedulePool(models.Model):
+    id = models.AutoField(
+        primary_key=True,
+        db_column="id"
+    )
+    voting_start_date = models.DateTimeField()
+    voting_deadline = models.DateTimeField()
+    meeting = models.ForeignKey(
+        to=Meeting,
+        on_delete=models.CASCADE,
+    )
+
+
+class UserFake(models.Model):
+    id = models.AutoField(
+        primary_key=True,
+        db_column="id"
+    )
+    name = models.CharField(
+        db_column="name",
+        max_length=100,
+    )
+    surname = models.CharField(
+        db_column="surname",
+        max_length=100,
+    )
+    email = models.CharField(
+        db_column="email",
+        max_length=100,
+    )
+
 
 class TimeSlot(models.Model):
-    timeslot_id = models.AutoField(primary_key=True)
-    meeting_id = models.ForeignKey(Meeting, on_delete=models.CASCADE)
-    user_id = models.ForeignKey(RegUser, on_delete=models.CASCADE)
-    start_time = models.IntegerField()
-    end_time = models.IntegerField()
+    id = models.AutoField(
+        primary_key=True,
+        db_column="id",
+        default=-1
+    )
+    start_time = models.DateTimeField(
+        db_column="start_time",
+        null=True
+    )
+    end_date = models.DateTimeField(
+        db_column="end_date",
+        null=True
+    )
+    schedule_pool = models.ForeignKey(
+        to=SchedulePool,
+        on_delete=models.CASCADE,
+        default=None
+    )
+    user = models.ForeignKey(
+        to=UserFake,
+        on_delete=models.CASCADE,
+        default=None
+    )
+
 
 class Vote(models.Model):
-    timeslot_id = models.ForeignKey(TimeSlot, on_delete=models.CASCADE)
-    user_id = models.ForeignKey(RegUser, on_delete=models.CASCADE)
-    vote = models.IntegerField()
+    id = models.AutoField(
+        primary_key=True,
+        db_column="id",
+        default=-1
+    )
+    start_time = models.DateTimeField(
+        db_column="start_time",
+        default=None
+    )
+    preference = models.CharField(
+        db_column="preference",
+        max_length=100,
+        default=None
+    )
+    time_slot = models.ForeignKey(
+        db_column="time_slot",
+        to=TimeSlot,
+        on_delete=models.CASCADE,
+        default=None
+    )
+    user = models.ForeignKey(
+        db_column="user",
+        to=UserFake,
+        on_delete=models.CASCADE,
+        default=None
+    )
+
+    class Meta:
+        unique_together = ('time_slot', 'user')

@@ -41,3 +41,30 @@
     cursor: pointer;
     user-select: none;
 }
+
+.selection-hour-container {
+    width: 100%;
+    height: 20%;
+}
+.start-hour-container {
+}
+
+.end-hour-container {
+}
+
+.timeSlotFormContainer{
+    
+}
+
+.timeSlotContainer{
+    width: 100%;
+    display: grid;
+    grid-gap: 2em;
+    margin-top: 20%;
+}
+.pseudo-button{
+    height: 16px;
+    width: 16px;
+    cursor: pointer;
+    user-select: none;
+}
