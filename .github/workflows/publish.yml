@@ -2,7 +2,7 @@ name: Publishing Workflow
 
 on:
     push:
-        branches: ["main", "ci-cd"]
+        branches: ["main"]
     
     workflow_dispatch:
 
