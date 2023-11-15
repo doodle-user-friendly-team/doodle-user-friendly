@@ -2,8 +2,9 @@ import React from "react";
 import "../CSS/style.css";
 
 interface timeSlotInfo{
-    startTime: string
-    endTime: string
+    start_time: string
+    end_time: string
+    id: string
 }
 
 interface formProps{
@@ -20,7 +21,7 @@ export class TimeSlotFormComponent extends React.Component<formProps, formState 
     
     constructor(props: formState) {
         super(props);
-        this.state = {startTime: "0000", endTime: "0000", confirmTimeFunc: this.props.confirmTimeFunc};
+        this.state = {startTime: "00:00", endTime: "00:00", confirmTimeFunc: this.props.confirmTimeFunc};
     }
     
     convertTimeToString = (time: number): string => {
@@ -103,11 +104,24 @@ export class TimeSlotFormComponent extends React.Component<formProps, formState 
     }
 }
 
-export const TimeSlotComponent = (props: timeSlotInfo) => {
-    return (
-        <div className="selection-hour-container">
-            <div className="start-hour-container">Start: {props.startTime}</div>
-            <div className="end-hour-container">End: {props.endTime}</div>
-        </div>
-    );
+
+export class TimeSlotComponent extends React.Component<timeSlotInfo, timeSlotInfo> {
+    
+    constructor(props: timeSlotInfo) {
+        super(props);
+        this.state = props
+    }
+    
+    render() {
+        return (
+            <div className="selection-hour-container">
+                <div className="start-hour-container">Start: {this.state.start_time}</div>
+                <div className="end-hour-container">End: {this.state.end_time}</div>
+                <div className="pseudo-button" onClick={() => {
+                    console.log(this.state)
+                }}>Edit
+                </div>
+            </div>
+        );
+    }
 };

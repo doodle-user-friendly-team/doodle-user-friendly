@@ -45,8 +45,6 @@ export class TimeSlotBaseComponent extends React.Component<{}, state> {
     
     pushToDatabase = (): void => {
         
-        
-        
         this.getGetTimeSlots(false)
     }
 
@@ -64,7 +62,7 @@ export class TimeSlotBaseComponent extends React.Component<{}, state> {
                 <div className="timeSlotContainer">
                         {
                             this.state.timeSlots.map((ts) => {
-                                return <TimeSlotComponent startTime={ts.start_time} endTime={ts.end_time}/>
+                                return <TimeSlotComponent id={ts.id} start_time={ts.start_time} end_time={ts.end_time}/>
                             })
                         }
                     <div className="timeSlotFormContainer">
