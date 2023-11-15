@@ -58,8 +58,22 @@ export class TimeSlotFormComponent extends React.Component<formProps, formState 
         this.setState(() => {
             return {startTime: this.convertTimeToString(timeNumber), endTime: this.state.endTime, confirmTimeFunc: this.state.confirmTimeFunc};
         });
+    }
 
-        
+    incrementEndTime = (incr: number): void => {
+        let timeNumber = this.convertStringToTime(this.state.endTime);
+        let time = timeNumber + incr;
+
+        if (time < 0)
+            time = 2300;
+        else if (time > 2359)
+            time = 0;
+
+        timeNumber = time;
+
+        this.setState(() => {
+            return {startTime: this.state.startTime, endTime: this.convertTimeToString(timeNumber), confirmTimeFunc: this.state.confirmTimeFunc};
+        });
     }
     
     render() {
@@ -74,7 +88,14 @@ export class TimeSlotFormComponent extends React.Component<formProps, formState 
                         this.incrementStartTime(100);
                     }}>▷</div>
                 </div>
-                <div className="end-hour-container">To</div>
+                <div className="end-hour-container">To
+                    <div className="pseudo-button" onClick={() => {
+                    this.incrementEndTime(-100);
+                }}>◁</div> {this.state.endTime}
+                    <div className="pseudo-button" onClick={() => {
+                        this.incrementEndTime(100);
+                    }}>▷</div>
+                </div>
                 
                 <div className="pseudo-button" onClick={this.state.confirmTimeFunc}>Confirm</div>
             </div>

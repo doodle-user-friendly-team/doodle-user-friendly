@@ -1,67 +1,66 @@
 import React from "react";
+import axios from 'axios';
 import "../CSS/style.css";
 import {TimeSlotComponent, TimeSlotFormComponent} from "./TimeSlotForm";
 
 interface timeSlotInfo{
+    id: string
     startTime: string
     endTime: string
-    id: string
 }
 
 interface state{
     creationMode: boolean
+    timeSlots: timeSlotInfo[]
+    
 }
 export class TimeSlotBaseComponent extends React.Component<{}, state> {
     
     constructor(props: {}) {
         super(props);
-        this.state = {creationMode: false};
+        this.state = {creationMode: false, timeSlots: []};
     }
     
     addNewTimeSlot = () => {
         this.setState(
             () => {
-                return {creationMode: true};
+                return {creationMode: true, timeSlots: this.state.timeSlots};
             }
         )
-    }
-    
-    
-    
-    getGetTimeSlots = (): timeSlotInfo[] => {
-        let timeSlots : timeSlotInfo[] = [];
-        
-        timeSlots.push({startTime: "1630", endTime: "1730", id: "0"});
-        
-        return timeSlots;
     }
 
+
+
+    getGetTimeSlots =  (creationMode: boolean): void => {
+            axios.get('http://localhost:8000/timeslots/').then((response: { data: timeSlotInfo[]; }) =>{
+                console.log(response.data)
+                this.setState(() => {
+                    return {creationMode: creationMode, timeSlots: response.data}
+                })
+            })
+    };
+
+
     pushToDatabase = (): void => {
-        this.setState(
-            () => {
-                return {creationMode: false};
-            }
-        )
+        this.getGetTimeSlots(false)
     }
-    
-    render()
-    {
+
+    render() {
         return (
             <div className="timeslotPanel">
                 <div className="buttonAdd">
                     <div className="group">
                         <div className="overlap-group">
-                            <div className="text-wrapper" onClick={() => this.addNewTimeSlot()}>+
-                            </div>
+                            <div className="text-wrapper" onClick={() => this.addNewTimeSlot()}>+</div>
                         </div>
                     </div>
                 </div>
                 <div className="timeSlotContainer">
-                    {
-                        this.getGetTimeSlots().map((timeSlot) => {
-                            return <TimeSlotComponent startTime={timeSlot.startTime} endTime={timeSlot.endTime}/>
-                        })
-                    }
+                        {
+                            this.state.timeSlots.map((timeSlot) => {
+                                return <TimeSlotComponent startTime={timeSlot.startTime} endTime={timeSlot.endTime}/>
+                            })
+                        }
                     <div className="timeSlotFormContainer">
                         {this.state.creationMode && <TimeSlotFormComponent confirmTimeFunc={this.pushToDatabase}/>}
                     </div>
@@ -69,5 +68,10 @@ export class TimeSlotBaseComponent extends React.Component<{}, state> {
             </div>
         );
     }
-};
+
+    componentDidMount() {
+        this.getGetTimeSlots(false)
+    }
+
+}
 
