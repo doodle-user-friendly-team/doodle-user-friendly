@@ -184,6 +184,7 @@
     top: 16px;
     width: 16px;
     cursor: pointer;
+    user-select: none;
 }
 
 .pseudo-button-left{
@@ -193,4 +194,5 @@
     top: 16px;
     width: 16px;
     cursor: pointer;
+    user-select: none;
 }
