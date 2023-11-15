@@ -101,13 +101,13 @@ export class TimeSlotFormComponent extends React.Component<formProps, formState 
             </div>
         );
     }
-};
+}
 
 export const TimeSlotComponent = (props: timeSlotInfo) => {
     return (
         <div className="selection-hour-container">
-            <div className="start-hour-container">I’m available from {props.startTime}</div>
-            <div className="end-hour-container">To {props.endTime}</div>
+            <div className="start-hour-container">Start: {props.startTime}</div>
+            <div className="end-hour-container">End: {props.endTime}</div>
         </div>
     );
 };

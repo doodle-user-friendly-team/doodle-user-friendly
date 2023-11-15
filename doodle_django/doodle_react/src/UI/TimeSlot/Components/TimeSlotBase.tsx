@@ -5,8 +5,8 @@ import {TimeSlotComponent, TimeSlotFormComponent} from "./TimeSlotForm";
 
 interface timeSlotInfo{
     id: string
-    startTime: string
-    endTime: string
+    start_time: string
+    end_time: string
 }
 
 interface state{
@@ -28,24 +28,30 @@ export class TimeSlotBaseComponent extends React.Component<{}, state> {
             }
         )
     }
+    
+    _array: timeSlotInfo[] = [];
 
-
-
+    
     getGetTimeSlots =  (creationMode: boolean): void => {
             axios.get('http://localhost:8000/timeslots/').then((response: { data: timeSlotInfo[]; }) =>{
-                console.log(response.data)
+
+                this._array = response.data.map((x) => x);
                 this.setState(() => {
-                    return {creationMode: creationMode, timeSlots: response.data}
+                    return {creationMode: creationMode, timeSlots: this._array }
                 })
             })
     };
 
-
+    
     pushToDatabase = (): void => {
+        
+        
+        
         this.getGetTimeSlots(false)
     }
 
     render() {
+        console.log(this.state.timeSlots)
         return (
             <div className="timeslotPanel">
                 <div className="buttonAdd">
@@ -57,8 +63,8 @@ export class TimeSlotBaseComponent extends React.Component<{}, state> {
                 </div>
                 <div className="timeSlotContainer">
                         {
-                            this.state.timeSlots.map((timeSlot) => {
-                                return <TimeSlotComponent startTime={timeSlot.startTime} endTime={timeSlot.endTime}/>
+                            this.state.timeSlots.map((ts) => {
+                                return <TimeSlotComponent startTime={ts.start_time} endTime={ts.end_time}/>
                             })
                         }
                     <div className="timeSlotFormContainer">

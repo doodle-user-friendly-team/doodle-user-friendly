@@ -10,7 +10,7 @@ class TimeSlotView(APIView):
     serializer_class = TimeSlotSerializer
 
     def get(self, request):
-        ts = [ {"id": timeslot.id,"start_time": timeslot.start_time, "end_date": timeslot.end_date}
+        ts = [ {"id": timeslot.id,"start_time": timeslot.start_time, "end_time": timeslot.end_date}
                    for timeslot in TimeSlot.objects.all()]
         return Response(ts)
 
