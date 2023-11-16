@@ -1,0 +1,16 @@
+<!-- myapp/templates/confirm_delete_meeting.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Confirm Deletion</title>
+</head>
+<body>
+    <h1>Confirm Deletion</h1>
+    <p>Are you sure you want to delete the meeting "{{ meeting.title }}"?</p>
+    <form method="post" action="{% url 'confirm_delete_meeting' meeting.id %}">
+        {% csrf_token %}
+        <button type="submit">Confirm Deletion</button>
+        <a href="{% url 'meeting_list' %}"><button type="button">Cancel</button></a>
+    </form>
+</body>
+</html>
