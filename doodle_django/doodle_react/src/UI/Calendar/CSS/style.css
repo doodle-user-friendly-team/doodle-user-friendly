@@ -1,0 +1,198 @@
+.component {
+    align-items: center;
+    background-color: #ffffff;
+    border-radius: 8px;
+    display: flex;
+    gap: 8px;
+    height: 100px;
+    justify-content: center;
+    overflow: hidden;
+    padding: 0 0 4px;
+    position: relative;
+    width: 116px;
+}
+
+.component .group {
+    height: 84px;
+    position: relative;
+    width: 68px;
+}
+
+.component .overlap-group-green {
+    background-color: #59ca79;
+    border-bottom-right-radius: 32px;
+    border-top-right-radius: 32px;
+    height: 80px;
+    position: relative;
+    width: 64px;
+}
+
+.component .overlap-group-red {
+    background-color: #F14F4F;
+    border-bottom-right-radius: 32px;
+    border-top-right-radius: 32px;
+    height: 80px;
+    position: relative;
+    width: 64px;
+}
+
+.component .date {
+    color: #fffefe;
+    font-family: "Inter-Regular", Helvetica;
+    font-size: 28px;
+    font-weight: 400;
+    left: 0;
+    letter-spacing: -0.4px;
+    line-height: 8px;
+    position: absolute;
+    text-align: center;
+    top: 36px;
+    width: 68px;
+}
+
+.component .content {
+    align-items: center;
+    background-color: #ffffff;
+    display: inline-flex;
+    flex: 0 0 auto;
+    flex-wrap: wrap;
+    gap: 4px 4px;
+    height: 84px;
+    justify-content: center;
+    overflow: hidden;
+    padding: 0 0 8px;
+    position: relative;
+}
+
+.component .day {
+    color: #000000;
+    text-align: left;
+    font-family: "Inter-Regular", Helvetica;
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: -0.4px;
+    line-height: 8px;
+    margin-left: -32px;
+    position: relative;
+    transform: rotate(-90deg);
+    width: 80px;
+}
+
+.calendarDate {
+    height: 336px;
+    width: max-content;
+    background-color: #F3FDF6;
+    overflow: auto;
+    display: grid;
+    grid-template-columns: repeat(3, 0fr);
+    grid-gap: 0.4rem;
+    margin: 0.4rem;
+    padding: 0.4rem;
+    border-radius: 0.4rem;
+}
+
+.calendar {
+    height: max-content;
+    width: max-content;
+    background-color: #F3FDF6;
+    overflow: auto;
+    display: grid;
+    grid-gap: 0.4rem;
+    padding: 0.4rem;
+    border: 0.4px solid #ccc;
+    border-radius: 0.4rem;
+    box-shadow: 0 1.6px 3.2px rgba(0, 0, 0, 0.1);
+}
+
+.box {
+    height: 48px;
+    width: 180px;
+    display: grid;
+    grid-template-columns: repeat(2, 0fr);
+    grid-gap: 4em;
+}
+
+.box .anni {
+    height: 32px;
+    width: 136px;
+}
+
+.box .mesi {
+    height: 48px;
+    width: 180px;
+}
+
+.box .overlap-group {
+    background-color: #ffffff;
+    border-radius: 4px;
+    box-shadow: 0px 1.6px 1.6px #00000040;
+    height: 48px;
+    position: relative;
+    width: 180px;
+}
+
+.box .text-wrapper {
+    color: #000000;
+    font-family: "Inter-Regular", Helvetica;
+    font-size: 16px;
+    font-weight: 400;
+    height: 24px;
+    left: 36px;
+    letter-spacing: -0.4px;
+    line-height: 8px;
+    position: absolute;
+    text-align: center;
+    top: 12px;
+    width: 108px;
+}
+
+
+.month-text-wrapper {
+    color: #000000;
+    font-family: "Inter-Regular", Helvetica;
+    font-size: 16px;
+    font-weight: 400;
+    height: 24px;
+    left: 36px;
+    letter-spacing: -0.4px;
+    line-height: 8px;
+    position: absolute;
+    text-align: center;
+    top: 20px;
+    width: 108px;
+}
+
+.year-text-wrapper {
+    color: #000000;
+    font-family: "Inter-Regular", Helvetica;
+    font-size: 16px;
+    font-weight: 400;
+    height: 24px;
+    left: 36px;
+    letter-spacing: -0.4px;
+    line-height: 8px;
+    position: absolute;
+    text-align: center;
+    top: 20px;
+    width: 108px;
+}
+
+.pseudo-button-right{
+    height: 16px;
+    left: 156px;
+    position: absolute;
+    top: 16px;
+    width: 16px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.pseudo-button-left{
+    height: 16px;
+    left: 8px;
+    position: absolute;
+    top: 16px;
+    width: 16px;
+    cursor: pointer;
+    user-select: none;
+}
