@@ -2,6 +2,14 @@ import "../CSS/style.css";
 import React from "react";
 import {CalendarDayComponent} from "./CalendarDay";
 
+interface CalendarBaseProps {
+    currentName: string;
+    currentSurname: string;
+    currentEmail: string
+    isLableVisible: boolean
+
+}
+
 interface calendarState {
     currentMonth: number;
     currentYear: number;
@@ -18,10 +26,10 @@ export class CalendarBaseComponent extends React.Component<calendareProps, calen
         super(props);
         this.state = { currentMonth: new Date().getMonth(), currentYear: new Date().getFullYear(), month: new Date().getMonth(), year: new Date().getFullYear()};
     }
-
     dayName = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
     monthName = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-    
+
+
     getMonthDays = () => {
         let lastDay = new Date(this.state.year, this.state.month + 1, 0);
         let startDay = (this.state.month === this.state.currentMonth && this.state.year === this.state.currentYear) ? new Date().getDate() : 1;
@@ -70,6 +78,13 @@ export class CalendarBaseComponent extends React.Component<calendareProps, calen
         return (
             //make a table with 3 columns
             <div className="calendar">
+
+                {this.props.isLableVisible && (
+                    <label>
+                        {this.props.currentName} {this.props.currentSurname} {this.props.currentEmail}
+                    </label>
+                )}
+
                 <div className="calendarDate">
                     {
                         //make a column for each day
@@ -101,7 +116,9 @@ export class CalendarBaseComponent extends React.Component<calendareProps, calen
                         </div>
                     </div>
                 </div>
+           
+        
             </div>
         );
     }
-}
+};

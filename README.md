@@ -48,3 +48,9 @@ pip freeze > requirements.txt
 #On Windows
 pip freeze | Out-File -FilePath requirements.txt
 ```
+
+For testing with pytest, remember to call it inside the `doodle_django` parent folder:
+```{bash}
+cd doodle_django
+pytest
+```
