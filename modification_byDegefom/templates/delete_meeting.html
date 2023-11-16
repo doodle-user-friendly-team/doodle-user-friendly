@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Delete Meeting</title>
+</head>
+<body>
+    <h1>Delete Meeting</h1>
+    <p>Are you sure you want to delete "{{ meeting.title }}"?</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit">Delete</button>
+        <button type="submit">cancel</button>
+    </form>
+</body>
+</html>

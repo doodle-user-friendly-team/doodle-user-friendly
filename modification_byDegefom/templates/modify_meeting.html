@@ -1,0 +1,15 @@
+<!-- templates/modify_meeting.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Modify Meeting</title>
+</head>
+<body>
+    <h1>Modify Meeting</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>

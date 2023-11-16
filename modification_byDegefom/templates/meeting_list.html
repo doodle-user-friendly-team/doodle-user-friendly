@@ -1,0 +1,19 @@
+<!-- myapp/templates/meeting_list.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Meeting List</title>
+</head>
+<body>
+    <h1>Meeting List</h1>
+    <ul>
+        {% for meeting in meetings %}
+            <li>
+                {{ meeting.title }}
+                - <a href="{% url 'modify_meeting' meeting.id %}">Modify</a>
+                - <a href="{% url 'delete_meeting' meeting.id %}">Delete</a>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
