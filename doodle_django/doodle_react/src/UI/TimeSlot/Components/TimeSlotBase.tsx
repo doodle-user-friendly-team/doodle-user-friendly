@@ -14,7 +14,7 @@ interface state{
     timeSlots: timeSlotInfo[]
     
 }
-export class TimeSlotBaseComponent extends React.Component<{}, state> {
+export class TimeSlotBaseComponent extends React.Component<, state> {
     
     constructor(props: {}) {
         super(props);

@@ -8,9 +8,13 @@ interface calendarState {
     month: number;
     year: number;
 }
+interface calendareProps
+{
+    newDataSetter:  React.Dispatch<React.SetStateAction<boolean>>
+}
 
-export class CalendarBaseComponent extends React.Component<{}, calendarState> {
-    constructor(props: {}) {
+export class CalendarBaseComponent extends React.Component<calendareProps, calendarState> {
+    constructor(props: calendareProps) {
         super(props);
         this.state = { currentMonth: new Date().getMonth(), currentYear: new Date().getFullYear(), month: new Date().getMonth(), year: new Date().getFullYear()};
     }
@@ -27,6 +31,7 @@ export class CalendarBaseComponent extends React.Component<{}, calendarState> {
         for (let i = startDay; i <= lastDay.getDate(); i++) {
             remainingDays.push([i, this.dayName[dayIdx++ % 7]]);
         }
+        
         return remainingDays;
     }
 
@@ -35,7 +40,7 @@ export class CalendarBaseComponent extends React.Component<{}, calendarState> {
             return;
         
         this.setState(() => {
-            return { currentMonth: new Date().getMonth(), currentYear: new Date().getFullYear(), month: this.state.month + incM, year: this.state.year};
+            return { currentMonth: this.state.currentMonth, currentYear: this.state.currentYear, month: this.state.month + incM, year: this.state.year};
         });
     };
     
@@ -49,8 +54,13 @@ export class CalendarBaseComponent extends React.Component<{}, calendarState> {
             month = this.state.currentMonth;
         
         this.setState(() => {
-            return { currentMonth: new Date().getMonth(), currentYear: new Date().getFullYear(), month: month, year: this.state.year + incY};
+            return { currentMonth: this.state.currentMonth, currentYear: this.state.currentYear, month: month, year: this.state.year + incY};
         });
+    }
+    
+    updateTimeslots = (day: string, month: string, year: string) => {
+        console.log(day, month, year);
+        this.props.newDataSetter(true)
     }
     
     render()
@@ -66,10 +76,12 @@ export class CalendarBaseComponent extends React.Component<{}, calendarState> {
                         this.getMonthDays().map((day) => {
                             if (day[1].toString() === restDays[0] || day[1].toString() === restDays[1]) {
                                 return (<CalendarDayComponent day={day[0].toString()} dayName={day[1].toString()}
-                                                              type={"overlap-group-red"}/>);
+                                                              type={"overlap-group-red"} month={'0'} year={this.state.year.toString()} 
+                                                              callback_update_timeslots={this.updateTimeslots}/>);
                             }
                             return (<CalendarDayComponent day={day[0].toString()} dayName={day[1].toString()}
-                                                          type={"overlap-group-green"}/>);
+                                                          type={"overlap-group-green"} month={'0'} year={this.state.year.toString()} 
+                                                          callback_update_timeslots={this.updateTimeslots}/>);
                         })
                     }
                 </div>
