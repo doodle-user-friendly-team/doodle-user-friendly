@@ -27,4 +27,9 @@ urlpatterns = [
     path('timeslots/', TimeSlotView.as_view()),
     path('votes/timeslot/<str:time_slot_id>/', VoteView.get, name='vote_list'),
     path('votes/create/', VoteView.post, name='vote_create'),
+
+    # add react path
+    # but I think it's better to do it when we have finished the website
+    # since we have to build the react app first
+
 ]
