@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class Meeting(models.Model):
     id = models.AutoField(
         primary_key=True,
@@ -82,10 +83,6 @@ class Vote(models.Model):
         primary_key=True,
         db_column="id",
         default=-1
-    )
-    start_time = models.DateTimeField(
-        db_column="start_time",
-        default=None
     )
     preference = models.CharField(
         db_column="preference",

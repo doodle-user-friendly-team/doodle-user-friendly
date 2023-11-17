@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="0fbe42e5-c28c-4d4a-ad0c-f1bcb6952f41" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/../doodle/serializer.py" beforeDir="false" afterPath="$PROJECT_DIR$/../doodle/serializer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../doodle/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/../doodle/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../doodle_django/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/../doodle_django/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/UI/PlanningPanel/Component/PlanningPanel.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/UI/PlanningPanel/Component/PlanningPanel.tsx" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="CSS File" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 4
+}</component>
+  <component name="ProjectId" id="2YFz3RF8I506L4sGwmi9jYUfDaK" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "git-widget-placeholder": "group__1__voting__create",
+    "list.type.of.created.stylesheet": "CSS",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "ts.external.directory.path": "C:\\Users\\Jacopo\\Documents\\GitHub\\doodle-user-friendly\\doodle_django\\doodle_react\\node_modules\\typescript\\lib",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="0fbe42e5-c28c-4d4a-ad0c-f1bcb6952f41" name="Changes" comment="" />
+      <created>1700135921658</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1700135921658</updated>
+      <workItem from="1700135925278" duration="324000" />
+      <workItem from="1700141936961" duration="7433000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>
