@@ -15,13 +15,16 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from doodle.views import *
+from rest_framework.documentation import include_docs_urls
+from rest_framework.schemas import get_schema_view
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("docs/", include_docs_urls(title="Doodle API")),
+    path("schema/", get_schema_view(title="Doodle API")),
     path('timeslots/', TimeSlotView.as_view()),
-    path('timeslots/recap/', time_slots_recap, name='time_slots_recap'),
-    path('votes/<str:time_slot_id>/', VoteView.as_view(), name='vote_list'),
-    path('votes/', VoteView.as_view(), name='vote_create'),
+    path('votes/timeslot/<str:time_slot_id>/', VoteView.get, name='vote_list'),
+    path('votes/create/', VoteView.post, name='vote_create'),
 ]

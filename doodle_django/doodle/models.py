@@ -56,7 +56,6 @@ class TimeSlot(models.Model):
     id = models.AutoField(
         primary_key=True,
         db_column="id",
-        default=-1
     )
     start_time = models.DateTimeField(
         db_column="start_time",
@@ -82,7 +81,6 @@ class Vote(models.Model):
     id = models.AutoField(
         primary_key=True,
         db_column="id",
-        default=-1
     )
     preference = models.CharField(
         db_column="preference",

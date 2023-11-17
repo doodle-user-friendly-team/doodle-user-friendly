@@ -29,8 +29,8 @@ class VoteView(APIView):
 
         specified_time_slot = TimeSlot.objects.get(id=time_slot_id)
         votes = Vote.objects.filter(time_slot=specified_time_slot)
-
-        serializer_result = GetVoteSerializer(votes, many=True)
+        print(len(votes))
+        serializer_result = DetailedVoteSerializer(votes, many=True)
         return Response(serializer_result.data)
 
     def post(self, request):

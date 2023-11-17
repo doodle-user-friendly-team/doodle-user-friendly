@@ -1,5 +1,9 @@
 import React from "react";
 import axios from "axios";
+import "../CSS/style.css";
+import {PreferenceComponent} from "./PreferenceComponent";
+import {Button} from "@mui/material";
+
 
 export interface fakeUser{
     id: string,
@@ -36,6 +40,10 @@ export class PreferenceBaseComponent extends React.Component<{}, state> {
         this.state = {creationMode: false, preferences: []};
     }
 
+    handleCreationForm = () => {
+        console.log("ciao")
+    };
+
     getTimeSlotPreferences = (creationMode: boolean, time_slot_id: string): void => {
         axios.get(`http://localhost:8000/votes/${time_slot_id}/`).then((response: { data: preferenceInfo[]; }) =>{
 
@@ -53,7 +61,21 @@ export class PreferenceBaseComponent extends React.Component<{}, state> {
 
     render() {
         return (
-            <h1>ciao</h1>
+            <div className="preferencePanel">
+                <div className="header">
+                    <span>Scritta all'inizio</span>
+                    <button className="add-button" onClick={this.handleCreationForm}>Crea</button>
+                </div>
+                <div className="preferenceContainer">
+                    {
+                        this.state.preferences.map((p) => {
+                            return <PreferenceComponent id={p.id} preference={p.preference} time_slot={p.time_slot} user={p.user}/>
+                        })
+                    }
+
+                </div>
+            </div>
+
         );
     }
 
