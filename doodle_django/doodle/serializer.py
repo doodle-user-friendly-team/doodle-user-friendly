@@ -20,9 +20,16 @@ class UserFakeSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'surname', 'email']
 
 
-class GetVoteSerializer(serializers.ModelSerializer):
+class DetailedVoteSerializer(serializers.ModelSerializer):
 
     user = UserFakeSerializer()
+
+    class Meta:
+        model = Vote
+        fields = ['id', 'preference', 'time_slot', 'user']
+
+
+class VoteSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Vote
@@ -38,7 +45,7 @@ class CreateVoteSerializer(serializers.ModelSerializer):
 
 class TimeSlotRecapSerializer(serializers.ModelSerializer):
 
-    votes = GetVoteSerializer(many=True)
+    votes = VoteSerializer(many=True)
 
     class Meta:
         model = TimeSlot
