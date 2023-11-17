@@ -8,14 +8,12 @@ class Meeting(models.Model):
     name = models.CharField(
         db_column="name",
         max_length=100,
-        blank=False,
-        null=False
+        default=""
     )
     description = models.CharField(
         db_column="description",
         max_length=500,
-        blank=True,
-        null=True
+        default=""
     )
 
 
@@ -48,61 +46,54 @@ class UserFake(models.Model):
     email = models.CharField(
         db_column="email",
         max_length=100,
+        unique = True
     )
 
 
 class TimeSlot(models.Model):
     id = models.AutoField(
         primary_key=True,
-        db_column="id",
-        default=-1
+        db_column="id"
     )
     start_time = models.DateTimeField(
         db_column="start_time",
-        null=True
+        default=None
     )
-    end_date = models.DateTimeField(
-        db_column="end_date",
-        null=True
+    end_time = models.DateTimeField(
+        db_column="end_time",
+        default=None
     )
     schedule_pool = models.ForeignKey(
         to=SchedulePool,
-        on_delete=models.CASCADE,
-        default=None
+        on_delete=models.CASCADE
     )
     user = models.ForeignKey(
         to=UserFake,
-        on_delete=models.CASCADE,
-        default=None
+        on_delete=models.CASCADE
     )
+    
+    class Meta:
+        unique_together = ("start_time", "end_time")
 
 
 class Vote(models.Model):
     id = models.AutoField(
         primary_key=True,
-        db_column="id",
-        default=-1
-    )
-    start_time = models.DateTimeField(
-        db_column="start_time",
-        default=None
+        db_column="id"
     )
     preference = models.CharField(
         db_column="preference",
-        max_length=100,
-        default=None
+        max_length=100
     )
     time_slot = models.ForeignKey(
         db_column="time_slot",
         to=TimeSlot,
-        on_delete=models.CASCADE,
-        default=None
+        on_delete=models.CASCADE
     )
     user = models.ForeignKey(
         db_column="user",
         to=UserFake,
-        on_delete=models.CASCADE,
-        default=None
+        on_delete=models.CASCADE
     )
 
     class Meta:
