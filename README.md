@@ -54,3 +54,11 @@ For testing with pytest, remember to call it inside the `doodle_django` parent f
 cd doodle_django
 pytest
 ```
+
+## Generate dummy data for Development 
+
+Replace N with the desired number of items to generate
+
+```{bash}
+python doodle_django/manage.py -c N
+```
