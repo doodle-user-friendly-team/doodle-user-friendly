@@ -1,0 +1,18 @@
+.image_news {
+  width: -webkit-fill-available;
+  max-height: 50%;
+}
+
+.a_news > div {
+  height: 500px;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 16;
+  -webkit-box-orient: vertical;
+  margin-bottom: 5px;
+}
+
+.a_news {
+  color: inherit;
+  text-decoration: inherit;
+}

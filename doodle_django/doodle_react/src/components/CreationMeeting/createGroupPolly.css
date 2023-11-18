@@ -1,0 +1,22 @@
+.sx_news {
+  padding-right: 10px !important;
+  padding-top: 35px !important;
+}
+
+.dx_news {
+  padding-left: 10px !important;
+  padding-top: 35px !important;
+}
+
+.middle_grid {
+  padding-left: 0 !important;
+  padding-top: 0 !important;
+}
+
+.field2 {
+  margin-top: 10px;
+  background-color: white;
+  box-shadow: 0 0 10px #858585;
+  border-radius: 10px;
+  height: 400px;
+}

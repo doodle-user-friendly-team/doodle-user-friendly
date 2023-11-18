@@ -1,0 +1,25 @@
+.CreateGroup {
+  padding: inherit;
+}
+.title {
+  font-size: 32px;
+  font-weight: bold;
+  text-align: center;
+  padding-top: 20px;
+}
+
+.field {
+  background-color: white;
+  box-shadow: 0 0 10px #858585;
+  border-radius: 10px;
+  height: fit-content;
+}
+
+.switch {
+  margin: 20px;
+  padding-bottom: 20px;
+}
+
+.form_creation {
+  padding-left: 15px;
+}
