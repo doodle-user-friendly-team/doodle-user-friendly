@@ -45,6 +45,9 @@ jobs:
               run: coverage run -m pytest
             
             - name: Show coverage
-              run: coverage report -m
+              if: always()
+              run: | 
+                coverage report -m
+                coverage erase
             
 
