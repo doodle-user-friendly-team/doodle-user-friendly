@@ -42,8 +42,9 @@ jobs:
             
             - name: Running tests with pytest
               working-directory: doodle_django
-              run: pytest
+              run: coverage run -m pytest
             
-            - name: Running tests with django
-              working-directory: doodle_django
-              run: python manage.py test
+            - name: Show coverage
+              run: coverage report -m
+            
+
