@@ -11,8 +11,6 @@ import {Button} from "@mui/material";
 export class PreferenceComponent extends React.Component<preferenceInfo, preferenceInfo> {
 
 
-
-
     constructor(props: preferenceInfo) {
         super(props);
         this.state = this.props;

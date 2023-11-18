@@ -25,7 +25,9 @@ urlpatterns = [
     path("docs/", include_docs_urls(title="Doodle API")),
     path("schema/", get_schema_view(title="Doodle API")),
     path('timeslots/', TimeSlotView.as_view()),
-    path('votes/<str:time_slot_id>/', get_preferences, name='timeslot_vote_list'),
+    path('votes/', VotesView.as_view()),
+    path('timeslots/id/<str:time_slot_id>/', get_timeslot, name='timeslot_list'),
+    path('votes/timeslot/<str:time_slot_id>/', get_preferences, name='timeslot_vote_list'),
 
     # add react path
     # but I think it's better to do it when we have finished the website
