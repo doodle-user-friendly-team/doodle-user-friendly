@@ -13,8 +13,7 @@ import { grey } from "@mui/material/colors";
 import { styled } from "@mui/material/styles";
 import axios from "axios";
 
-const Manage = ( { news, data }) => {
-
+const Manage = ({ news, data }) => {
   const ColorButton = styled(Button)(({ theme }) => ({
     color: theme.palette.getContrastText(grey[600]),
     backgroundColor: grey[600],
@@ -60,12 +59,12 @@ const Manage = ( { news, data }) => {
     <div className="CreateGroup">
       <Box sx={{ flexGrow: 1 }}>
         <Grid container spacing={2}>
-          <Grid className="sx_news" item xs={3}>
-            <News news={news} start={0} numberOfDivsNews={2} />
+          <Grid className="sx_news" item xs={2}>
+            <News news={news} start={0} numberOfDivsNews={3} />
           </Grid>
-          <Grid style={{ marginTop: 32, paddingLeft: 0 }} item xs={6}>
+          <Grid style={{ marginTop: 32, paddingLeft: 0 }} item xs={8}>
             <div className="field">
-              <ManageMeeting data={data}/>
+              <ManageMeeting data={data} />
               <TableMeeting
                 data={data}
                 selectedColumn={selectedColumn}
@@ -82,8 +81,8 @@ const Manage = ( { news, data }) => {
               </div>
             </div>
           </Grid>
-          <Grid className="dx_news" item xs={3}>
-            <News news={news} start={3} numberOfDivsNews={5} />
+          <Grid className="dx_news" item xs={2}>
+            <News news={news} start={3} numberOfDivsNews={6} />
           </Grid>
         </Grid>
       </Box>

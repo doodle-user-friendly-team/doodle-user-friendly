@@ -4,7 +4,7 @@
 }
 
 .a_news > div {
-  height: 500px;
+  height: 300px;
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 16;

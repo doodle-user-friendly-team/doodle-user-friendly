@@ -11,8 +11,7 @@ import RangeDate from "../Date/RangeDate";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-const CreateGroupPolly = ( { news } ) => {
-
+const CreateGroupPolly = ({ news }) => {
   const ColorButton = styled(Button)(({ theme }) => ({
     color: theme.palette.getContrastText(grey[600]),
     backgroundColor: grey[600],
@@ -72,9 +71,9 @@ const CreateGroupPolly = ( { news } ) => {
 
   const checkRequirements = () => {
     if (title === "") {
-      titleError()
+      titleError();
       return false;
-    } 
+    }
     return true;
   };
 
@@ -95,11 +94,15 @@ const CreateGroupPolly = ( { news } ) => {
       location: location,
     };
     try {
-      const result = axios.post("http://127.0.0.1:8000/api/meetings/new/", data, {
-        headers: {
-          authorization: `Token ${getToken()}`,
-        },
-      });
+      const result = axios.post(
+        "http://127.0.0.1:8000/api/meetings/new/",
+        data,
+        {
+          headers: {
+            authorization: `Token ${getToken()}`,
+          },
+        }
+      );
       alert("Mettting Created successfully !");
       navigate("/manage");
       deleteFields();
@@ -109,8 +112,7 @@ const CreateGroupPolly = ( { news } ) => {
     }
   };
   const handleButtonClick = (e) => {
-    if(checkRequirements())
-      handleApi(e);
+    if (checkRequirements()) handleApi(e);
   };
 
   const onExpand = (index) => {
@@ -119,7 +121,7 @@ const CreateGroupPolly = ( { news } ) => {
     else btn[1].style.paddingBottom = "180px";
   };
 
-  console.log("news", news)
+  console.log("news", news);
 
   const onContraction = (index) => {
     const btn = document.getElementsByClassName("field");
@@ -130,10 +132,10 @@ const CreateGroupPolly = ( { news } ) => {
   return (
     <div className="CreateGroupPolly">
       <Grid container spacing={2}>
-        <Grid className="sx_news" item xs={3}>
-          <News news={news} start={0} numberOfDivsNews={2} />
+        <Grid className="sx_news" item xs={2}>
+          <News news={news} start={0} numberOfDivsNews={3} />
         </Grid>
-        <Grid className="middle_grid" item xs={6}>
+        <Grid className="middle_grid" item xs={8}>
           <div className="field">
             <CreateGroup
               title={title}
@@ -165,8 +167,8 @@ const CreateGroupPolly = ( { news } ) => {
             </ColorButton>
           </div>
         </Grid>
-        <Grid className="dx_news" item xs={3}>
-          <News news={news} start={3} numberOfDivsNews={5} />
+        <Grid className="dx_news" item xs={2}>
+          <News news={news} start={3} numberOfDivsNews={6} />
         </Grid>
       </Grid>
     </div>
