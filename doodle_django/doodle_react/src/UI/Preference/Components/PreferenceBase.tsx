@@ -27,17 +27,22 @@ export interface preferenceInfo{
 
 
 interface state{
+    newData: string
     creationMode: boolean
     preferences: preferenceInfo[]
 }
 
-export class PreferenceBaseComponent extends React.Component<{}, state> {
+interface preferenceBaseProps{
+    newData: string
+}
+
+export class PreferenceBaseComponent extends React.Component< preferenceBaseProps, state> {
 
     _array : preferenceInfo[] = []
 
-    constructor(props: {}) {
+    constructor(props: preferenceBaseProps) {
         super(props);
-        this.state = {creationMode: false, preferences: []};
+        this.state = {newData: props.newData, creationMode: false, preferences: []};
     }
 
     handleCreationForm = () => {
@@ -50,13 +55,9 @@ export class PreferenceBaseComponent extends React.Component<{}, state> {
             this._array = response.data.map((x) => x);
             console.log(response.data)
             this.setState(() => {
-                return {creationMode: creationMode, preferences: this._array }
+                return {newData: this.props.newData, creationMode: creationMode, preferences: this._array }
             })
         })
-    }
-
-    componentDidMount() {
-        this.getTimeSlotPreferences(false, "-1")
     }
 
     render() {
@@ -77,6 +78,13 @@ export class PreferenceBaseComponent extends React.Component<{}, state> {
             </div>
 
         );
+    }
+
+    componentDidUpdate(){
+        if (this.props.newData !== this.state.newData) {
+
+            this.getTimeSlotPreferences(false, this.props.newData)
+        }
     }
 
 }

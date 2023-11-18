@@ -4,7 +4,7 @@ import "../CSS/style.css";
 import {TimeSlotComponent, TimeSlotFormComponent} from "./TimeSlotForm";
 import Cookies from "js-cookie";
 
-interface timeSlotInfo{
+export interface timeSlotInfo{
     id: string
     start_time: string
     end_time: string
@@ -19,6 +19,7 @@ interface state{
 interface timeSlotBaseProps{
     newData: string
     updateNewData:  (val: string) => void
+    updatePreferences: (id: string) => void
 }
 
 export class TimeSlotBaseComponent extends React.Component<timeSlotBaseProps , state> {
@@ -38,6 +39,7 @@ export class TimeSlotBaseComponent extends React.Component<timeSlotBaseProps , s
     }
     
     _array: timeSlotInfo[] = [];
+
 
     
     getGetTimeSlots =  (creationMode: boolean): void => {
@@ -74,7 +76,7 @@ export class TimeSlotBaseComponent extends React.Component<timeSlotBaseProps , s
                 <div className="timeSlotContainer">
                         {
                             this.state.timeSlots.map((ts) => {
-                                return <TimeSlotComponent id={ts.id} start_time={ts.start_time} end_time={ts.end_time}/>
+                                return <TimeSlotComponent id={ts.id} start_time={ts.start_time} end_time={ts.end_time} callback_update_preferences={this.props.updatePreferences}/>
                             })
                         }
                     <div className="timeSlotFormContainer">

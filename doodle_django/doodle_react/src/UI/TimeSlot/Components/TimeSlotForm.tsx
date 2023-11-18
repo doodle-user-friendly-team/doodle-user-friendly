@@ -20,6 +20,14 @@ interface formState{
     confirmTimeFunc: () => void
 }
 
+interface timeSlotProps{
+    start_time: string
+    end_time: string
+    id: string
+    callback_update_preferences: (id: string) => void
+
+}
+
 export class TimeSlotFormComponent extends React.Component<formProps, formState >{
     
     data: string = ""
@@ -106,6 +114,7 @@ export class TimeSlotFormComponent extends React.Component<formProps, formState 
             'Content-Type': 'application/json' // Specifica il tipo di contenuto
         };
 
+
         axios.post('http://localhost:8000/timeslots/', postData, { headers })
             .then((response) => {
                 console.log("res:" + response);
@@ -145,16 +154,18 @@ export class TimeSlotFormComponent extends React.Component<formProps, formState 
 }
 
 
-export class TimeSlotComponent extends React.Component<timeSlotInfo, timeSlotInfo> {
+export class TimeSlotComponent extends React.Component<timeSlotProps, timeSlotInfo> {
     
-    constructor(props: timeSlotInfo) {
+    constructor(props: timeSlotProps) {
         super(props);
         this.state = props
     }
     
     render() {
         return (
-            <div className="selection-hour-container">
+            <div className="selection-hour-container" onClick={() =>
+                this.props.callback_update_preferences(this.props.id)
+            }>
                 <div className="start-hour-container">Start: {this.state.start_time}</div>
                 <div className="end-hour-container">End: {this.state.end_time}</div>
                 <div className="pseudo-button" onClick={() => {

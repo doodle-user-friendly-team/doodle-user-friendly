@@ -1,4 +1,7 @@
 from django.shortcuts import render
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework.decorators import api_view, renderer_classes
+from rest_framework.renderers import TemplateHTMLRenderer, JSONRenderer
 from rest_framework.views import APIView
 from .models import *
 from rest_framework.response import Response
@@ -29,19 +32,13 @@ class TimeSlotView(APIView):
             return Response(serializer.data)
 
 
-class VoteView(APIView):
+@csrf_exempt
+@api_view(('GET',))
+@renderer_classes((TemplateHTMLRenderer, JSONRenderer))
+def get_preferences(request, time_slot_id):
+    specified_time_slot = TimeSlot.objects.get(id=time_slot_id)
+    votes = Vote.objects.filter(time_slot=specified_time_slot)
+    print(votes)
+    serializer_result = DetailedVoteSerializer(votes, many=True)
+    return Response(serializer_result.data)
 
-    def get(self, request, time_slot_id):
-        print(time_slot_id)
-
-        specified_time_slot = TimeSlot.objects.get(id=time_slot_id)
-        votes = Vote.objects.filter(time_slot=specified_time_slot)
-        print(len(votes))
-        serializer_result = DetailedVoteSerializer(votes, many=True)
-        return Response(serializer_result.data)
-
-    def post(self, request):
-        serializer = CreateVoteSerializer(data=request.data)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            return Response(serializer.data)
