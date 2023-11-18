@@ -20,6 +20,43 @@ def api_meetings(request):
             meetings = Meeting.objects.filter(title__icontains=request.GET["title"]).order_by("title")
             return Response(MeetingSerializer(instance=meetings, many=True).data, status=status.HTTP_200_OK)
 
+@api_view(['GET'])
+def last_meeting(request):
+    try:
+        last_meeting = Meeting.objects.latest('pk')
+        meeting = get_object_or_404(Meeting, pk=last_meeting.id)
+        return Response(MeetingSerializer(meeting).data, status=status.HTTP_200_OK)
+    except Meeting.DoesNotExist:
+        raise Http404("Meeting not found")
+
+@api_view(['GET'])
+def api_meeting(request):
+    if(request.GET):
+        try:
+            meeting = get_object_or_404(Meeting, pk=request.GET["id"])
+            return Response(MeetingSerializer(meeting).data, status=status.HTTP_200_OK)
+        except Meeting.DoesNotExist:
+            raise Http404("Meeting not found")
+
+@api_view(['POST'])
+def api_meeting_book(request, meeting_id):
+    try:
+        meeting = get_object_or_404(Meeting, pk=meeting_id)
+        
+        if "final_date" in request.data:
+            time_slot_id = request.data["final_date"]
+            
+            time_slot, created = TimeSlot.objects.get_or_create(pk=time_slot_id)
+
+            meeting.final_date = time_slot
+            meeting.save()
+
+            return Response(status=status.HTTP_200_OK)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={"error": "final_date is required in the request data"})
+    except Meeting.DoesNotExist:
+        raise Http404("Meeting not found")
+
 @api_view(['POST'])
 def api_meetings_create(request):
     data = request.data

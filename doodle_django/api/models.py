@@ -14,6 +14,30 @@ class VideoType(models.Model):
         blank=False,
         null=False,
     )
+
+class TimeSlot(models.Model):
+    id = models.BigAutoField(
+        primary_key=True,
+        db_column="id",
+    )
+    schedule_pool_id = models.ForeignKey(
+        "SchedulePool",
+        on_delete=models.CASCADE,
+        blank=True,
+        null=False,
+    )
+    start_date = models.DateTimeField(
+        db_column="start_date",
+        blank=False,
+        null=False,
+    )
+    end_date = models.DateTimeField(
+        db_column="end_date",
+        blank=False,
+        null=False,
+    )
+    
+
 class Meeting(models.Model):
     id = models.BigAutoField(
         primary_key=True,
@@ -52,7 +76,9 @@ class Meeting(models.Model):
         blank=False,
         null=False,
     )
-    final_date = models.DateTimeField(
+    final_date = models.ForeignKey(
+        TimeSlot, 
+        on_delete=models.SET_NULL,
         db_column="final_date",
         blank=True,
         null=True,
@@ -74,27 +100,5 @@ class Meeting(models.Model):
         null=False
     )
 
-class TimeSlot(models.Model):
-    id = models.BigAutoField(
-        primary_key=True,
-        db_column="id",
-    )
-    schedule_pool_id = models.ForeignKey(
-        "SchedulePool",
-        on_delete=models.CASCADE,
-        blank=True,
-        null=False,
-    )
-    start_date = models.DateTimeField(
-        db_column="start_date",
-        blank=False,
-        null=False,
-    )
-    end_date = models.DateTimeField(
-        db_column="end_date",
-        blank=False,
-        null=False,
-    )
-    
 class SchedulePool(models.Model):
     pass
