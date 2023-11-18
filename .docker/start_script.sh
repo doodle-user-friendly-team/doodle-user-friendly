@@ -1,3 +1,6 @@
 #!/bin/sh
 python3 manage.py migrate
-python3 manage.py runserver 0.0.0.0:8000 & npm start --prefix doodle_react
+cd doodle_django
+npm run build --prefix doodle_react
+python3 manage.py collectstatic --noinput
+python3 manage.py runserver 0.0.0.0:8000

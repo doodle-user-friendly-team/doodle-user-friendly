@@ -4,6 +4,8 @@ on:
     workflow_dispatch:
     pull_request:
         branches: ["group_1", "group_2"]
+    push:
+        branches: ["group2_cicd"]
         
 jobs:
     test:
@@ -31,6 +33,10 @@ jobs:
             - name: Lint with black
               run: black .
             
-            - name: Running tests
+            - name: Running tests with pytest
               run: pytest
+              working-directory: doodle_django
+            
+            - name: Running tests with django
+              run: python manage.py test
               working-directory: doodle_django
