@@ -27,7 +27,7 @@ def last_meeting(request):
         meeting = get_object_or_404(Meeting, pk=last_meeting.id)
         return Response(MeetingSerializer(meeting).data, status=status.HTTP_200_OK)
     except Meeting.DoesNotExist:
-        raise Http404("Meeting not found")
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET'])
 def api_meeting(request):
@@ -36,7 +36,7 @@ def api_meeting(request):
             meeting = get_object_or_404(Meeting, pk=request.GET["id"])
             return Response(MeetingSerializer(meeting).data, status=status.HTTP_200_OK)
         except Meeting.DoesNotExist:
-            raise Http404("Meeting not found")
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
 def api_meeting_book(request, meeting_id):
@@ -55,7 +55,7 @@ def api_meeting_book(request, meeting_id):
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST, data={"error": "final_date is required in the request data"})
     except Meeting.DoesNotExist:
-        raise Http404("Meeting not found")
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
 def api_meetings_create(request):

@@ -98,7 +98,7 @@ const TableMeeting = ({ selectedColumn, columnSelection, data }) => {
                     <img
                       id="star"
                       className={
-                        selectedColumn === column
+                        selectedColumn === index
                           ? "img_star_select"
                           : "img_star_unselect"
                       }
