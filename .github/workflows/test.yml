@@ -6,11 +6,7 @@ on:
         branches: ["group_1", "group_2"]
     push:
         branches: ["group2_cicd"]
-
-defaults:
-  run: 
-    working-directory: ./doodle_django
-
+        
 jobs:
     test:
         runs-on: ubuntu-latest
@@ -22,9 +18,11 @@ jobs:
             - uses: actions/checkout@v4
             - uses: actions/setup-node@v4
               with:
-                node-version: '21.x'
+                node-version: 21.1.0
+                cache: 'npm'
+                
             - run: npm ci
-              working-directory: ./doodle_react
+              working-directory: doodle_django/doodle_react
 
             - uses: actions/setup-python@v3
             - name: Install Django dependencies
@@ -38,8 +36,8 @@ jobs:
             
             - name: Running tests with pytest
               run: pytest
-              working-directory: ./doodle_django
+              working-directory: doodle_django
             
             - name: Running tests with django
               run: python manage.py test
-              working-directory: ./doodle_django
+              working-directory: doodle_django
