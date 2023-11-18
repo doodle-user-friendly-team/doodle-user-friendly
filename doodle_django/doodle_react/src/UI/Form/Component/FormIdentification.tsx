@@ -1,6 +1,7 @@
 import React, { useState, FormEvent} from 'react';
 import "../CSS/style.css";
 import { CalendarBaseComponent } from '../../Calendar/Components/CalendarBase';
+import { Alert, Button } from '@mui/material';
 
 
 export const FormComponent = () => {
@@ -14,6 +15,8 @@ export const FormComponent = () => {
   const [isFormVisible, setFormVisible] = useState(true);
   const [isCalendarVisible, setCalendarVisible] = useState(true);
   const [isLabelVisible, setLabelVisible] = useState(false);
+  //aggiunta per utente non registrato
+  const [isAlertVisible, setAlertVisible] = useState(false)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     setFormData({
@@ -23,17 +26,80 @@ export const FormComponent = () => {
   };
 
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>): void => {
+  
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
 
     if (formData.name && formData.surname && formData.email) {
-      console.log('Dati del modulo:', formData);
-      setFormVisible(false)
-      setLabelVisible(true);
+
+      try {
+        const response = await fetch('http://localhost:8000/authenticate/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData),
+        });
+
+        if (response.ok) {
+          // Autenticazione riuscita, puoi reindirizzare l'utente alla tua pagina principale o fare altre operazioni necessarie.
+          console.log('Dati del modulo:', formData);
+          setFormVisible(false)
+          setLabelVisible(true);
+        } else {
+            console.error('Errore nell\'autenticazione dell\'utente');
+            console.error('Errore nella risposta del server:', await response.text());
+            setAlertVisible(true)
+        }
+      } catch (error) {
+        console.error('Errore:', error);
+      }
+
+
     } else {
       alert('Must complet all fields');
     }
   }
+
+
+  const onCloseAlert = (): void => {
+    setAlertVisible(false);
+  };
+
+
+  
+  const handleCreateAccount = async () => {
+    try {
+      const response = await fetch('http://localhost:8000/register/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          surname: formData.surname,
+          email: formData.email,
+        }),
+      });
+
+      if (response.ok) {
+        console.log('Utente registrato con successo');
+
+        console.log('Dati del modulo:', formData);
+        setFormVisible(false)
+        setLabelVisible(true);
+      
+      } else {
+        console.error('Errore durante la registrazione dell\'utente');
+        console.error('Errore nella risposta del server:', await response.text());
+        setAlertVisible(true);
+      }
+    } catch (error) {
+      console.error('Errore:', error);
+    }
+  };
+
+  
 
 
   return (
@@ -89,6 +155,26 @@ export const FormComponent = () => {
               </form>
             </div>
           )}
+
+          {/* aggiunta per utente non registrato */}
+          {isAlertVisible && isFormVisible && (
+            <div className="alert-container">
+              <div className="alert-box">
+                <Alert variant="filled" severity="error">
+                  <h3> Utente non presente nel sistema! </h3>
+                </Alert>
+                <Button variant="contained" color="success" onClick={()=> handleCreateAccount()}>
+                  Create new account
+                </Button>
+                <Button variant="outlined" color="error" onClick={() => onCloseAlert()}>
+                  Close
+                </Button>
+              </div>
+            </div>
+          )}
+
+
+
           {isCalendarVisible && (
             <div>
             <CalendarBaseComponent currentName= {formData.name} currentSurname={formData.surname} currentEmail={formData.email} isLableVisible={isLabelVisible}  />
