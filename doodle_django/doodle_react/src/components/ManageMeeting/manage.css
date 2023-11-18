@@ -46,6 +46,8 @@
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+  overflow-x: auto;
+  display: block;
 }
 
 .manage_nobr_info {
