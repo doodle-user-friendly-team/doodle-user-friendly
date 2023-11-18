@@ -68,7 +68,7 @@ ROOT_URLCONF = "doodle_django.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [os.path.join(BASE_DIR, 'doodle_react/build'),],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -131,7 +131,9 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 
-STATICFILE_DIRS = [
+STATIC_ROOT = "staticfiles/"
+
+STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'doodle_react/build/static'),
 ]
 
