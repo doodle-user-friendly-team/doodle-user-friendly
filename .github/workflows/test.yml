@@ -6,7 +6,11 @@ on:
         branches: ["group_1", "group_2"]
     push:
         branches: ["group2_cicd"]
-        
+
+defaults:
+  run:
+    working-directory: doodle_django
+
 jobs:
     test:
         runs-on: ubuntu-latest
@@ -19,6 +23,8 @@ jobs:
             - uses: actions/setup-node@v4
               with:
                 node-version: 21.1.0
+                cache: 'npm'
+                cache-dependency-path: '**/package-lock.json'
                 
             - run: npm ci
               working-directory: doodle_django/doodle_react
