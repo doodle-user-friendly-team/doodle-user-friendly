@@ -60,20 +60,32 @@ def api_meeting_book(request, meeting_id):
 @api_view(['POST'])
 def api_meetings_create(request):
     data = request.data
-    timeslots = data.pop("timeslots", None)
-    timeslots_data = None
-    if timeslots:
-        timeslot_serializer = TimeSlotSerializer(timeslots, many=True)
-        if timeslot_serializer.is_valid():
-            timeslots_data = timeslot_serializer.data
-    
+    timeslots = data.pop("timeslots", [])
+    meeting = None
+
     data["creation_date"] = now()
     data["passcode"] = get_random_string(5, allowed_chars=ascii_uppercase + digits)
     meeting_serializer = MeetingSerializer(data=data)
 
     if meeting_serializer.is_valid():
-        meeting_serializer.save()
-        return Response(status=status.HTTP_201_CREATED)
+        meeting = meeting_serializer.save()
+
+        schedule_pool = SchedulePool.objects.create(
+            meeting=meeting,
+            voting_start_date=meeting.creation_date,
+            voting_deadline=meeting.deadline            
+        )
+
+        for timeslot in timeslots:
+            timeslot["schedule_pool_id"] = schedule_pool.id
+        timeslot_serializer = TimeSlotSerializer(data=timeslots, many=True)
+        if timeslot_serializer.is_valid():
+            timeslots = timeslot_serializer.save()
+
+        meeting_data = meeting_serializer.data
+        meeting_data["timeslots"] = timeslot_serializer.data
+        
+        return Response(status=status.HTTP_201_CREATED, data=meeting_data)
     return Response(status=status.HTTP_400_BAD_REQUEST, data=meeting_serializer.errors)
 
 @api_view(['GET', 'POST'])

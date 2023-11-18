@@ -31,3 +31,13 @@ class TimeSlotSerializer(serializers.ModelSerializer):
         model = TimeSlot
         fields = '__all__'
         
+class SchedulePoolSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SchedulePool
+        fields = '__all__'
+
+
+class SchedulePoolSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Vote
+        fields = '__all__'

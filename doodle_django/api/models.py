@@ -101,4 +101,28 @@ class Meeting(models.Model):
     )
 
 class SchedulePool(models.Model):
-    pass
+    id = models.AutoField(
+        primary_key=True,
+        db_column="id"
+    )
+    voting_start_date = models.DateTimeField()
+    voting_deadline = models.DateTimeField()
+    meeting = models.ForeignKey(
+        to=Meeting,
+        on_delete=models.CASCADE,
+    )
+
+class Vote(models.Model):
+    id = models.AutoField(
+        primary_key=True,
+        db_column="id"
+    )
+    preference = models.CharField(
+        db_column="preference",
+        max_length=100
+    )
+    time_slot = models.ForeignKey(
+        db_column="time_slot",
+        to=TimeSlot,
+        on_delete=models.CASCADE
+    )

@@ -18,15 +18,48 @@ class MeetingTests(APITestCase):
         """
         url = reverse('api:api_meetings_create')
 
-        data = {
-            'title': 'TestMeeting',
-            'description': 'Test Description',
-            'location': 'Test Location',
-            'video_conferencing': True,
-            'duration': timedelta(hours=1),         
-            'start_date': now() + timedelta(days=1),
-            'end_date': now() + timedelta(days=5),
+        data = {   
+            "title": "TestMeeting",
+            "description": "Test Description",
+            "location": "Test Location",
+            "video_conferencing": "False",
+            "duration": timedelta(hours=1),     
+            "deadline": now() + timedelta(days=5),
+            "timeslots": [
+                {
+                    "start_date": now() + timedelta(days=1),
+                    "end_date": now() + timedelta(days=2)
+                },
+                {
+                    "start_date": now() + timedelta(days=2),
+                    "end_date": now() + timedelta(days=3)
+                }
+            ]
         }
+
+        # manual test
+        '''
+        {   
+            "title": "TestMeeting",
+            "description": "Test Description",
+            "location": "Test Location",
+            "video_conferencing": "False",
+            "duration": "01:00:00",         
+            "start_date": "2023-11-19",
+            "deadline": "2023-12-26",
+            "timeslots": [
+                {
+                    "start_date": "2023-11-20",
+                    "end_date": "2023-11-21"
+                },
+                {
+                    "start_date": "2023-11-20",
+                    "end_date": "2023-11-22"
+                }
+            ]
+        }
+        '''
+
 
         response = self.client.post(url, data, format='json')
 
@@ -43,14 +76,23 @@ class MeetingTests(APITestCase):
         """
         url = reverse('api:api_meetings_create')
 
-        data = {
+        data = {   
             #missing title
-            'description': 'Test Description',
-            'location': 'Test Location',
-            'video_conferencing': True,
-            'duration': timedelta(hours=1),         
-            'start_date': now() + timedelta(days=1),
-            'end_date': now() + timedelta(days=5),
+            "description": "Test Description",
+            "location": "Test Location",
+            "video_conferencing": "False",
+            "duration": timedelta(hours=1),     
+            "deadline": now() + timedelta(days=5),
+            "timeslots": [
+                {
+                    "start_date": now() + timedelta(days=1),
+                    "end_date": now() + timedelta(days=2)
+                },
+                {
+                    "start_date": now() + timedelta(days=2),
+                    "end_date": now() + timedelta(days=3)
+                }
+            ]
         }
 
         response = self.client.post(url, data, format='json')
@@ -61,43 +103,31 @@ class MeetingTests(APITestCase):
 
     
 
-    def test_create_meeting_unsuccessfully_past_start_date(self):
+    def test_create_meeting_unsuccessfully_past_deadline(self):
         """
-        Creating a Meeting Unsuccessfully with a Past Starting Time
-        """
-        url = reverse('api:api_meetings_create')
-
-        data = {
-            'title': 'TestMeeting',
-            'description': 'Test Description',
-            'location': 'Test Location',
-            'video_conferencing': True,
-            'duration': timedelta(hours=1),         
-            'start_date': now() - timedelta(days=1),
-            'end_date': now() + timedelta(days=5),
-        }
-
-        response = self.client.post(url, data, format='json')
-
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-        self.assertEqual(Meeting.objects.count(), 0)
-
-    def test_create_meeting_unsuccessfully_end_date_before_start_date(self):
-        """
-        Creating a Meeting Unsuccessfully with a End Date which comes before Start Date
+        Creating a Meeting Unsuccessfully with a Past Deadline
         """
         url = reverse('api:api_meetings_create')
 
-        data = {
-            'title': 'TestMeeting',
-            'description': 'Test Description',
-            'location': 'Test Location',
-            'video_conferencing': True,
-            'duration': timedelta(hours=1),         
-            'start_date': now() + timedelta(days=4),
-            'end_date': now() + timedelta(days=2),
+        data = {   
+            "title": "TestMeeting",
+            "description": "Test Description",
+            "location": "Test Location",
+            "video_conferencing": "False",
+            "duration": timedelta(hours=1),     
+            "deadline": now() - timedelta(days=1),
+            "timeslots": [
+                {
+                    "start_date": now() + timedelta(days=1),
+                    "end_date": now() + timedelta(days=2)
+                },
+                {
+                    "start_date": now() + timedelta(days=2),
+                    "end_date": now() + timedelta(days=3)
+                }
+            ]
         }
+
 
         response = self.client.post(url, data, format='json')
 
@@ -114,15 +144,25 @@ class MeetingTests(APITestCase):
         #create 4 meetings
         url = reverse('api:api_meetings_create')
         
-        data = {
-            'title': 'TestMeeting',
-            'description': 'Test Description',
-            'location': 'Test Location',
-            'video_conferencing': True,
-            'duration': timedelta(hours=1),         
-            'start_date': now() + timedelta(days=1),
-            'end_date': now() + timedelta(days=5),
+        data = {   
+            "title": "TestMeeting",
+            "description": "Test Description",
+            "location": "Test Location",
+            "video_conferencing": "False",
+            "duration": timedelta(hours=1),     
+            "deadline": now() + timedelta(days=5),
+            "timeslots": [
+                {
+                    "start_date": now() + timedelta(days=1),
+                    "end_date": now() + timedelta(days=2)
+                },
+                {
+                    "start_date": now() + timedelta(days=2),
+                    "end_date": now() + timedelta(days=3)
+                }
+            ]
         }
+
 
         for _ in range(4):
             self.client.post(url, data, format='json')
@@ -143,38 +183,46 @@ class MeetingTests(APITestCase):
         """
         url = reverse('api:api_meetings_create')
         
-        data1 = {
-            'title': 'TestMeeting',
-            'description': 'Test Description',
-            'location': 'Test Location',
-            'video_conferencing': True,
-            'duration': timedelta(hours=1),         
-            'start_date': now() + timedelta(days=1),
-            'end_date': now() + timedelta(days=5),
-        }
-        {
+        data1 = {   
             "title": "TestMeeting",
-            "description ": "TestMeeting",
             "description": "Test Description",
             "location": "Test Location",
-            "video_conferencing": "True",
-            "duration": "01:00:00",
-            "deadline": "2023-12-22",
-            "location": "Test Location",
-            "video_conferencing": "True",
-            "video_type": ""
+            "video_conferencing": "False",
+            "duration": timedelta(hours=1),     
+            "deadline": now() + timedelta(days=5),
+            "timeslots": [
+                {
+                    "start_date": now() + timedelta(days=1),
+                    "end_date": now() + timedelta(days=2)
+                },
+                {
+                    "start_date": now() + timedelta(days=2),
+                    "end_date": now() + timedelta(days=3)
+                }
+            ]
         }
+
         self.client.post(url, data1, format='json')
 
-        data2 = {
-            'title': 'OtherMeeting',
-            'description': 'Test Description',
-            'location': 'Test Location',
-            'video_conferencing': False,
-            'duration': timedelta(hours=1),         
-            'start_date': now() + timedelta(days=2),
-            'end_date': now() + timedelta(days=4),
+        data2 = {   
+            "title": "OtherMeeting",
+            "description": "Test Description",
+            "location": "Test Location",
+            "video_conferencing": "False",
+            "duration": timedelta(hours=1),     
+            "deadline": now() + timedelta(days=5),
+            "timeslots": [
+                {
+                    "start_date": now() + timedelta(days=1),
+                    "end_date": now() + timedelta(days=2)
+                },
+                {
+                    "start_date": now() + timedelta(days=2),
+                    "end_date": now() + timedelta(days=3)
+                }
+            ]
         }
+
 
         self.client.post(url, data2, format='json')
 
