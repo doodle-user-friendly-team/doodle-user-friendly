@@ -85,8 +85,19 @@ def api_meetings_edit(request, meeting_id, meeting=None):
         meeting = get_object_or_404(Meeting, pk=meeting_id)
         return Response(MeetingSerializer(meeting).data, status=status.HTTP_200_OK)
     else:
+        '''
+            todo edit code...
+            ...
+            ...
+        '''
         return Response(status=status.HTTP_200_OK)
 
 @api_view(['POST'])
 def api_meetings_delete(request, meeting_id, meeting=None):
-    pass
+    '''
+        todo edit code..
+        ...
+        ...
+    '''
+
+

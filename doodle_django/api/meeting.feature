@@ -4,15 +4,18 @@ Feature: Meeting Creation
     When the user selects the option to create a new meeting
     Then the user should see a form to enter meeting details
     And the user can provide information, including:
-      | Field                | Description                    | Requirement         |
-      | -------------------- | ------------------------------ | ------------------- |
-      | Title                | Meeting title                  | Required            |
-      | Description          | Meeting Description            | Not Required        |
-      | Location             | Meeting Location               | Not Required        |
-      | Video conferencing   | Meeting Online                 | Required            |
-      | Duration             | Meeting Duration               | Required            |
-      | Date and Time        | 2023-11-10 10:00               | Required            |
-      | Deadline             | 2023-11-10 11:00               | Required            |
+      | Field              | Description                  | Requirement       |
+      |--------------------|------------------------------|-------------------|
+      | Title              | Meeting title                | Required          |
+      | Description        | Meeting Description          | Not Required      |
+      | Location           | Meeting Location             | Not Required      |
+      | Video conferencing | Meeting Online               | Required          |
+      | Duration           | Meeting Duration             | Required          |
+      | Final Date         | Meeting Final Date Time      | Chosen Later      |
+      | Start Date         | Meeting Start Date Time      | Required          |
+      | End Date           | Meeting End Date Time        | Required          |
+      | Creation Date      | Meeting Creation Date Time   | Server Generated  |
+      | Passcode           | Meeting Owner Passcode       | Server Generated  |
     When the user submits the form
     Then the meeting should be successfully created
     And the user should receive a confirmation message
@@ -21,43 +24,35 @@ Feature: Meeting Creation
     When the user selects the option to create a new meeting
     Then the user should see a form to enter meeting details
     And the user provides incomplete information, including:
-      | Field                | Description                    | Requirement         |
-      | -------------------- | ------------------------------ | ------------------- |
-      | Title                | Meeting title                  | Required            |
-      | Description          | Meeting Description            | Not Required        |
+      | Field              | Description                  | Provided          |
+      |--------------------|------------------------------|-------------------|
+      | Title              | Meeting title                | no                |
+      | Description        | Meeting Description          | yes               |
+      | Location           | Meeting Location             | yes               |
+      | Video conferencing | Meeting Online               | yes               |
+      | Duration           | Meeting Duration             | yes               |
+      | Final Date         | Meeting Final Date Time      | no                |
+      | Start Date         | Meeting Start Date Time      | yes               |
+      | End Date           | Meeting End Date Time        | yes               |
+      | Creation Date      | Meeting Creation Date Time   | no                |
+      | Passcode           | Meeting Owner Passcode       | no                |
     When the user submits the form
     Then the user should see validation errors
     And the meeting should not be created
-  Scenario: Creating a Meeting Unsuccessfully with a Past Date and Time
+  Scenario: Creating a Meeting Unsuccessfully with a Past Starting Time
     Given the user has access to the application
     When the user selects the option to create a new meeting
-    And the user provides the following information:
-      | Field                | Description                    | Requirement         |
-      | -------------------- | ------------------------------ | ------------------- |
-      | Title                | Meeting title                  | Required            |
-      | Video conferencing   | Meeting Online                 | Required            |
-      | Duration             | Meeting Duration               | Required            |
-      | Date and Time        | 2000-11-10 10:00               | Required            |
-      | Deadline             | 2023-11-10 11:00               | Required            |
+    And the user fills the Start Date field with an already passed date
     When the user submits the form
     Then the user should see a validation error
     And the meeting should not be created
-  Scenario: Creating a Meeting Successfully with a Distant Future Date and Time
+  Scenario: Creating a Meeting Unsuccessfully with a End Date which comes before Start Date
     Given the user has access to the application
     When the user selects the option to create a new meeting
-    And the user provides the following information:
-      | Field                | Description                    | Requirement         |
-      | -------------------- | ------------------------------ | ------------------- |
-      | Title                | Meeting title                  | Required            |
-      | Description          | Meeting Description            | Not Required        |
-      | Location             | Meeting Location               | Not Required        |
-      | Video conferencing   | Meeting Online                 | Required            |
-      | Duration             | Meeting Duration               | Required            |
-      | Date and Time        | 2024-11-10 10:00               | Required            |
-      | Deadline             | 2023-11-10 11:00               | Required            |
+    And the user fills the End Date field with a date that comes before Start Date
     When the user submits the form
-    Then the meeting should be successfully created
-    And the user should receive a confirmation message
+    Then the user should see a validation error
+    And the meeting should not be created
 Feature: Meeting Modification
   Scenario: Modifying Meeting Details Successfully
     Given the user has access to the application
