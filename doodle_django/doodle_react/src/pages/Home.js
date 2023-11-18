@@ -79,7 +79,7 @@ export default function Welcome() {
               </Typography>
             </CardActionArea>
             <CardActions style={{ justifyContent: "center" }}>
-              <Link to={card.link} sx={{ color: "teal" }}>
+              <Link to={{ pathname: card.link, state: { customProp: news } }} sx={{ color: "teal" }}>
                 <Button>create</Button>
               </Link>
             </CardActions>

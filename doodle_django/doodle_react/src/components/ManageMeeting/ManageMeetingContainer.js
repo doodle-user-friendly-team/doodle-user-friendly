@@ -47,7 +47,7 @@ const Manage = ( { news, data }) => {
   const [selectedColumn, setSelectedColumn] = useState([]);
 
   const columnSelection = (columnName) => {
-    if (columnName !== "partecipants") {
+    if (columnName !== 0) {
       if (selectedColumn === columnName) {
         setSelectedColumn("");
       } else {

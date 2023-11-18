@@ -38,7 +38,7 @@ const ManageMeeting = ( {data} ) => {
         <Grid container spacing={2}>
           <Grid item xs={6}>
             <h2>{data["title"]}</h2>
-            <p style={{ marginLeft: 24 }}>Owner meeting</p>
+            {/* <p style={{ marginLeft: 24 }}>Owner meeting</p> */}
             <div className="manage_div_info">
               <img src={timeImage} alt="time.png" />
               <nobr>{data["duration"]}</nobr>

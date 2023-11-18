@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Card,
   Box,
@@ -26,6 +25,7 @@ function Welcome() {
       link: "/create",
     },
   ];
+
   return (
     <div>
       <Card
