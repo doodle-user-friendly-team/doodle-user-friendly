@@ -8,3 +8,6 @@ pytest==7.4.3
 pytest-django==4.6.0
 pytz==2023.3.post1
 sqlparse==0.4.4
+django-cors-headers==3.8.0
+coreapi==2.3.3
+PyYAML==6.0

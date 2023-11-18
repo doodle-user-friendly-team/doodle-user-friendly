@@ -1,5 +1,6 @@
 import React from "react";
 import "../CSS/style.css";
+import { ModifyProposedTimeSlot } from "../../EditTimeSlot/Component/ModifyTimeSlot";   {/* per aggiunta modifica time slot*/}
 
 interface timeSlotInfo{
     start_time: string
@@ -105,11 +106,53 @@ export class TimeSlotFormComponent extends React.Component<formProps, formState 
 }
 
 
-export class TimeSlotComponent extends React.Component<timeSlotInfo, timeSlotInfo> {
+ {/* per aggiunta modifica time slot*/}
+interface TimeSlotComponentState extends timeSlotInfo {
+    showProposedTimeSlot: boolean;
+    formData: {
+        name: string,
+        surname: string,
+        email: string
+    }
+}
+
+
+export class TimeSlotComponent extends React.Component<timeSlotInfo, TimeSlotComponentState> {
     
     constructor(props: timeSlotInfo) {
         super(props);
-        this.state = props
+        this.state = {
+            ...props,
+            showProposedTimeSlot: false, //aggiunta per modifica timeslot
+            formData: {
+                name: '',
+                surname: '',
+                email: ''
+            }
+        }
+    }
+
+
+    showTimeSlotForm = () => {      //{/* per aggiunta modifica time slot*/}
+        this.setState({
+            showProposedTimeSlot: true
+        });
+    }
+
+    closeTimeSlotForm = () => {         //{/* per aggiunta modifica time slot*/}
+        this.setState({
+            showProposedTimeSlot: false
+        })
+    }
+
+    handleFormSubmit = (data: { name: string, surname: string, email: string }) => {    //{/* per aggiunta modifica time slot*/}
+        this.setState({
+            formData: {
+              name: data.name,
+              surname: data.surname,
+              email: data.email
+            }
+        });
     }
     
     render() {
@@ -117,10 +160,9 @@ export class TimeSlotComponent extends React.Component<timeSlotInfo, timeSlotInf
             <div className="selection-hour-container">
                 <div className="start-hour-container">Start: {this.state.start_time}</div>
                 <div className="end-hour-container">End: {this.state.end_time}</div>
-                <div className="pseudo-button" onClick={() => {
-                    console.log(this.state)
-                }}>Edit
-                </div>
+                {/* modifiche e aggiunte per modificare il time slot*/}
+                <div className="pseudo-button" onClick={this.showTimeSlotForm}> Edit </div>
+                {this.state.showProposedTimeSlot && <ModifyProposedTimeSlot onClose={this.closeTimeSlotForm} formData={this.state.formData} timeSlot={this.props}/>}
             </div>
         );
     }
