@@ -27,24 +27,6 @@ def api_meetings(request):
                 meeting.timeslots = timeslots.filter(schedule_pool_id__meeting_id=meeting.pk)
             return Response(MeetingTimeSlotSerializer(meetings, many=True).data, status=status.HTTP_200_OK)
 
-@api_view(['GET'])
-def last_meeting(request):
-    try:
-        last_meeting = Meeting.objects.latest('pk')
-        meeting = get_object_or_404(Meeting, pk=last_meeting.id)
-        return Response(MeetingSerializer(meeting).data, status=status.HTTP_200_OK)
-    except Meeting.DoesNotExist:
-        return Response(status=status.HTTP_400_BAD_REQUEST)
-
-@api_view(['GET'])
-def api_meeting(request):
-    if(request.GET):
-        try:
-            meeting = get_object_or_404(Meeting, pk=request.GET["id"])
-            return Response(MeetingSerializer(meeting).data, status=status.HTTP_200_OK)
-        except Meeting.DoesNotExist:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
 @api_view(['POST'])
 def api_meeting_book(request, meeting_id):
     try:

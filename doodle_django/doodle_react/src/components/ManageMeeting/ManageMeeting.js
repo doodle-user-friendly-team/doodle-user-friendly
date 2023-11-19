@@ -47,13 +47,15 @@ const ManageMeeting = ( {data} ) => {
               <img src={locationImage} alt="location.png" />
               <nobr>{data["location"]}</nobr>
             </div>
-            <div className="manage_div_info">
-              <img src={videoImage} alt="video.png" />
-              <nobr>{data["video"]}</nobr>
-            </div>
+            {data["video_conferencing"] === true && (
+              <div className="manage_div_info">
+                <img src={videoImage} alt="video.png" />
+                <nobr>{data["video_type_id"]}</nobr>
+              </div>
+            )}
             <div className="manage_div_info">
               <img src={descriptionImage} alt="description.png" />
-              <div>{data["description"]}</div>
+              <nobr>{data["description"]}</nobr>
             </div>
           </Grid>
           <Grid item xs={6}>
