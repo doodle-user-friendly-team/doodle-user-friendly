@@ -106,7 +106,7 @@ const CreateGroupPolly = ({ news }) => {
   };
 
   let navigate = useNavigate();
-  // console.log({ customer, title, subject, date });
+  // console.log({ title, date });
 
   const getToken = () => sessionStorage.getItem("token");
 
@@ -139,25 +139,41 @@ const CreateGroupPolly = ({ news }) => {
 
   const formatDeadline = (deadline) => {
     const year = deadline.getFullYear();
-  const month = (deadline.getMonth() + 1).toString().padStart(2, "0");
-  const day = deadline.getDate().toString().padStart(2, "0");
-  const hours = deadline.getHours().toString().padStart(2, "0");
-  const minutes = deadline.getMinutes().toString().padStart(2, "0");
-  const seconds = deadline.getSeconds().toString().padStart(2, "0");
-  const offsetHours = Math.floor(deadline.getTimezoneOffset() / 60);
-  const offsetMinutes = Math.abs(deadline.getTimezoneOffset() % 60);
+    const month = (deadline.getMonth() + 1).toString().padStart(2, "0");
+    const day = deadline.getDate().toString().padStart(2, "0");
+    const hours = deadline.getHours().toString().padStart(2, "0");
+    const minutes = deadline.getMinutes().toString().padStart(2, "0");
+    const seconds = deadline.getSeconds().toString().padStart(2, "0");
+    const offsetHours = Math.floor(deadline.getTimezoneOffset() / 60);
+    const offsetMinutes = Math.abs(deadline.getTimezoneOffset() % 60);
 
-  const offsetSign = offsetHours >= 0 ? "+" : "-";
-  const offsetHoursFormatted = Math.abs(offsetHours).toString().padStart(2, "0");
-  const offsetMinutesFormatted = offsetMinutes.toString().padStart(2, "0");
+    const offsetSign = offsetHours >= 0 ? "+" : "-";
+    const offsetHoursFormatted = Math.abs(offsetHours)
+      .toString()
+      .padStart(2, "0");
+    const offsetMinutesFormatted = offsetMinutes.toString().padStart(2, "0");
 
-  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}${offsetSign}${offsetHoursFormatted}:${offsetMinutesFormatted}`;
-
+    return `${year}-${month}-${day}`;
   };
 
   const handleApi = async (e) => {
     e.preventDefault();
-    
+
+    if (selectedDates.length === 0) {
+      // Handle the case where no dates are selected
+      console.error("No dates selected");
+      return;
+    }
+
+    const startDate = selectedDates[0].date.toISOString().split("T")[0];
+    const deadline = formatDeadline(
+      selectedDates[selectedDates.length - 1].date
+    );
+
+    const timeslots = selectedDates.map((dateObj) => ({
+      start_date: dateObj.date.toISOString().split("T")[0],
+      end_date: deadline,
+    }));
     const startTime = selectedTimeRange[0];
     const endTime = selectedTimeRange[1];
     const duration = calculateDuration(startTime, endTime);
@@ -166,15 +182,18 @@ const CreateGroupPolly = ({ news }) => {
       title,
       description,
       location,
+      timeslots,
       duration,
-      formatDeadline(selectedDates[selectedDates.length - 1].date),
+      formatDeadline(selectedDates[selectedDates.length - 1].date)
     );
     let data = {
       title: title,
+      timeslots: timeslots,
       description: description,
       location: location,
       duration: duration,
-      deadline: formatDeadline(selectedDates[selectedDates.length - 1].date),
+      start_date: startDate,
+      deadline: deadline,
     };
     console.log("after", data);
     try {
@@ -192,7 +211,7 @@ const CreateGroupPolly = ({ news }) => {
       deleteFields();
       console.log(result);
     } catch (e) {
-      console.log(e);
+      console.log("sth failed", e);
     }
   };
   const handleButtonClick = (e) => {
@@ -207,8 +226,6 @@ const CreateGroupPolly = ({ news }) => {
     if (index === 0) btn[0].style.marginBottom = "120px";
     else btn[1].style.paddingBottom = "180px";
   };
-
-  console.log("news", news);
 
   const onContraction = (index) => {
     const btn = document.getElementsByClassName("field");
