@@ -1,7 +1,14 @@
 import "../CSS/style.css";
 import React from "react";
 import {CalendarDayComponent} from "./CalendarDay";
-import Cookies from "js-cookie";
+
+interface CalendarBaseProps {
+    currentName: string;
+    currentSurname: string;
+    currentEmail: string
+    isLableVisible: boolean
+
+}
 
 interface calendarState {
     currentMonth: number;
@@ -9,20 +16,16 @@ interface calendarState {
     month: number;
     year: number;
 }
-interface calendarProps
-{
-    updateNewData:  (val: string) => void
-}
 
-export class CalendarBaseComponent extends React.Component<calendarProps, calendarState> {
-    constructor(props: calendarProps) {
+export class CalendarBaseComponent extends React.Component<CalendarBaseProps, calendarState > {
+    constructor(props: CalendarBaseProps) {
         super(props);
         this.state = { currentMonth: new Date().getMonth(), currentYear: new Date().getFullYear(), month: new Date().getMonth(), year: new Date().getFullYear()};
     }
-    
     dayName = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
     monthName = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-    
+
+
     getMonthDays = () => {
         let lastDay = new Date(this.state.year, this.state.month + 1, 0);
         let startDay = (this.state.month === this.state.currentMonth && this.state.year === this.state.currentYear) ? new Date().getDate() : 1;
@@ -32,7 +35,6 @@ export class CalendarBaseComponent extends React.Component<calendarProps, calend
         for (let i = startDay; i <= lastDay.getDate(); i++) {
             remainingDays.push([i, this.dayName[dayIdx++ % 7]]);
         }
-        
         return remainingDays;
     }
 
@@ -41,7 +43,7 @@ export class CalendarBaseComponent extends React.Component<calendarProps, calend
             return;
         
         this.setState(() => {
-            return { currentMonth: this.state.currentMonth, currentYear: this.state.currentYear, month: this.state.month + incM, year: this.state.year};
+            return { currentMonth: new Date().getMonth(), currentYear: new Date().getFullYear(), month: this.state.month + incM, year: this.state.year};
         });
     };
     
@@ -55,19 +57,8 @@ export class CalendarBaseComponent extends React.Component<calendarProps, calend
             month = this.state.currentMonth;
         
         this.setState(() => {
-            return { currentMonth: this.state.currentMonth, currentYear: this.state.currentYear, month: month, year: this.state.year + incY};
+            return { currentMonth: new Date().getMonth(), currentYear: new Date().getFullYear(), month: month, year: this.state.year + incY};
         });
-    }
-    
-    updateTimeslots = (day: string, month: string, year: string) => {
-        console.log(day, month, year);
-        
-        const paddedDay = day.padStart(2, '0');
-        const paddedMonth = month.padStart(2, '0');
-
-        const dateString = `${paddedDay}/${paddedMonth}/${year}`;
-
-        this.props.updateNewData(dateString);
     }
     
     render()
@@ -78,20 +69,22 @@ export class CalendarBaseComponent extends React.Component<calendarProps, calend
             //make a table with 3 columns
             <div className="calendar">
 
+                {this.props.isLableVisible && (
+                    <label>
+                        {this.props.currentName} {this.props.currentSurname} {this.props.currentEmail}
+                    </label>
+                )}
+
                 <div className="calendarDate">
                     {
                         //make a column for each day
                         this.getMonthDays().map((day) => {
                             if (day[1].toString() === restDays[0] || day[1].toString() === restDays[1]) {
                                 return (<CalendarDayComponent day={day[0].toString()} dayName={day[1].toString()}
-                                                              type={"overlap-group-red"} month={this.state.month.toString()} 
-                                                              year={this.state.year.toString()} 
-                                                              callback_update_timeslots={this.updateTimeslots}/>);
+                                                              type={"overlap-group-red"}/>);
                             }
                             return (<CalendarDayComponent day={day[0].toString()} dayName={day[1].toString()}
-                                                          type={"overlap-group-green"} month={this.state.month.toString()} 
-                                                          year={this.state.year.toString()} 
-                                                          callback_update_timeslots={this.updateTimeslots}/>);
+                                                          type={"overlap-group-green"}/>);
                         })
                     }
                 </div>

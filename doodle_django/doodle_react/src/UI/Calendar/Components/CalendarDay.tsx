@@ -1,20 +1,9 @@
 import React from "react";
 import "../CSS/style.css";
 
-interface calendarDayProps{
-    day: string
-    month: string
-    year: string
-    dayName: string
-    type: string
-    callback_update_timeslots: (day: string, month: string, year: string) => void
-}
-
-export function CalendarDayComponent (props: calendarDayProps) {
+export function CalendarDayComponent (props: { day: string; dayName: string; type: string;}) {
     return (
-        <div className="component" onClick={() => {
-            props.callback_update_timeslots(props.day, props.month, props.year);
-        }}>
+        <div className="component">
             <div className="group">
                 <div className={props.type}>
                     <div className="date">{props.day}</div>

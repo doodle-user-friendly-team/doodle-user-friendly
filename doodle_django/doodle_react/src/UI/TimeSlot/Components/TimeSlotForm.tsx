@@ -1,7 +1,5 @@
 import React from "react";
 import "../CSS/style.css";
-import axios from "axios";
-import Cookies from "js-cookie";
 
 interface timeSlotInfo{
     start_time: string
@@ -10,7 +8,6 @@ interface timeSlotInfo{
 }
 
 interface formProps{
-    dataSelected: string
     confirmTimeFunc: () => void
 }
 
@@ -20,22 +17,11 @@ interface formState{
     confirmTimeFunc: () => void
 }
 
-interface timeSlotProps{
-    start_time: string
-    end_time: string
-    id: string
-    callback_update_preferences: (id: string) => void
-
-}
-
 export class TimeSlotFormComponent extends React.Component<formProps, formState >{
     
-    data: string = ""
-    
-    constructor(props: formProps) {
+    constructor(props: formState) {
         super(props);
         this.state = {startTime: "00:00", endTime: "00:00", confirmTimeFunc: this.props.confirmTimeFunc};
-
     }
     
     convertTimeToString = (time: number): string => {
@@ -91,41 +77,6 @@ export class TimeSlotFormComponent extends React.Component<formProps, formState 
         });
     }
     
-    postTimeslot = (): void => {
-
-        const day = this.props.dataSelected.substring(0, 2);
-        const month = parseInt(this.props.dataSelected.substring(3, 5)) + 1;
-        const year = this.props.dataSelected.substring(6, 10);
-
-        let start_time_timeslot = year + '-' + month + '-' + day + 'T' + this.state.startTime + ':00Z'
-        let end_time_timeslot = year + '-' + month + '-' + day + 'T' + this.state.endTime + ':00Z'
-
-        const postData = {
-            start_time: start_time_timeslot,
-            end_time: end_time_timeslot,
-            schedule_pool: 1,
-            user: 1
-        };
-
-        const csrfToken = Cookies.get('csrftoken');
-
-        const headers = {
-            'X-CSRFToken': csrfToken,
-            'Content-Type': 'application/json' // Specifica il tipo di contenuto
-        };
-
-
-        axios.post('http://localhost:8000/timeslots/', postData, { headers })
-            .then((response) => {
-                console.log("res:" + response);
-                this.props.confirmTimeFunc();
-            })
-            .catch((error) => {
-                console.log(error);
-            });
-
-    }
-    
     render() {
         
         return (
@@ -147,25 +98,23 @@ export class TimeSlotFormComponent extends React.Component<formProps, formState 
                     }}>▷</div>
                 </div>
                 
-                <div className="pseudo-button" onClick={this.postTimeslot}>Confirm</div>
+                <div className="pseudo-button" onClick={this.state.confirmTimeFunc}>Confirm</div>
             </div>
         );
     }
 }
 
 
-export class TimeSlotComponent extends React.Component<timeSlotProps, timeSlotInfo> {
+export class TimeSlotComponent extends React.Component<timeSlotInfo, timeSlotInfo> {
     
-    constructor(props: timeSlotProps) {
+    constructor(props: timeSlotInfo) {
         super(props);
         this.state = props
     }
     
     render() {
         return (
-            <div className="selection-hour-container" onClick={() =>
-                this.props.callback_update_preferences(this.props.id)
-            }>
+            <div className="selection-hour-container">
                 <div className="start-hour-container">Start: {this.state.start_time}</div>
                 <div className="end-hour-container">End: {this.state.end_time}</div>
                 <div className="pseudo-button" onClick={() => {
@@ -174,11 +123,5 @@ export class TimeSlotComponent extends React.Component<timeSlotProps, timeSlotIn
                 </div>
             </div>
         );
-    }
-    
-    componentDidUpdate(prevProps: Readonly<timeSlotInfo>, prevState: Readonly<timeSlotInfo>, snapshot?: any) {
-        if (prevProps.start_time !== this.props.start_time || prevProps.end_time !== this.props.end_time) {
-            this.setState({start_time: this.props.start_time, end_time: this.props.end_time})
-        }
     }
 };

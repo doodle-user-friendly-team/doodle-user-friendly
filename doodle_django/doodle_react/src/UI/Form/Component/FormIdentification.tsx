@@ -2,7 +2,6 @@ import React, { useState, FormEvent} from 'react';
 import "../CSS/style.css";
 import { CalendarBaseComponent } from '../../Calendar/Components/CalendarBase';
 import { Alert, Button } from '@mui/material';
-import Cookies from 'js-cookie';
 
 
 export const FormComponent = () => {
@@ -16,7 +15,7 @@ export const FormComponent = () => {
   const [isFormVisible, setFormVisible] = useState(true);
   const [isCalendarVisible, setCalendarVisible] = useState(true);
   const [isLabelVisible, setLabelVisible] = useState(false);
-  //for unregistered user
+  //aggiunta per utente non registrato
   const [isAlertVisible, setAlertVisible] = useState(false)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
@@ -43,7 +42,7 @@ export const FormComponent = () => {
         });
 
         if (response.ok) {
-          // Authentication successful
+          // Autenticazione riuscita, puoi reindirizzare l'utente alla tua pagina principale o fare altre operazioni necessarie.
           console.log('Dati del modulo:', formData);
           setFormVisible(false)
           setLabelVisible(true);
@@ -113,7 +112,7 @@ export const FormComponent = () => {
               <form onSubmit={handleSubmit}>
 
                 <div className="form-group">
-                <label htmlFor="name">
+                <label htmlFor="uname">
                   <b>Name</b>
                 </label>
                   <input type="text" 
@@ -121,10 +120,12 @@ export const FormComponent = () => {
                   placeholder="Enter your name" 
                   value= {formData.name} 
                   onChange={handleChange} required/>
+
+  
                 </div>
                 
                 
-                <label htmlFor="surname">
+                <label htmlFor="username">
                   <b>Surname</b>
                 </label>
                   <input
@@ -151,21 +152,17 @@ export const FormComponent = () => {
                   />
                 
                 <br />
-                <button type="submit" onClick={() =>{
-                  Cookies.set('name', formData.name);
-                  Cookies.set('surname', formData.surname);
-                  Cookies.set('email', formData.email);
-                }}> Send </button>
+                <button type="submit"> Send </button>
               </form>
             </div>
           )}
 
-          {/* addition for unregistered user */}
+          {/* aggiunta per utente non registrato */}
           {isAlertVisible && isFormVisible && (
             <div className="alert-container">
               <div className="alert-box">
                 <Alert variant="filled" severity="error">
-                  <h3> User not found in the system! </h3>
+                  <h3> Utente non presente nel sistema! </h3>
                 </Alert>
                 <Button variant="contained" color="success" onClick={()=> handleCreateAccount()}>
                   Create new account
@@ -181,13 +178,15 @@ export const FormComponent = () => {
 
           {isCalendarVisible && (
             <div>
-              <CalendarBaseComponent currentName= {formData.name} currentSurname={formData.surname} currentEmail={formData.email} isLableVisible={isLabelVisible}  />
+            <CalendarBaseComponent currentName= {formData.name} currentSurname={formData.surname} currentEmail={formData.email} isLableVisible={isLabelVisible}  />
             
-            </div>
+              </div>
           )}
 
-    
+      
+
     </div>
+  
   )
 
   
