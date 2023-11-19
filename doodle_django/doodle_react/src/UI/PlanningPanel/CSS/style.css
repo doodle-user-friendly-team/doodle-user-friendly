@@ -1,7 +1,7 @@
 .planningPanel{
     text-align: center;
     display: grid;
-    grid-template-columns: repeat(2, 0fr);
+    grid-template-columns: repeat(3, 0fr);
     grid-gap: 2em;
     height: 400px;
     margin: 0.4rem;

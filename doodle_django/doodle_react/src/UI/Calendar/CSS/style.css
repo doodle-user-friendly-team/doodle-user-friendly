@@ -20,8 +20,7 @@
 
 .component .overlap-group-green {
     background-color: #59ca79;
-    border-bottom-right-radius: 32px;
-    border-top-right-radius: 32px;
+    border-radius: 10px;
     height: 80px;
     position: relative;
     width: 64px;
@@ -29,8 +28,7 @@
 
 .component .overlap-group-red {
     background-color: #F14F4F;
-    border-bottom-right-radius: 32px;
-    border-top-right-radius: 32px;
+    border-radius: 10px;
     height: 80px;
     position: relative;
     width: 64px;
