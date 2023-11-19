@@ -11,11 +11,12 @@ Feature: Meeting Creation
       | Location           | Meeting Location             | Not Required      |
       | Video conferencing | Meeting Online               | Required          |
       | Duration           | Meeting Duration             | Required          |
-      | Final Date         | Meeting Final Date Time      | Chosen Later      |
+      | Final Date         | Meeting Final Date Time      | Not Required      |
       | Start Date         | Meeting Start Date Time      | Required          |
       | End Date           | Meeting End Date Time        | Required          |
       | Creation Date      | Meeting Creation Date Time   | Server Generated  |
       | Passcode           | Meeting Owner Passcode       | Server Generated  |
+      | TimeSlots          | Meeting Initial Timeslots    | Required          |
     When the user submits the form
     Then the meeting should be successfully created
     And the user should receive a confirmation message
@@ -32,24 +33,17 @@ Feature: Meeting Creation
       | Video conferencing | Meeting Online               | yes               |
       | Duration           | Meeting Duration             | yes               |
       | Final Date         | Meeting Final Date Time      | no                |
-      | Start Date         | Meeting Start Date Time      | yes               |
-      | End Date           | Meeting End Date Time        | yes               |
+      | Deadline           | Meeting Deadline             | yes               |
       | Creation Date      | Meeting Creation Date Time   | no                |
       | Passcode           | Meeting Owner Passcode       | no                |
+      | TimeSlots          | Meeting Initial Timeslots    | yes               |
     When the user submits the form
     Then the user should see validation errors
     And the meeting should not be created
-  Scenario: Creating a Meeting Unsuccessfully with a Past Starting Time
+  Scenario: Creating a Meeting Unsuccessfully with a Past Deadline
     Given the user has access to the application
     When the user selects the option to create a new meeting
-    And the user fills the Start Date field with an already passed date
-    When the user submits the form
-    Then the user should see a validation error
-    And the meeting should not be created
-  Scenario: Creating a Meeting Unsuccessfully with a End Date which comes before Start Date
-    Given the user has access to the application
-    When the user selects the option to create a new meeting
-    And the user fills the End Date field with a date that comes before Start Date
+    And the user fills the deadline field with an already passed date
     When the user submits the form
     Then the user should see a validation error
     And the meeting should not be created

@@ -8,6 +8,7 @@ from django.shortcuts import get_object_or_404
 from string import ascii_uppercase, digits
 
 from . serializers import *
+from . exceptions import *
 
 
 @api_view(['GET', 'POST'])
@@ -63,30 +64,44 @@ def api_meetings_create(request):
     timeslots = data.pop("timeslots", [])
     meeting = None
 
+    if len(timeslots) == 0:
+        raise MissingDataException(detail={"Failure": "error", "TimeSlots": "required field not provided"}, status_code=status.HTTP_400_BAD_REQUEST)
+
     data["creation_date"] = now()
     data["passcode"] = get_random_string(5, allowed_chars=ascii_uppercase + digits)
     meeting_serializer = MeetingSerializer(data=data)
 
-    if meeting_serializer.is_valid():
-        meeting = meeting_serializer.save()
+    if not meeting_serializer.is_valid():
+        return Response(status=status.HTTP_400_BAD_REQUEST, data=meeting_serializer.errors)
+    
+    meeting = Meeting(**meeting_serializer.validated_data)
 
-        schedule_pool = SchedulePool.objects.create(
-            meeting=meeting,
-            voting_start_date=meeting.creation_date,
-            voting_deadline=meeting.deadline            
-        )
+    timeslot_serializer = TimeSlotSerializer(data=timeslots, many=True)
 
-        for timeslot in timeslots:
-            timeslot["schedule_pool_id"] = schedule_pool.id
-        timeslot_serializer = TimeSlotSerializer(data=timeslots, many=True)
-        if timeslot_serializer.is_valid():
-            timeslots = timeslot_serializer.save()
+    if not timeslot_serializer.is_valid():
+        return Response(status=status.HTTP_400_BAD_REQUEST, data=timeslot_serializer.errors)
+    
+    meeting.save()  #persist
 
-        meeting_data = meeting_serializer.data
-        meeting_data["timeslots"] = timeslot_serializer.data
-        
-        return Response(status=status.HTTP_201_CREATED, data=meeting_data)
-    return Response(status=status.HTTP_400_BAD_REQUEST, data=meeting_serializer.errors)
+    schedule_pool = SchedulePool.objects.create( #persist
+        meeting=meeting,
+        voting_start_date=meeting.creation_date,
+        voting_deadline=meeting.deadline            
+    )
+
+    timeslots_data = timeslot_serializer.data
+    for ts_data in timeslots_data:
+        ts_data["schedule_pool_id"] = schedule_pool
+
+
+    timeslots = TimeSlot.objects.bulk_create( #persist
+        map(lambda item: TimeSlot(**item), timeslots_data)
+    ) 
+
+    response_data = meeting_serializer.data
+    response_data["timeslots"] = TimeSlotSerializer(timeslots, many=True).data
+    return Response(status=status.HTTP_201_CREATED, data=response_data)
+    
 
 @api_view(['GET', 'POST'])
 def api_meetings_edit(request, meeting_id, meeting=None):

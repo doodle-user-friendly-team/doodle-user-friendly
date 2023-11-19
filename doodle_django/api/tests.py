@@ -69,6 +69,81 @@ class MeetingTests(APITestCase):
 
         self.assertEqual(Meeting.objects.get().title, 'TestMeeting')
 
+    
+    def test_create_meeting_succesfully_with_only_one_timeslots(self):
+        """
+        Creating a Meeting successfully with only one timeslot
+        """
+        url = reverse('api:api_meetings_create')
+
+        data = {   
+            "title": "TestMeeting",
+            "description": "Test Description",
+            "location": "Test Location",
+            "video_conferencing": "False",
+            "duration": timedelta(hours=1),     
+            "deadline": now() + timedelta(days=5),
+            "timeslots": [
+                {
+                    "start_date": now() + timedelta(days=1),
+                    "end_date": now() + timedelta(days=2)
+                },
+            ]
+        }
+
+        response = self.client.post(url, data, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        self.assertEqual(Meeting.objects.count(), 1)
+
+    
+    def test_create_meeting_unsuccessfully_with_no_timeslots(self):
+        """
+        Creating a Meeting unsuccessfully without timeslots
+        """
+        url = reverse('api:api_meetings_create')
+
+        data = {   
+            "title": "TestMeeting",
+            "description": "Test Description",
+            "location": "Test Location",
+            "video_conferencing": "False",
+            "duration": timedelta(hours=1),     
+            "deadline": now() + timedelta(days=5),
+        }
+
+        # manual test
+        '''
+        {   
+            "title": "TestMeeting",
+            "description": "Test Description",
+            "location": "Test Location",
+            "video_conferencing": "False",
+            "duration": "01:00:00",         
+            "start_date": "2023-11-19",
+            "deadline": "2023-12-26",
+            "timeslots": [
+                {
+                    "start_date": "2023-11-20",
+                    "end_date": "2023-11-21"
+                },
+                {
+                    "start_date": "2023-11-20",
+                    "end_date": "2023-11-22"
+                }
+            ]
+        }
+        '''
+
+
+        response = self.client.post(url, data, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        self.assertEqual(Meeting.objects.count(), 0)
+
+
 
     def test_create_meeting_unsuccessfully_incomplete_information(self):
         """
@@ -237,5 +312,69 @@ class MeetingTests(APITestCase):
         self.assertEqual(response.data[0]["title"], data1["title"])
 
 
+    def test_search_meeting_detail(self):
+        """
+        Get a Meeting detail
+        """
+        data = {
+            "title": "TestMeeting",
+            "description": "Test Description",
+            "location": "Test Location",
+            "video_conferencing": "False",
+            "duration": timedelta(hours=1),     
+            "deadline": now() + timedelta(days=5),
+            "timeslots": [
+                {
+                    "start_date": now() + timedelta(days=1),
+                    "end_date": now() + timedelta(days=2)
+                },
+                {
+                    "start_date": now() + timedelta(days=2),
+                    "end_date": now() + timedelta(days=3)
+                }
+            ]
+        }
 
-        
+        self.client.post(reverse('api:api_meetings_create'), data, format='json')
+
+        url = reverse('api:api_meetings_edit', kwargs={"meeting_id":1})
+
+        response = self.client.get(url, data, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        self.assertEqual(Meeting.objects.count(), 1)
+
+        self.assertEqual(response.data["title"], 'TestMeeting')
+
+
+    def test_create_meeting_unsuccesfully_due_to_bad_timeslots(self):
+        """
+        Creating a Meeting unsuccesfully due to timeslots
+        """
+        url = reverse('api:api_meetings_create')
+
+        data = {   
+            "title": "TestMeeting",
+            "description": "Test Description",
+            "location": "Test Location",
+            "video_conferencing": "False",
+            "duration": timedelta(hours=1),     
+            "deadline": now() + timedelta(days=5),
+            "timeslots": [
+                {
+                    "start_date": now() + timedelta(days=2),
+                    "end_date": now() + timedelta(days=1)
+                },
+                {
+                    "start_date": now() + timedelta(days=2),
+                    "end_date": now() + timedelta(days=3)
+                }
+            ]
+        }
+
+        response = self.client.post(url, data, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        self.assertEqual(Meeting.objects.count(), 0)
