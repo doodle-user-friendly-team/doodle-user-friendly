@@ -22,6 +22,7 @@ export class CalendarBaseComponent extends React.Component<calendarProps, calend
     
     dayName = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
     monthName = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    selectedDay = new Date().getDate();
     
     getMonthDays = () => {
         let lastDay = new Date(this.state.year, this.state.month + 1, 0);
@@ -38,6 +39,12 @@ export class CalendarBaseComponent extends React.Component<calendarProps, calend
 
     incrementMonth = (incM: number) => {
         if (this.state.month + incM < this.state.currentMonth && this.state.year === this.state.currentYear)
+            return;
+        
+        if (this.state.month + incM < 0)
+            return;
+        
+        if (this.state.month + incM > 11)
             return;
         
         this.setState(() => {
@@ -67,6 +74,7 @@ export class CalendarBaseComponent extends React.Component<calendarProps, calend
 
         const dateString = `${paddedDay}/${paddedMonth}/${year}`;
 
+        this.selectedDay = parseInt(day);
         this.props.updateNewData(dateString);
     }
     
@@ -77,18 +85,17 @@ export class CalendarBaseComponent extends React.Component<calendarProps, calend
         return (
             //make a table with 3 columns
             <div className="calendar">
-
                 <div className="calendarDate">
                     {
                         //make a column for each day
                         this.getMonthDays().map((day) => {
                             if (day[1].toString() === restDays[0] || day[1].toString() === restDays[1]) {
-                                return (<CalendarDayComponent day={day[0].toString()} dayName={day[1].toString()}
+                                return (<CalendarDayComponent selectedDay={this.selectedDay.toString()} day={day[0].toString()} dayName={day[1].toString()}
                                                               type={"overlap-group-red"} month={this.state.month.toString()} 
                                                               year={this.state.year.toString()} 
                                                               callback_update_timeslots={this.updateTimeslots}/>);
                             }
-                            return (<CalendarDayComponent day={day[0].toString()} dayName={day[1].toString()}
+                            return (<CalendarDayComponent selectedDay={this.selectedDay.toString()} day={day[0].toString()} dayName={day[1].toString()}
                                                           type={"overlap-group-green"} month={this.state.month.toString()} 
                                                           year={this.state.year.toString()} 
                                                           callback_update_timeslots={this.updateTimeslots}/>);
@@ -111,9 +118,12 @@ export class CalendarBaseComponent extends React.Component<calendarProps, calend
                         </div>
                     </div>
                 </div>
-           
-        
             </div>
         );
+    }
+    
+    componentDidMount() {
+        this.selectedDay = new Date().getDate();
+        this.updateTimeslots(this.selectedDay.toString(), this.state.month.toString(), this.state.year.toString());
     }
 };

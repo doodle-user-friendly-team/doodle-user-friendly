@@ -1,95 +1,65 @@
-import React, {useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import axios from 'axios';
 import "../CSS/style.css";
-import {TimeSlotComponent, TimeSlotFormComponent} from "./TimeSlotForm";
+import { TimeSlotComponent, TimeSlotFormComponent } from "./TimeSlotForm";
 import Cookies from "js-cookie";
 
-interface timeSlotInfo{
-    id: string
-    start_time: string
-    end_time: string
+interface TimeSlotInfo {
+    id: string;
+    start_time: string;
+    end_time: string;
 }
 
-interface state{
-    newData: string
-    creationMode: boolean
-    timeSlots: timeSlotInfo[]
+interface TimeSlotBaseProps {
+    newData: string;
+    updateNewData: (val: string) => void;
 }
 
-interface timeSlotBaseProps{
-    newData: string
-    updateNewData:  (val: string) => void
-}
+const TimeSlotBaseComponent: React.FC<TimeSlotBaseProps> = ({ newData, updateNewData }) => {
+    const [creationMode, setCreationMode] = useState(false);
+    const [timeSlots, setTimeSlots] = useState<TimeSlotInfo[]>([]);
 
-export class TimeSlotBaseComponent extends React.Component<timeSlotBaseProps , state> {
-    
-    constructor(props: timeSlotBaseProps) {
-        super(props);
-        this.state = {newData: props.newData, creationMode: false, timeSlots: []};
-    }
-    
-    addNewTimeSlot = () => {
-        this.setState(
-            () => {
-                return {creationMode: true, timeSlots: this.state.timeSlots};
-            }
-            
-        )
-    }
-    
-    _array: timeSlotInfo[] = [];
+    useEffect(() => {
+        getGetTimeSlots(false);
+    }, [newData]);
 
-    
-    getGetTimeSlots =  (creationMode: boolean): void => {
-        
-            const day = this.props.newData.substring(0, 2);
-            const month = this.props.newData.substring(3, 5);
-            const year = this.props.newData.substring(6, 10);
-            
-            axios.get('http://localhost:8000/timeslots/?day=' + day + "&month=" + month + "&year=" + year).then((response: { data: timeSlotInfo[]; }) =>{
-
-                this._array = response.data.map((x) => x);
-                this.setState(() => {
-                    return {newData: this.props.newData, creationMode: creationMode, timeSlots: this._array }
-                })
-                this.setState({timeSlots: this._array, newData: this.props.newData})
-            })
+    const addNewTimeSlot = () => {
+        setCreationMode(true);
     };
 
-    
-    pushToDatabase = (): void => {
-    }
+    const getGetTimeSlots = (creationMode: boolean): void => {
+        const [day, month, year] = newData.split('/');
+        axios.get(`http://localhost:8000/timeslots/?day=${day}&month=${month}&year=${year}`)
+            .then((response: { data: TimeSlotInfo[] }) => {
+                setTimeSlots(response.data);
+                setCreationMode(creationMode);
+            });
+    };
 
-    render() {
-        
-        return (
-            <div className="timeslotPanel">
-                <div className="buttonAdd">
-                    <div className="group">
-                        <div className="overlap-group">
-                            <div className="text-wrapper" onClick={() => this.addNewTimeSlot()}>+</div>
-                        </div>
-                    </div>
-                </div>
-                <div className="timeSlotContainer">
-                        {
-                            this.state.timeSlots.map((ts) => {
-                                return <TimeSlotComponent id={ts.id} start_time={ts.start_time} end_time={ts.end_time}/>
-                            })
-                        }
-                    <div className="timeSlotFormContainer">
-                        {this.state.creationMode && <TimeSlotFormComponent confirmTimeFunc={this.pushToDatabase} dataSelected={this.state.newData}/>}
-                    </div>
-                </div>
+    const hideTimeSlotForm = (): void => {
+        setCreationMode(false);
+    };
+
+    const updateDatabase = (): void => {
+        getGetTimeSlots(false);
+    };
+
+    return (
+        <div className="timeslot-panel">
+            <div className="add-button">
+                {!creationMode ?
+                    <div className="text" onClick={addNewTimeSlot}>+</div> :
+                    <div className="text" onClick={hideTimeSlotForm}>-</div>
+                }
             </div>
-        );
-    }
+            <div className="time-slot-container">
+                {timeSlots.map((ts) => (
+                    <TimeSlotComponent key={ts.id} id={ts.id} start_time={ts.start_time} end_time={ts.end_time} />
+                ))}
+                {creationMode && <TimeSlotFormComponent updateDatabase={updateDatabase} dataSelected={newData} />}
+            </div>
+        </div>
+    );
+};
 
-    componentDidUpdate(){
-        if (this.props.newData !== this.state.newData) {
-            this.getGetTimeSlots(false)
-        }
-    }
-
-}
-
+export default TimeSlotBaseComponent;

@@ -1,6 +1,7 @@
 import React, { useState, FormEvent} from 'react';
 import "../CSS/style.css";
 import Cookies from 'js-cookie';
+import {redirect} from "react-router-dom";
 
 
 export const FormComponent = () => {
@@ -87,6 +88,7 @@ export const FormComponent = () => {
                   Cookies.set('name', formData.name);
                   Cookies.set('surname', formData.surname);
                   Cookies.set('email', formData.email);
+                  window.location.assign("/")
                 }}> Send </button>
               </form>
             </div>

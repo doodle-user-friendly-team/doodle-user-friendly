@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {CalendarBaseComponent} from "../../Calendar/Components/CalendarBase";
-import {TimeSlotBaseComponent} from "../../TimeSlot/Components/TimeSlotBase";
+import TimeSlotBaseComponent from "../../TimeSlot/Components/TimeSlotBase";
 
 import "../CSS/style.css";
 

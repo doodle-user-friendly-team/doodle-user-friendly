@@ -12,8 +12,17 @@ function App() {
     <div className="App">
       <Router>
         <Routes>
-          <Route path='/login' element={<FormComponent />} />
-          <Route path='/' element={<PlanningPanelComponent />} />
+            {
+                Cookies.get('email') === undefined ?
+                    <>
+                        <Route path='/' element={<FormComponent />} />
+                    </>
+                :
+                    <>
+                        <Route path='/login' element={<FormComponent />}/>
+                        <Route path='/' element={<PlanningPanelComponent />} />
+                    </>
+            }
         </Routes>
       </Router>
     </div>
