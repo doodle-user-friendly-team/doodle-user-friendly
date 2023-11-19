@@ -47,6 +47,38 @@ class VotesView(APIView):
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data)
+        
+class ModifyMyPreferenceView(APIView):
+    
+        serializer_class = VoteSerializer
+        
+        #@permission_classes([IsAuthenticated])
+        #@authentication_classes([SessionAuthentication, BasicAuthentication])
+        def put(self, request):
+            
+            #todo: sistemare con serializer
+    
+            serializer = VoteSerializer(data=request.data)
+            print(request.data)
+            print(serializer)
+            
+            voto_id = request.data.get('id')
+            preference = request.data.get('preference')
+            user_id = request.data.get('user')
+            timeslot_id = request.data.get('time_slot')
+
+            try:
+                # Verifica se esiste il voto e il time slot
+                print("->"+str(voto_id))
+                voto = Vote.objects.get(id=voto_id, user=user_id)
+                timeslot = TimeSlot.objects.get(id=timeslot_id)
+
+                # Esegui l'operazione di aggiornamento nel database
+                voto.preference = preference
+                voto.save()
+                return Response({'message': 'Preferenza aggiornata con successo'})
+            except (Vote.DoesNotExist, TimeSlot.DoesNotExist):
+                return Response({'message': 'Voto o time slot non trovato'}, status=404)
 
 
 @csrf_exempt

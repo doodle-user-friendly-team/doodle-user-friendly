@@ -51,3 +51,5 @@ class TimeSlotRecapSerializer(serializers.ModelSerializer):
         model = TimeSlot
         fields = ['id', 'start_time', 'end_date', 'schedule_pool', 'user', 'votes']
 
+
+
