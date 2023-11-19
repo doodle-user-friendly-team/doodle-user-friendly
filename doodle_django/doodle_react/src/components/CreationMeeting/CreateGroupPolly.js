@@ -170,10 +170,27 @@ const CreateGroupPolly = ({ news }) => {
       selectedDates[selectedDates.length - 1].date
     );
 
-    const timeslots = selectedDates.map((dateObj) => ({
-      start_date: dateObj.date.toISOString().split("T")[0],
-      end_date: deadline,
-    }));
+    // const timeslots = selectedDates.map((dateObj) => ({
+    //   start_date: dateObj.date.toISOString().split("T")[0],
+    //   end_date: deadline,
+    // }));
+    let array_time_slots = [];
+    for (let i = 0; i < selectedDates.length; ++i) {
+      const startDate = selectedDates[i].date.toISOString().split("T")[0];
+      const startTime = selectedTimeRange[0];
+      const startDateTime = `${startDate}T${startTime}:00`;
+
+      const endDate = selectedDates[i].date.toISOString().split("T")[0];
+      const endTime = selectedTimeRange[1];
+      const endDateTime = `${endDate}T${endTime}:00`;
+
+      console.log("Selected date", startDateTime, endDateTime);
+
+      array_time_slots.push({
+        start_date: startDateTime,
+        end_date: endDateTime,
+      });
+    }
     const startTime = selectedTimeRange[0];
     const endTime = selectedTimeRange[1];
     const duration = calculateDuration(startTime, endTime);
@@ -182,18 +199,18 @@ const CreateGroupPolly = ({ news }) => {
       title,
       description,
       location,
-      timeslots,
       duration,
       formatDeadline(selectedDates[selectedDates.length - 1].date)
     );
     let data = {
       title: title,
-      timeslots: timeslots,
       description: description,
       location: location,
       duration: duration,
+      video_conferencing: checked,
       start_date: startDate,
       deadline: deadline,
+      timeslots: array_time_slots,
     };
     console.log("after", data);
     try {
