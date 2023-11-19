@@ -6,7 +6,7 @@ from django.utils.crypto import get_random_string
 from django.shortcuts import get_object_or_404
 
 from string import ascii_uppercase, digits
-
+from django.http import JsonResponse
 from . serializers import *
 
 
@@ -88,28 +88,19 @@ def api_meetings_create(request):
         return Response(status=status.HTTP_201_CREATED, data=meeting_data)
     return Response(status=status.HTTP_400_BAD_REQUEST, data=meeting_serializer.errors)
 
-@api_view(['GET', 'POST'])
-def api_meetings_edit(request, meeting_id, meeting=None):
-    '''
-        Get single meeting (No editing)
-    '''
-    if request.method == 'GET':
-        meeting = get_object_or_404(Meeting, pk=meeting_id)
-        return Response(MeetingSerializer(meeting).data, status=status.HTTP_200_OK)
-    else:
-        '''
-            todo edit code...
-            ...
-            ...
-        '''
-        return Response(status=status.HTTP_200_OK)
+    
+@api_view(['PUT'])
+def api_meetings_edit(request, meeting_id):
+    meeting = get_object_or_404(Meeting, pk=meeting_id)
+    serializer = MeetingSerializer(meeting, data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    return Response(serializer.errors, status=400)
 
-@api_view(['POST'])
-def api_meetings_delete(request, meeting_id, meeting=None):
-    '''
-        todo edit code..
-        ...
-        ...
-    '''
-
+@api_view(['DELETE'])
+def api_meetings_delete(request, meeting_id):
+    meeting = get_object_or_404(Meeting, pk=meeting_id)
+    meeting.delete()
+    return JsonResponse({'message': 'Meeting deleted successfully'}, status=204)
 

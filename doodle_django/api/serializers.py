@@ -6,17 +6,20 @@ from django.core.validators import *
 from . models import *
 
 class MeetingSerializer(serializers.ModelSerializer):
-    def validate(self, data):
-        if 'deadline' in data and 'creation_date' in data:
-            if data['deadline'] < data['creation_date']:
-                raise serializers.ValidationError("Deadline must occur after Creation date", code="DeadlineBeforeCreationDate")
-
-        return data
-
     class Meta:
         model = Meeting
         fields = '__all__'
-        
+
+    def validate_deadline(self, value):
+        """
+        Validate that the deadline is not in the past.
+        """
+        if value and value < now():
+            raise serializers.ValidationError("Meeting deadline cannot be in the past.")
+        return value
+    
+
+    
 
 
 class TimeSlotSerializer(serializers.ModelSerializer):

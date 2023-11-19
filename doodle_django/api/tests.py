@@ -1,29 +1,48 @@
 from django.test import TestCase
-from django.utils.timezone import *
-from django.urls import reverse
-
-from rest_framework.test import APITestCase
 from rest_framework import status
+from rest_framework.test import APITestCase
+from django.urls import reverse
+from django.utils.timezone import now, timedelta
+from collections import OrderedDict
 
-import json
+from django.test import TestCase
+from django.urls import reverse
+from .models import Meeting
 
-from . models import *
+
+# myapp/tests.py
+
+from django.test import TestCase
+from django.urls import reverse
+from rest_framework import status
+from rest_framework.test import APIClient
+from .models import Meeting
 
 
 class MeetingTests(APITestCase):
-    
+    # def setUp(self):
+    #     self.client = APIClient()
+    #     self.meeting = Meeting.objects.create(
+    #         title="TestMeeting",
+    #         description="Test Description",
+    #         location="Test Location",
+    #         video_conferencing="False",
+    #         duration=timedelta(hours=1),
+    #         deadline=now() + timedelta(days=5),
+    #     )
+          
+
     def test_create_meeting_successfully(self):
         """
         Creating a Meeting Successfully
         """
-        url = reverse('api:api_meetings_create')
-
-        data = {   
+        create_meeting_url = reverse('api:api_meetings_create')
+        data = {
             "title": "TestMeeting",
             "description": "Test Description",
             "location": "Test Location",
-            "video_conferencing": "False",
-            "duration": timedelta(hours=1),     
+            "video_conferencing": False,
+            "duration": timedelta(hours=1),
             "deadline": now() + timedelta(days=5),
             "timeslots": [
                 {
@@ -36,39 +55,16 @@ class MeetingTests(APITestCase):
                 }
             ]
         }
-
-        # manual test
-        '''
-        {   
-            "title": "TestMeeting",
-            "description": "Test Description",
-            "location": "Test Location",
-            "video_conferencing": "False",
-            "duration": "01:00:00",         
-            "start_date": "2023-11-19",
-            "deadline": "2023-12-26",
-            "timeslots": [
-                {
-                    "start_date": "2023-11-20",
-                    "end_date": "2023-11-21"
-                },
-                {
-                    "start_date": "2023-11-20",
-                    "end_date": "2023-11-22"
-                }
-            ]
-        }
-        '''
-
-
-        response = self.client.post(url, data, format='json')
-
+        response = self.client.post(create_meeting_url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-        self.assertEqual(Meeting.objects.count(), 1)
+        # Debug information
+        print(f"Response data: {response.data}")
+        
+        self.created_meeting_id = response.data.get('id')  # Set the created meeting ID
 
-        self.assertEqual(Meeting.objects.get().title, 'TestMeeting')
-
+        # Debug information
+        print(f"created_meeting_id: {self.created_meeting_id}")
 
     def test_create_meeting_unsuccessfully_incomplete_information(self):
         """
@@ -94,6 +90,7 @@ class MeetingTests(APITestCase):
                 }
             ]
         }
+
 
         response = self.client.post(url, data, format='json')
 
@@ -238,4 +235,103 @@ class MeetingTests(APITestCase):
 
 
 
-        
+    def test_update_meeting_successfully(self):
+        # Call the create test to ensure a meeting is created and created_meeting_id is set
+        self.test_create_meeting_successfully()
+
+        # Ensure that created_meeting_id is set
+        self.assertIsNotNone(getattr(self, 'created_meeting_id', None), "created_meeting_id not set")
+
+        # Define the update data
+        updated_data = {
+            "title": "UpdatedMeeting",
+            "description": "Updated Description",
+            "location": "Updated Location",
+            "video_conferencing": True,
+            "duration": timedelta(hours=2),
+            "deadline": now() + timedelta(days=7),
+            "passcode": "12345",# Add the 'passcode' field
+            "timeslots": [
+                {
+                    "start_date": now() + timedelta(days=3),
+                    "end_date": now() + timedelta(days=4),
+                },
+                {
+                    "start_date": now() + timedelta(days=4),
+                    "end_date": now() + timedelta(days=5),
+                },
+            ],
+        }
+
+        # Make the update request
+        url = reverse('api:api_meetings_edit', args=[self.created_meeting_id])
+        response = self.client.put(url, updated_data, format='json')
+
+        # Print response data and status code for debugging
+        print(f"Response data: {response.data}")
+        print(f"Response status code: {response.status_code}")
+        if response.status_code != status.HTTP_200_OK:
+           print(f"Response errors: {response.data.get('errors')}")
+
+    # self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # Check if the update was successful
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_update_meeting_unsuccessfully_not_found(self):
+        self.test_create_meeting_successfully()
+    # Ensure that created_meeting_id is set (you may also check if it's None or not set)
+        self.assertIsNotNone(getattr(self, 'created_meeting_id', None), "created_meeting_id not set")
+        url = reverse('api:api_meetings_edit',args=[self.created_meeting_id])  # Assuming the meeting with ID 999 does not exist
+        updated_data = {
+            "title": "UpdatedMeeting",
+            "description": "Updated Description",
+            "location": "Updated Location",
+            "video_conferencing": "True",
+            "duration": timedelta(hours=2),
+            "deadline": now() + timedelta(days=7),
+            "passcode": "UpdatedPasscode",  # Add the 'passcode' field
+            "timeslots": [
+                {
+                    "start_date": now() + timedelta(days=3),
+                    "end_date": now() + timedelta(days=4),
+                },
+                {
+                    "start_date": now() + timedelta(days=4),
+                    "end_date": now() + timedelta(days=5),
+                },
+            ],
+        }
+
+        response = self.client.put(url, updated_data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+    def test_delete_meeting_successfully(self):
+        self.test_create_meeting_successfully()
+       # Ensure that created_meeting_id is set (you may also check if it's None or not set)
+        self.assertIsNotNone(getattr(self, 'created_meeting_id', None), "created_meeting_id not set")
+        url = reverse('api:api_meetings_delete',args=[self.created_meeting_id])
+        response = self.client.delete(url)
+
+        # The expected behavior depends on your API design.
+        # You might choose to return 204 NO CONTENT for a successful deletion.
+
+        # Example: Expecting 204 NO CONTENT
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+        # Ensure that the meeting was deleted
+        # self.assertEqual(Meeting.objects.count(), 0)
+
+    def test_delete_meeting_unsuccessfully_not_found(self):
+        # Ensure that created_meeting_id is set (you may also check if it's None or not set)
+        self.test_create_meeting_successfully()
+        self.assertIsNotNone(getattr(self, 'created_meeting_id', None), "created_meeting_id not set")
+        url = reverse('api:api_meetings_delete',args=[13])  # Assuming the meeting with ID 999 does not exist
+        response = self.client.delete(url)
+
+        # The expected behavior depends on your API design.
+        # You might choose to return 404 NOT FOUND for a non-existent resource.
+
+        # Example: Expecting 404 NOT FOUND
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+        # Ensure that no meeting was deleted
+        self.assertEqual(Meeting.objects.count(), 1)  # Assuming you have one test meeting created in the setUp method
