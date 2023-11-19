@@ -1,7 +1,7 @@
 import React, { useState, FormEvent} from 'react';
 import "../CSS/style.css";
 import { CalendarBaseComponent } from '../../Calendar/Components/CalendarBase';
-
+import Cookies from 'js-cookie';
 
 export const FormComponent = () => {
   const [formData, setFormData] = useState({
@@ -14,6 +14,7 @@ export const FormComponent = () => {
   const [isFormVisible, setFormVisible] = useState(true);
   const [isCalendarVisible, setCalendarVisible] = useState(true);
   const [isLabelVisible, setLabelVisible] = useState(false);
+  
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     setFormData({
@@ -85,7 +86,13 @@ export const FormComponent = () => {
                   />
                 
                 <br />
-                <button type="submit"> Send </button>
+                <button type="submit" onClick={():void=>{
+                    Cookies.set('name', formData.name);
+                    Cookies.set('surname', formData.surname);
+                    Cookies.set('email', formData.email);
+                    console.log(Cookies.get('email'));
+                  }
+                }> Send </button>
               </form>
             </div>
           )}

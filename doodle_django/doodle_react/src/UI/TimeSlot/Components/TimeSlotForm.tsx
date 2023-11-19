@@ -6,6 +6,7 @@ interface TimeSlotInfo {
   start_time: string;
   end_time: string;
   id: string;
+  user: string;
 }
 
 interface FormProps {
@@ -138,6 +139,11 @@ export class TimeSlotComponent extends React.Component<TimeSlotInfo, TimeSlotCom
   showTimeSlotForm = () => {
     this.setState({
       showProposedTimeSlot: true,
+      formData: {
+        name: '',
+        surname: '',
+        email: '',
+      },
     });
   };
 
