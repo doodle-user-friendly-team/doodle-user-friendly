@@ -26,19 +26,19 @@ export const FormComponent = () => {
   };
 
 
-  
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
 
     if (formData.name && formData.surname && formData.email) {
 
       try {
-        const response = await fetch('http://localhost:8000/authenticate/', {
-            method: 'POST',
+        const queryString = `?email=${formData.email}`;
+        const response = await fetch(`http://localhost:8000/authenticate/${queryString}`, {
+            method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(formData),
         });
 
         if (response.ok) {
@@ -57,9 +57,10 @@ export const FormComponent = () => {
 
 
     } else {
-      alert('Must complet all fields');
+      alert('Must provide an email');
     }
-  }
+}
+
 
 
   const onCloseAlert = (): void => {
@@ -125,7 +126,7 @@ export const FormComponent = () => {
                 
                 
                 <label htmlFor="username">
-                  <b>Username</b>
+                  <b>Surname</b>
                 </label>
                   <input
                     type="text"

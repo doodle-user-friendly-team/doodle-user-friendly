@@ -47,22 +47,16 @@ class UserAuthenticationView(APIView):
     serializer_class = UserFakeSerializer
 
     @permission_classes([AllowAny])
-    def post(self, request):
-        serializer = self.serializer_class(data=request.data)
-        if serializer.is_valid(raise_exception=True):
-            email = serializer.validated_data['email']
-            name = serializer.validated_data['name']
-            surname = serializer.validated_data['surname']
+    def get(self, request):
+        # Estrai l'email dalla stringa di query
+        email = request.GET.get('email', '')
 
-            try:
-                user = UserFake.objects.get(email=email, name=name, surname=surname)
-            except UserFake.DoesNotExist:
-                user = None
-
-            if user is not None:
-                return Response({'message': 'User authenticated successfully'})
-            else:
-                return Response({'message': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+        # Verifica se l'email è presente nel database
+        try:
+            user = UserFake.objects.get(email=email)
+            return Response({'message': 'User authenticated successfully'})
+        except UserFake.DoesNotExist:
+            return Response({'message': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
 
 
