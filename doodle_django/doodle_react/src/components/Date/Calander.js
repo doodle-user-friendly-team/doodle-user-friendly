@@ -4,64 +4,72 @@ import "react-calendar/dist/Calendar.css";
 import TimePicker from "react-time-picker";
 import "react-time-picker/dist/TimePicker.css";
 
-export default function CalendarDate() {
-  const endpoint = "http://127.0.0.1:8000/api/meetings/";
-
+export default function CalendarDate({ onDurationChange }) {
   const [selectedDates, setSelectedDates] = useState([]);
   const [selectedTimeRange, setSelectedTimeRange] = useState([
     "09:00",
     "10:00",
   ]);
 
-  const handleSubmit = () => {
-    fetch(endpoint, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(selectedDates),
-    })
-      .then((response) => {
-        if (response.ok) {
-          console.log("Data sent to the backend successfully!");
+  const calculateDuration = (startTime, endTime) => {
+    const start = new Date(`1970-01-01T${startTime}`);
+    const end = new Date(`1970-01-01T${endTime}`);
+    const durationInMilliseconds = end - start;
 
-          setSelectedDates([]);
-        } else {
-          throw new Error("Failed to send data");
-        }
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
+    const pad = (num) => num.toString().padStart(2, "0");
+
+    const hours = pad(Math.floor(durationInMilliseconds / 3600000));
+    const minutes = pad(Math.floor((durationInMilliseconds % 3600000) / 60000));
+    const seconds = pad(Math.floor((durationInMilliseconds % 60000) / 1000));
+
+    return `${hours}:${minutes}:${seconds}`;
   };
+
+  const handleSave = () => {
+    if (selectedDates.length === 0) {
+      // Handle error: No dates selected
+      return;
+    }
+
+    const startTime = selectedTimeRange[0];
+    const endTime = selectedTimeRange[1];
+    const duration = calculateDuration(startTime, endTime);
+    const deadline = selectedDates[selectedDates.length - 1].date;
+
+    console.log("Deadline:", deadline);
+    console.log("Duration:", duration);
+
+    
+    onDurationChange({ deadline, duration });
+  };
+
   const handleDateClick = (value) => {
     const dateIndex = selectedDates.findIndex(
       (dateObj) => dateObj.date.toDateString() === value.toDateString()
     );
     if (dateIndex > -1) {
-      const updatedDates = [...selectedDates];
-      updatedDates.splice(dateIndex, 1);
+      const updatedDates = selectedDates.filter(
+        (dateObj) => dateObj.date.toDateString() !== value.toDateString()
+      );
       setSelectedDates(updatedDates);
     } else {
-      setSelectedDates([
-        ...selectedDates,
+      setSelectedDates((prevDates) => [
+        ...prevDates,
         { date: value, timeRange: [...selectedTimeRange] },
       ]);
     }
   };
 
   const handleTimeChange = (time, index) => {
-    const updatedTimeRange = [...selectedTimeRange];
-    updatedTimeRange[index] = time;
-    setSelectedTimeRange(updatedTimeRange);
+    setSelectedTimeRange((prevTimeRange) => {
+      const updatedTimeRange = [...prevTimeRange];
+      updatedTimeRange[index] = time;
+      return updatedTimeRange;
+    });
   };
 
-  const tileDisabled = ({ date, view }) => {
-    if (view === "month") {
-      // Disable past days
-      return date < new Date();
-    }
-  };
+  const tileDisabled = ({ date, view }) =>
+    view === "month" && date < new Date();
 
   return (
     <div style={{ display: "flex" }}>
@@ -107,7 +115,7 @@ export default function CalendarDate() {
             <p>End Time: {selectedTimeRange[1]}</p>
           </div>
         </div>
-        <button onClick={handleSubmit}>Submit</button>
+        <button onClick={handleSave}>Submit</button>
       </div>
     </div>
   );

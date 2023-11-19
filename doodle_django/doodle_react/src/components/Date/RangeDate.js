@@ -2,36 +2,14 @@ import React, { useState } from "react";
 import { Calendar } from "primereact/calendar";
 import CalendarDate from "./Calander";
 
-function RangeDate({ onContraction, onExpand }) {
+function RangeDate({ onContraction, onExpand, onDurationChange }) {
   const [dates, setDates] = useState(null);
-  const sendDatesToBackend = async () => {
-    try {
-      if (dates) {
-        const response = await fetch(
-          // "https://your-backend-api-endpoint.com/save-dates",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ dates: dates }),
-          }
-        );
-
-        if (response.ok) {
-          console.log("Dates sent to the backend successfully!");
-        } else {
-          console.error("Failed to send dates to the backend.");
-        }
-      }
-    } catch (error) {
-      console.error("Error while sending dates to the backend:", error);
-    }
-  };
+  const [duration, setDuration] = useState(null);
+ 
 
   return (
     <div onExpand={onExpand}>
-      <CalendarDate />
+      <CalendarDate onDurationChange={onDurationChange} />
 
       <Calendar
         value={dates}
@@ -42,7 +20,7 @@ function RangeDate({ onContraction, onExpand }) {
         onHide={() => onContraction(1)}
       />
 
-      <button onClick={sendDatesToBackend}>Save</button>
+      <button >Save</button>
     </div>
   );
 }
