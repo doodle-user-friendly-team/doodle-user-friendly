@@ -59,8 +59,8 @@ class ModifyMyPreferenceView(APIView):
             #todo: sistemare con serializer
     
             serializer = VoteSerializer(data=request.data)
-            print(request.data)
-            print(serializer)
+            #print(request.data)
+            #print(serializer)
             
             voto_id = request.data.get('id')
             preference = request.data.get('preference')

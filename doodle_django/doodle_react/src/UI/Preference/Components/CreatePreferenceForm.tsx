@@ -51,19 +51,19 @@ export function CreatePreferenceForm ({ onSave, onClose, start, end }:CreatePref
                     onChange={handleChange}
                     sx={{ minWidth: 300}}
                 >
-                    <MenuItem value={"ci sono"} sx={{ }}>
+                    <MenuItem value={"Available"} sx={{ }}>
                         <ListItemIcon>
                             <DoneIcon fontSize="small" color="primary" />
                         </ListItemIcon>
                         <Typography variant="inherit">Available</Typography>
                     </MenuItem>
-                    <MenuItem value={"non lo so"}>
+                    <MenuItem value={"Maybe available"}>
                         <ListItemIcon>
                             <QuestionMarkIcon fontSize="small" color="warning" />
                         </ListItemIcon>
                         <Typography variant="inherit">Maybe available</Typography>
                     </MenuItem>
-                    <MenuItem value={"non ci sono"}>
+                    <MenuItem value={"Unavailable"}>
                         <ListItemIcon>
                             <CloseIcon fontSize="small" color="error" />
                         </ListItemIcon>

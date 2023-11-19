@@ -15,7 +15,6 @@ interface ModifyPreferenceProps {
     user : number;
     time_slot : number;
     selectedPreference: string;
-    onSave: (preference: string) => void;
     onClose: () => void;
     start: string;
     end: string;
@@ -24,12 +23,12 @@ interface ModifyPreferenceProps {
 
 
 
-export function MofifyPreferenceForm ({id,user,time_slot, selectedPreference, onSave, onClose, start, end, date }:ModifyPreferenceProps){
+export function MofifyPreferenceForm ({id,user,time_slot, selectedPreference, onClose, start, end, date }:ModifyPreferenceProps){
 
   const [selectedButton, setSelectedButton] = useState(selectedPreference);
 
   const handleUpdatePreference = () => { // decidere se farlo asincrono o meno (async + await)
-    const preference = selectedPreference;
+    const preference = selectedButton;
     axios.put('http://localhost:8000/api/update_preference/', {
         id,
         preference,
@@ -58,7 +57,6 @@ export function MofifyPreferenceForm ({id,user,time_slot, selectedPreference, on
     console.log(selectedButton);
     handleUpdatePreference();
 
-    onSave(selectedButton);
     onClose();
   };
   const handleClose = () => {

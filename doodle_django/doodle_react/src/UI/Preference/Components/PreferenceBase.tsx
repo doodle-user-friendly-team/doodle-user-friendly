@@ -103,13 +103,14 @@ export class PreferenceBaseComponent extends React.Component< preferenceBaseProp
                 console.log("res:" + response);
                 let saved_preference: preferenceInfo = response.data
                 saved_preference.user = {id: "1", name: Cookies.get("name")!!, surname: Cookies.get("surname")!!, email: Cookies.get("email")!!}
-                this.state.preferences.push(response.data)
+                /*this.state.preferences.push(response.data)
                 this.setState(
                     () => {
                         return {creationMode: false, preferences: this.state.preferences, timeSlot: this.state.timeSlot};
                     }
 
-                )
+                )*/
+                this.getTimeSlotPreferences(false, this.state.timeSlot.id)
             })
             .catch((error) => {
                 console.log(error);
@@ -137,8 +138,8 @@ export class PreferenceBaseComponent extends React.Component< preferenceBaseProp
                 <div className="preferenceContainer">
                     {
                         this.state.preferences.map((p) => {
-                            return <PreferenceComponent id={p.id} preference={p.preference} time_slot={p.time_slot} user={p.user}/>
-                        })
+                            return <PreferenceComponent id={p.id} preference={p.preference} time_slot={p.time_slot} user={p.user} start_time={this._timeSlot.start_time} end_time={this._timeSlot.end_time} date={""}/>
+                        }) 
                     }
                 </div>
                 <div className="preferenceCreateForm">
