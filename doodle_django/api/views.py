@@ -15,11 +15,17 @@ from . exceptions import *
 def api_meetings(request):
     if request.method == 'POST' or not request.GET:
         meetings = Meeting.objects.all()
-        return Response(MeetingSerializer(instance=meetings, many=True).data, status=status.HTTP_200_OK)
+        timeslots = TimeSlot.objects.filter(schedule_pool_id__meeting_id__in=meetings.values_list("id", flat=True))
+        for meeting in meetings:
+            meeting.timeslots = timeslots.filter(schedule_pool_id__meeting_id=meeting.pk)
+        return Response(MeetingTimeSlotSerializer(meetings, many=True).data, status=status.HTTP_200_OK)
     else:
         if 'title' in request.GET:
             meetings = Meeting.objects.filter(title__icontains=request.GET["title"]).order_by("title")
-            return Response(MeetingSerializer(instance=meetings, many=True).data, status=status.HTTP_200_OK)
+            timeslots = TimeSlot.objects.filter(schedule_pool_id__meeting_id__in=meetings.values_list("id", flat=True))
+            for meeting in meetings:
+                meeting.timeslots = timeslots.filter(schedule_pool_id__meeting_id=meeting.pk)
+            return Response(MeetingTimeSlotSerializer(meetings, many=True).data, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
 def last_meeting(request):
@@ -98,9 +104,8 @@ def api_meetings_create(request):
         map(lambda item: TimeSlot(**item), timeslots_data)
     ) 
 
-    response_data = meeting_serializer.data
-    response_data["timeslots"] = TimeSlotSerializer(timeslots, many=True).data
-    return Response(status=status.HTTP_201_CREATED, data=response_data)
+    meeting.timeslots = timeslots
+    return Response(status=status.HTTP_201_CREATED, data=MeetingTimeSlotSerializer(meeting).data)
     
 
 @api_view(['GET', 'POST'])
@@ -110,7 +115,9 @@ def api_meetings_edit(request, meeting_id, meeting=None):
     '''
     if request.method == 'GET':
         meeting = get_object_or_404(Meeting, pk=meeting_id)
-        return Response(MeetingSerializer(meeting).data, status=status.HTTP_200_OK)
+        timeslots = TimeSlot.objects.filter(schedule_pool_id__meeting_id=meeting.pk)
+        meeting.timeslots = timeslots
+        return Response(MeetingTimeSlotSerializer(meeting).data, status=status.HTTP_200_OK)
     else:
         '''
             todo edit code...

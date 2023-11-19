@@ -5,6 +5,8 @@ from django.core.validators import *
 
 from . models import *
 
+
+
 class MeetingSerializer(serializers.ModelSerializer):
     def validate(self, data):
         if 'deadline' in data and 'creation_date' in data:
@@ -16,7 +18,6 @@ class MeetingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Meeting
         fields = '__all__'
-        
 
 
 class TimeSlotSerializer(serializers.ModelSerializer):
@@ -30,6 +31,10 @@ class TimeSlotSerializer(serializers.ModelSerializer):
     class Meta:
         model = TimeSlot
         fields = '__all__'
+        
+
+class MeetingTimeSlotSerializer(MeetingSerializer):
+    timeslots = TimeSlotSerializer(many=True)
 
 
 class SchedulePoolSerializer(serializers.ModelSerializer):
