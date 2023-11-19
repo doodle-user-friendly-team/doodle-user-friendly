@@ -1,24 +1,30 @@
 import React from 'react';
+import { FormComponent } from './UI/Form/Component/FormIdentification';
 import logo from './logo.svg';
 import './App.css';
-
+import {PlanningPanelComponent} from "./UI/PlanningPanel/Component/PlanningPanel";
+import { BrowserRouter as Router, Routes, Route} from 'react-router-dom';
+import Cookies from 'js-cookie';
+//{Cookies.get('email') === undefined && <FormComponent />}
+//{Cookies.get('email') !== undefined && <PlanningPanelComponent />}
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Router>
+        <Routes>
+            {
+                Cookies.get('email') === undefined ?
+                    <>
+                        <Route path='/' element={<FormComponent />} />
+                    </>
+                :
+                    <>
+                        <Route path='/login' element={<FormComponent />}/>
+                        <Route path='/' element={<PlanningPanelComponent />} />
+                    </>
+            }
+        </Routes>
+      </Router>
     </div>
   );
 }

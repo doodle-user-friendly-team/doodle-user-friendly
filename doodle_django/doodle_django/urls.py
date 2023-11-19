@@ -16,7 +16,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from doodle.views import *
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path('timeslots/', TimeSlotView.as_view()),
+    
+    # add react path
+    # but I think it's better to do it when we have finished the website
+    # since we have to build the react app first
+    
 ]
