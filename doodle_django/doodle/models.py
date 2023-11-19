@@ -83,10 +83,6 @@ class Vote(models.Model):
         db_column="id",
         default=-1
     )
-    start_time = models.DateTimeField(
-        db_column="start_time",
-        default=None
-    )
     preference = models.CharField(
         db_column="preference",
         max_length=100,
