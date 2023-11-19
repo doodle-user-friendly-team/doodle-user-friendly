@@ -1,3 +1,4 @@
+from urllib import response
 from django.shortcuts import render
 from rest_framework.views import APIView
 from .models import *
@@ -39,16 +40,27 @@ class UpdateTimeSlotView(APIView):
         try:
             timeslot = TimeSlot.objects.get(pk=pk)
             print('Data received:', request.data)
+
+            # Usa request.data invece di updated_data
             serializer = TimeSlotSerializer(timeslot, data=request.data)
+
+            # Verifica la validità del serializer
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data)
-            print('Serializer errors:', serializer.errors)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                print('Serializer errors:', serializer.errors)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except TimeSlot.DoesNotExist:
             return Response({'detail': 'Time slot non trovato'}, status=status.HTTP_404_NOT_FOUND)
-
-        
+        except TimeSlot.DoesNotExist:
+            return Response({'detail': 'Time slot non trovato'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            # Gestisci altre eccezioni
+            print('Exception:', e)
+            print('Response status code:', status.HTTP_500_INTERNAL_SERVER_ERROR)
+            print('Response content:', response.content)
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
 class CheckUser(APIView):
     

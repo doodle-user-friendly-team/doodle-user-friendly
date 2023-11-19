@@ -26,7 +26,7 @@ interface ModifyProposedTimeSlotProps {
 interface ModifiedTimeSlot {
   start_time: string;
   end_time: string;
-  schedule_pool: string;
+  schedule_pool: number;
   user: string;
 }
 
