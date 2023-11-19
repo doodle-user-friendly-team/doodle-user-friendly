@@ -1,88 +1,139 @@
-import React, { Component } from 'react';
-import axios from 'axios';
-import { Button, TextField, Dialog, DialogTitle, DialogContent, DialogActions} from '@mui/material';
-import "../CSS/style.css";
+import React, { ChangeEvent } from 'react';
+import axios, { AxiosResponse, AxiosError } from 'axios';
+import { Button, TextField, Dialog, DialogTitle, DialogContent, DialogActions, MenuItem } from '@mui/material';
+import '../CSS/style.css';
 
-interface ModifyProposedTimeSlotProps{
-    onClose: () => void
-    formData: {
-        name: string;
-        surname: string;
-        email: string;
-    };
-    timeSlot: {
-        start_time: string
-        end_time: string
-        id: string
-    }
+interface TimeSlotInfo {
+  id: string;
+  start_time: string;
+  end_time: string;
 }
 
+interface ModifyProposedTimeSlotProps {
+  onDialogClose: () => void;
+  formData: {
+    name: string;
+    surname: string;
+    email: string;
+  };
+  timeSlot: TimeSlotInfo;
+  updateTimeslot: (updatedTimeslot: TimeSlotInfo) => void;
+}
+
+interface ModifiedTimeSlot {
+  start_time: string;
+  end_time: string;
+  schedule_pool: string;
+  user: string;
+}
 
 interface ModifyProposedTimeSlotState {
-    open: boolean
+  open: boolean;
+  modifiedStartTime: string;
+  modifiedEndTime: string;
+  modifiedSchedulePool: string;
+  modifiedUser: string;
+  schedulePoolOptions: string[];
+  userOptions: string[];
 }
 
+export const ModifyProposedTimeSlot: React.FC<ModifyProposedTimeSlotProps> = (props) => {
+  const { timeSlot, updateTimeslot } = props;
 
-export class ModifyProposedTimeSlot extends React.Component<ModifyProposedTimeSlotProps, ModifyProposedTimeSlotState> {
+  const [state, setState] = React.useState<ModifyProposedTimeSlotState>({
+    open: true,
+    modifiedStartTime: timeSlot.start_time,
+    modifiedEndTime: timeSlot.end_time,
+    modifiedSchedulePool: '1',
+    modifiedUser: '1',
+    schedulePoolOptions: [], // Inizializzato vuoto
+    userOptions: [], // Inizializzato vuoto
+  });
 
+  const handleModify = (): void => {
+    const { modifiedStartTime, modifiedEndTime, modifiedSchedulePool, modifiedUser } = state;
+    const { id } = timeSlot;
 
-  constructor(props: ModifyProposedTimeSlotProps) {
-    super(props);
-    this.state= {
-        ...props,
-        open: true,
-    }
+    const sanitizedId = Math.max(1, parseInt(id, 10)).toString();
 
-}
+    const modifiedTimeSlot = {
+      start_time: modifiedStartTime,
+      end_time: modifiedEndTime,
+      schedule_pool: modifiedSchedulePool,
+      user: modifiedUser,
+    };
 
+    const updateUrl = `http://localhost:8000/timeslots/${sanitizedId}/`;
 
-
-  handleModify = () => {
-    console.log('Modify button clicked');
+    axios
+      .put<ModifiedTimeSlot>(updateUrl, modifiedTimeSlot)
+      .then((response: AxiosResponse<ModifiedTimeSlot>) => {
+        console.log('Modifica avvenuta con successo:', response.data);
+        props.onDialogClose();
+        updateTimeslot({
+          id: timeSlot.id,
+          start_time: response.data.start_time,
+          end_time: response.data.end_time,
+        });
+      })
+      .catch((error: AxiosError) => {
+        console.error('Errore durante la modifica:', error);
+        // Resto del tuo codice per gestire gli errori rimane invariato
+      });
   };
 
-  
-  render() {
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>): void => {
+    const { name, value } = e.target;
+    setState((prevState) => ({
+      ...prevState,
+      [name === 'From' ? 'modifiedStartTime' : 'modifiedEndTime']: value,
+    }));
+  };
 
-    return (
+  const handleSelectChange = (optionType: 'schedulePool' | 'user', value: string): void => {
+    setState((prevState) => ({
+      ...prevState,
+      [optionType === 'schedulePool' ? 'modifiedSchedulePool' : 'modifiedUser']: value,
+    }));
+  };
 
-        <Dialog open={this.state.open} onClose={this.props.onClose} maxWidth="xs">
-            <DialogTitle> Modify Proposed TimeSlot </DialogTitle>
-            <DialogContent>
-               <h3> Proposed TimeSlot </h3>
-                <TextField
-                    id="outlined-read-only-input"
-                    label="From"
-                    value={this.props.timeSlot.start_time}
-                    InputProps={{
-                        readOnly: true,
-                    }}
-                />
-                <br/>
-                <br/>
-                <TextField
-                    id="outlined-read-only-input"
-                    label="To"
-                    value={this.props.timeSlot.end_time}
-                    InputProps={{
-                        readOnly: true,
-                    }}
-                />
-            </DialogContent>
-            <DialogActions>
-                <Button variant="contained" color="error" onClick={this.props.onClose}>
-                    Close
-                </Button>
-                {/*occorre correggere questo controllo, non funziona esattamente come dovrebbe
-                dobbiamo controllare se chi ha creato il timeslot è la persona che si è identificato nel form iniziale */}
-                {this.props.formData.name !== "Martina" && (
-                    <Button variant="contained" color="primary" onClick={this.handleModify}>
-                        Modify
-                    </Button>
-                )}
-            </DialogActions>
-        </Dialog>
-    );
-  }
-}
+  const { modifiedStartTime, modifiedEndTime } = state;
 
+  return (
+    <Dialog open={state.open} onClose={props.onDialogClose} maxWidth="xs">
+      <DialogTitle> Modify Proposed TimeSlot </DialogTitle>
+      <DialogContent>
+        <h3> Proposed TimeSlot </h3>
+        <TextField
+          id="outlined-read-only-input"
+          label="From"
+          value={modifiedStartTime}
+          onChange={handleInputChange}
+          name="From"
+        />
+        <br />
+        <br />
+        <TextField
+          id="outlined-read-only-input"
+          label="To"
+          value={modifiedEndTime}
+          onChange={handleInputChange}
+          name="To"
+        />
+      
+        <br />
+      
+      </DialogContent>
+      <DialogActions>
+        <Button variant="contained" color="error" onClick={props.onDialogClose}>
+          Close
+        </Button>
+   
+          <Button variant="contained" color="primary" onClick={handleModify}>
+            Modify
+          </Button>
+        
+      </DialogActions>
+    </Dialog>
+  );
+};

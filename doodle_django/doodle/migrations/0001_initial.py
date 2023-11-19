@@ -43,7 +43,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(db_column='id', default=-1, primary_key=True, serialize=False)),
                 ('start_time', models.DateTimeField(db_column='start_time', null=True)),
-                ('end_date', models.DateTimeField(db_column='end_date', null=True)),
+                ('end_time', models.DateTimeField(db_column='end_time', null=True)),
                 ('schedule_pool', models.ForeignKey(default=None, on_delete=django.db.models.deletion.CASCADE, to='doodle.schedulepool')),
                 ('user', models.ForeignKey(default=None, on_delete=django.db.models.deletion.CASCADE, to='doodle.userfake')),
             ],

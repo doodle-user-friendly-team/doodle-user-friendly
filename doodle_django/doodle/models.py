@@ -61,8 +61,8 @@ class TimeSlot(models.Model):
         db_column="start_time",
         null=True
     )
-    end_date = models.DateTimeField(
-        db_column="end_date",
+    end_time = models.DateTimeField(
+        db_column="end_time",
         null=True
     )
     schedule_pool = models.ForeignKey(
