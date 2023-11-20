@@ -27,9 +27,9 @@ class TimeSlotView(APIView):
     serializer_class = TimeSlotSerializer
 
     def get(self, request):
-        day = request.data['day']
-        month = request.data['month']
-        year = request.data['year']
+        day = request.GET.get('day', '0')
+        month = request.GET.get('month', '0')
+        year = request.GET.get('year', '0')
         start_time = f"{int(year):04d}-{int(month) + 1:02d}-{int(day) :02d}T23:59:59Z"
         end_time =  f"{int(year):04d}-{int(month) + 1:02d}-{(int(day)):02d}T00:00:00Z"
         

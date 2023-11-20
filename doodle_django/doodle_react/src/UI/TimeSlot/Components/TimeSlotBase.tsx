@@ -29,11 +29,13 @@ const TimeSlotBaseComponent: React.FC<TimeSlotBaseProps> = ({ newData, updateNew
 
     const getGetTimeSlots = (creationMode: boolean): void => {
         const [day, month, year] = newData.split('/');
-        axios.get(`http://localhost:8000/timeslots/?day=${day}&month=${month}&year=${year}`)
-            .then((response: { data: TimeSlotInfo[] }) => {
-                setTimeSlots(response.data);
-                setCreationMode(creationMode);
-            });
+        
+        if (day !== undefined && month !== undefined && year !== undefined)
+            axios.get(`http://localhost:8000/timeslots/?day=${day}&month=${month}&year=${year}`)
+                .then((response: { data: TimeSlotInfo[] }) => {
+                    setTimeSlots(response.data);
+                    setCreationMode(creationMode);
+                });
     };
 
     const hideTimeSlotForm = (): void => {
