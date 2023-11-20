@@ -2,6 +2,7 @@ import React, { useState, FormEvent} from 'react';
 import "../CSS/style.css";
 import { CalendarBaseComponent } from '../../Calendar/Components/CalendarBase';
 import Cookies from 'js-cookie';
+import {redirect} from "react-router-dom";
 
 export const FormComponent = () => {
   const [formData, setFormData] = useState({
@@ -54,8 +55,6 @@ export const FormComponent = () => {
                   placeholder="Enter your name" 
                   value= {formData.name} 
                   onChange={handleChange} required/>
-
-  
                 </div>
                 
                 
@@ -86,27 +85,17 @@ export const FormComponent = () => {
                   />
                 
                 <br />
-                <button type="submit" onClick={():void=>{
-                    Cookies.set('name', formData.name);
-                    Cookies.set('surname', formData.surname);
-                    Cookies.set('email', formData.email);
-                    console.log(Cookies.get('email'));
-                  }
-                }> Send </button>
+
+                <button type="submit" onClick={() =>{
+                  Cookies.set('name', formData.name);
+                  Cookies.set('surname', formData.surname);
+                  Cookies.set('email', formData.email);
+                  window.location.assign("/")
+                }}> Send </button>
               </form>
             </div>
           )}
-          {isCalendarVisible && (
-            <div>
-            <CalendarBaseComponent currentName= {formData.name} currentSurname={formData.surname} currentEmail={formData.email} isLableVisible={isLabelVisible}  />
-            
-              </div>
-          )}
-
-      
-
     </div>
-  
   )
 
   

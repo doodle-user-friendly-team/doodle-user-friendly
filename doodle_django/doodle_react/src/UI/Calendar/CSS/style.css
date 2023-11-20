@@ -4,13 +4,16 @@
     border-radius: 8px;
     display: flex;
     gap: 8px;
-    height: 100px;
+    height: 90px;
     justify-content: center;
     overflow: hidden;
     padding: 0 0 4px;
     position: relative;
-    width: 116px;
+    width: 105px;
+    border: 2px solid rgba(20, 128, 20, 0.1);
 }
+
+.component
 
 .component .group {
     height: 84px;
@@ -20,20 +23,20 @@
 
 .component .overlap-group-green {
     background-color: #59ca79;
-    border-bottom-right-radius: 32px;
-    border-top-right-radius: 32px;
-    height: 80px;
+    border-radius: 10px;
+    height: 90px;
     position: relative;
     width: 64px;
+    display: inline-table;
 }
 
 .component .overlap-group-red {
     background-color: #F14F4F;
-    border-bottom-right-radius: 32px;
-    border-top-right-radius: 32px;
-    height: 80px;
+    border-radius: 10px;
+    height: 90px;
     position: relative;
     width: 64px;
+    display: inline-table;
 }
 
 .component .date {
@@ -68,7 +71,7 @@
     color: #000000;
     text-align: left;
     font-family: "Inter-Regular", Helvetica;
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 400;
     letter-spacing: -0.4px;
     line-height: 8px;
@@ -85,7 +88,7 @@
     overflow: auto;
     display: grid;
     grid-template-columns: repeat(3, 0fr);
-    grid-gap: 0.4rem;
+    grid-gap: 1rem;
     margin: 0.4rem;
     padding: 0.4rem;
     border-radius: 0.4rem;
@@ -106,10 +109,10 @@
 
 .box {
     height: 48px;
-    width: 180px;
     display: grid;
     grid-template-columns: repeat(2, 0fr);
     grid-gap: 4em;
+    margin-left: 0.5em;
 }
 
 .box .anni {
@@ -195,4 +198,13 @@
     width: 16px;
     cursor: pointer;
     user-select: none;
+}
+
+.dayNotSelected{
+}
+
+.daySelected{
+    border: 2px solid #46da50;
+    border-radius: 5px;
+    color: white;
 }
