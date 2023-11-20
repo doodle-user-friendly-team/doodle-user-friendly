@@ -22,8 +22,6 @@ from rest_framework.schemas import get_schema_view
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("docs/", include_docs_urls(title="Doodle API")),
-    path("schema/", get_schema_view(title="Doodle API")),
     path('timeslots/', TimeSlotView.as_view()),
     path('votes/', VotesView.as_view(), name="votes_api"),
     path('timeslots/id/<str:time_slot_id>/', get_timeslot, name='timeslot_detail'),
