@@ -20,16 +20,7 @@ from .models import Meeting
 
 
 class MeetingTests(APITestCase):
-    # def setUp(self):
-    #     self.client = APIClient()
-    #     self.meeting = Meeting.objects.create(
-    #         title="TestMeeting",
-    #         description="Test Description",
-    #         location="Test Location",
-    #         video_conferencing="False",
-    #         duration=timedelta(hours=1),
-    #         deadline=now() + timedelta(days=5),
-    #     )
+   
           
 
     def test_create_meeting_successfully(self):
