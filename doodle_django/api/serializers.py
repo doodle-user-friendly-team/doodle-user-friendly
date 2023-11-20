@@ -30,14 +30,13 @@ class TimeSlotSerializer(serializers.ModelSerializer):
     class Meta:
         model = TimeSlot
         fields = '__all__'
+
+
+class MeetingTimeSlotSerializer(MeetingSerializer):
+    timeslots = TimeSlotSerializer(many=True)
+
         
 class SchedulePoolSerializer(serializers.ModelSerializer):
     class Meta:
         model = SchedulePool
-        fields = '__all__'
-
-
-class SchedulePoolSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Vote
         fields = '__all__'
