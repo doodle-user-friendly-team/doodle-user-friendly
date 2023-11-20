@@ -36,9 +36,10 @@ class TimeSlotViewTest(TestCase):
     def setUp(self):
         self.ts = TimeSlotView()
 
-        self.user = UserFake.objects.create(name='Test', surname='User')
-        self.meeting = Meeting.objects.create(name='Test Meeting', description='test')
-        self.schedule_pool = SchedulePool.objects.create(voting_start_date=datetime.now(), voting_deadline=datetime.now() + timedelta(days=1), meeting=self.meeting)
+        self.user = UserFake.objects.create(id="1", name="mario", surname="rossi", email="text@example.com")
+        self.meeting = Meeting.objects.create(id="1", name="Prova",description="Questa è una prova")
+        self.schedule_pool = SchedulePool.objects.create(id="1", voting_start_date="2023-11-20 00:00:00",
+                                                         voting_deadline="2020-11-30 00:00:00", meeting=self.meeting)
 
     def test_create_time_slot(self):
         # Sample data to create a new TimeSlot
