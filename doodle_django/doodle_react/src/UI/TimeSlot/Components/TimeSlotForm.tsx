@@ -20,11 +20,19 @@ interface formState{
     confirmTimeFunc: () => void
 }
 
+interface timeSlotProps{
+    start_time: string
+    end_time: string
+    id: string
+    callback_update_preferences: (id: string) => void
+
+}
+
 export class TimeSlotFormComponent extends React.Component<formProps, formState >{
     
     data: string = ""
     INCR: number = 100; // 1 hour
-    
+
     constructor(props: formProps) {
         super(props);
         this.state = {startTime: "00:00", endTime: "23:00", confirmTimeFunc: this.props.updateDatabase};
@@ -84,7 +92,7 @@ export class TimeSlotFormComponent extends React.Component<formProps, formState 
             time = 23_00;
 
         end_time = time;
-        
+
         if ((end_time + incr) <= start_time)
             end_time = start_time + this.INCR;
 
@@ -161,9 +169,9 @@ export class TimeSlotFormComponent extends React.Component<formProps, formState 
 }
 
 
-export class TimeSlotComponent extends React.Component<timeSlotInfo, timeSlotInfo> {
+export class TimeSlotComponent extends React.Component<timeSlotProps, timeSlotInfo> {
     
-    constructor(props: timeSlotInfo) {
+    constructor(props: timeSlotProps) {
         super(props);
         this.state = props
     }
@@ -171,10 +179,12 @@ export class TimeSlotComponent extends React.Component<timeSlotInfo, timeSlotInf
     getTimeFromDateTime = (dateTime: string): string => {
         return dateTime.substring(11, 16);
     }
-    
+
     render() {
         return (
-            <div className="selection-hour-container">
+            <div className="selection-hour-container" onClick={() =>
+                this.props.callback_update_preferences(this.props.id)
+            }>
                 <div className="text">Start: {this.getTimeFromDateTime(this.state.start_time)}</div>
                 <div className="text">End: {this.getTimeFromDateTime(this.state.end_time)}</div>
                 <div className="pseudo-button" onClick={() => {
@@ -190,7 +200,7 @@ export class TimeSlotComponent extends React.Component<timeSlotInfo, timeSlotInf
             this.setState({start_time: this.props.start_time, end_time: this.props.end_time})
         }
     }
-    
+
     componentDidMount() {
         this.setState({start_time: this.props.start_time, end_time: this.props.end_time})
     }

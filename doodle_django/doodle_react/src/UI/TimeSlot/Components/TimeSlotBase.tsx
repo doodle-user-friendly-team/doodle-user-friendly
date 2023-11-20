@@ -4,10 +4,10 @@ import "../CSS/style.css";
 import { TimeSlotComponent, TimeSlotFormComponent } from "./TimeSlotForm";
 import Cookies from "js-cookie";
 
-interface TimeSlotInfo {
-    id: string;
-    start_time: string;
-    end_time: string;
+export interface timeSlotInfo{
+    id: string
+    start_time: string
+    end_time: string
 }
 
 interface TimeSlotBaseProps {
@@ -17,7 +17,7 @@ interface TimeSlotBaseProps {
 
 const TimeSlotBaseComponent: React.FC<TimeSlotBaseProps> = ({ newData, updateNewData }) => {
     const [creationMode, setCreationMode] = useState(false);
-    const [timeSlots, setTimeSlots] = useState<TimeSlotInfo[]>([]);
+    const [timeSlots, setTimeSlots] = useState<timeSlotInfo[]>([]);
 
     useEffect(() => {
         getGetTimeSlots(false);
@@ -30,7 +30,7 @@ const TimeSlotBaseComponent: React.FC<TimeSlotBaseProps> = ({ newData, updateNew
     const getGetTimeSlots = (creationMode: boolean): void => {
         const [day, month, year] = newData.split('/');
         axios.get(`http://localhost:8000/timeslots/?day=${day}&month=${month}&year=${year}`)
-            .then((response: { data: TimeSlotInfo[] }) => {
+            .then((response: { data: timeSlotInfo[] }) => {
                 setTimeSlots(response.data);
                 setCreationMode(creationMode);
             });

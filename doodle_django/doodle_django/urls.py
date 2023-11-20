@@ -15,15 +15,23 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from doodle.views import *
+from rest_framework.documentation import include_docs_urls
+from rest_framework.schemas import get_schema_view
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("docs/", include_docs_urls(title="Doodle API")),
+    path("schema/", get_schema_view(title="Doodle API")),
     path('timeslots/', TimeSlotView.as_view()),
-    
+    path('votes/', VotesView.as_view(), name="votes_api"),
+    path('timeslots/id/<str:time_slot_id>/', get_timeslot, name='timeslot_detail'),
+    path('votes/timeslot/<str:time_slot_id>/', get_preferences, name='timeslot_vote_list'),
+    path('api/update_preference/', ModifyMyPreferenceView.as_view(),name='update_preference'),
+
     # add react path
     # but I think it's better to do it when we have finished the website
     # since we have to build the react app first
-    
+
 ]

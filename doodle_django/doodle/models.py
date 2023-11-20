@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class Meeting(models.Model):
     id = models.AutoField(
         primary_key=True,
@@ -8,12 +9,14 @@ class Meeting(models.Model):
     name = models.CharField(
         db_column="name",
         max_length=100,
-        default=""
+        blank=False,
+        null=False
     )
     description = models.CharField(
         db_column="description",
         max_length=500,
-        default=""
+        blank=True,
+        null=True
     )
 
 
@@ -71,7 +74,7 @@ class TimeSlot(models.Model):
         to=UserFake,
         on_delete=models.CASCADE
     )
-    
+
     class Meta:
         unique_together = ("start_time", "end_time")
 
