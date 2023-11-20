@@ -173,7 +173,7 @@ export class TimeSlotComponent extends React.Component<timeSlotProps, timeSlotIn
     
     constructor(props: timeSlotProps) {
         super(props);
-        this.state = props
+        this.state = {start_time: props.start_time, end_time: props.end_time, id: props.id}
     }
     
     getTimeFromDateTime = (dateTime: string): string => {
@@ -196,12 +196,9 @@ export class TimeSlotComponent extends React.Component<timeSlotProps, timeSlotIn
     }
     
     componentDidUpdate(prevProps: Readonly<timeSlotInfo>, prevState: Readonly<timeSlotInfo>, snapshot?: any) {
-        if (prevProps.start_time !== this.props.start_time || prevProps.end_time !== this.props.end_time) {
-            this.setState({start_time: this.props.start_time, end_time: this.props.end_time})
+        if (this.state.start_time !== this.props.start_time || this.state.end_time !== this.props.end_time) {
+            if (this.props.start_time !== undefined && this.props.end_time !== undefined)
+                this.setState({start_time: this.props.start_time, end_time: this.props.end_time})
         }
-    }
-
-    componentDidMount() {
-        this.setState({start_time: this.props.start_time, end_time: this.props.end_time})
     }
 }

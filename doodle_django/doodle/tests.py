@@ -81,7 +81,6 @@ class TimeSlotViewTest(TestCase):
 
         self.assertEqual(self.ts.post(FakeRequest(goodRequest)).status_code, status.HTTP_200_OK)
 
-
     def test_get_time_slots(self):
         malformedTime = {
             "day": "00",
@@ -134,8 +133,4 @@ class VoteViewTest(TestCase):
         response = self.client.post(url, self.valid_vote_data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(Vote.objects.count(), 2)
-
-
-
-
 

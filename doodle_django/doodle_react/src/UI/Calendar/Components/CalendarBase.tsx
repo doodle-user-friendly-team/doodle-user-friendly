@@ -93,12 +93,15 @@ export class CalendarBaseComponent extends React.Component<calendarProps, calend
                                 return (<CalendarDayComponent selectedDay={this.selectedDay.toString()} day={day[0].toString()} dayName={day[1].toString()}
                                                               type={"overlap-group-red"} month={this.state.month.toString()} 
                                                               year={this.state.year.toString()} 
-                                                              callback_update_timeslots={this.updateTimeslots}/>);
+                                                              callback_update_timeslots={this.updateTimeslots}
+                                                              key={day[0].toString() + day[1].toString()}/>);
                             }
                             return (<CalendarDayComponent selectedDay={this.selectedDay.toString()} day={day[0].toString()} dayName={day[1].toString()}
                                                           type={"overlap-group-green"} month={this.state.month.toString()} 
                                                           year={this.state.year.toString()} 
-                                                          callback_update_timeslots={this.updateTimeslots}/>);
+                                                          callback_update_timeslots={this.updateTimeslots}
+                                                          key={day[0].toString() + day[1].toString()}/>);
+                                
                         })
                     }
                 </div>
