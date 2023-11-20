@@ -11,6 +11,11 @@ import RangeDate from "../Date/RangeDate";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
+import Calendar from "react-calendar";
+import "react-calendar/dist/Calendar.css";
+import TimePicker from "react-time-picker";
+import "react-time-picker/dist/TimePicker.css";
+
 const CreateGroupPolly = ({ news }) => {
   const ColorButton = styled(Button)(({ theme }) => ({
     color: theme.palette.getContrastText(grey[600]),
@@ -20,8 +25,55 @@ const CreateGroupPolly = ({ news }) => {
     },
   }));
 
-  const [error, setError] = useState(false);
+  const [selectedDates, setSelectedDates] = useState([]);
+  const [selectedTimeRange, setSelectedTimeRange] = useState([
+    "09:00",
+    "10:00",
+  ]);
 
+  const calculateDuration = (startTime, endTime) => {
+    const start = new Date(`1970-01-01T${startTime}`);
+    const end = new Date(`1970-01-01T${endTime}`);
+    const durationInMilliseconds = end - start;
+
+    const pad = (num) => num.toString().padStart(2, "0");
+
+    const hours = pad(Math.floor(durationInMilliseconds / 3600000));
+    const minutes = pad(Math.floor((durationInMilliseconds % 3600000) / 60000));
+    const seconds = pad(Math.floor((durationInMilliseconds % 60000) / 1000));
+
+    return `${hours}:${minutes}:${seconds}`;
+  };
+
+  const handleDateClick = (value) => {
+    const dateIndex = selectedDates.findIndex(
+      (dateObj) => dateObj.date.toDateString() === value.toDateString()
+    );
+    if (dateIndex > -1) {
+      const updatedDates = selectedDates.filter(
+        (dateObj) => dateObj.date.toDateString() !== value.toDateString()
+      );
+      setSelectedDates(updatedDates);
+    } else {
+      setSelectedDates((prevDates) => [
+        ...prevDates,
+        { date: value, timeRange: [...selectedTimeRange] },
+      ]);
+    }
+  };
+
+  const handleTimeChange = (time, index) => {
+    setSelectedTimeRange((prevTimeRange) => {
+      const updatedTimeRange = [...prevTimeRange];
+      updatedTimeRange[index] = time;
+      return updatedTimeRange;
+    });
+  };
+
+  const tileDisabled = ({ date, view }) =>
+    view === "month" && date < new Date();
+
+  const [error, setError] = useState(false);
   const [title, setTitle] = useState("");
 
   const updateTitle = (newTitle) => {
@@ -54,7 +106,7 @@ const CreateGroupPolly = ({ news }) => {
   };
 
   let navigate = useNavigate();
-  // console.log({ customer, title, subject, date });
+  // console.log({ title, date });
 
   const getToken = () => sessionStorage.getItem("token");
 
@@ -85,16 +137,84 @@ const CreateGroupPolly = ({ news }) => {
     updateVideo("");
   };
 
+  const formatDeadline = (deadline) => {
+    const year = deadline.getFullYear();
+    const month = (deadline.getMonth() + 1).toString().padStart(2, "0");
+    const day = deadline.getDate().toString().padStart(2, "0");
+    const hours = deadline.getHours().toString().padStart(2, "0");
+    const minutes = deadline.getMinutes().toString().padStart(2, "0");
+    const seconds = deadline.getSeconds().toString().padStart(2, "0");
+    const offsetHours = Math.floor(deadline.getTimezoneOffset() / 60);
+    const offsetMinutes = Math.abs(deadline.getTimezoneOffset() % 60);
+
+    const offsetSign = offsetHours >= 0 ? "+" : "-";
+    const offsetHoursFormatted = Math.abs(offsetHours)
+      .toString()
+      .padStart(2, "0");
+    const offsetMinutesFormatted = offsetMinutes.toString().padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+  };
+
   const handleApi = async (e) => {
     e.preventDefault();
-    console.log("inside");
+
+    if (selectedDates.length === 0) {
+      // Handle the case where no dates are selected
+      console.error("No dates selected");
+      return;
+    }
+
+    const startDate = selectedDates[0].date.toISOString().split("T")[0];
+    const deadline = formatDeadline(
+      selectedDates[selectedDates.length - 1].date
+    );
+
+    // const timeslots = selectedDates.map((dateObj) => ({
+    //   start_date: dateObj.date.toISOString().split("T")[0],
+    //   end_date: deadline,
+    // }));
+    let array_time_slots = [];
+    for (let i = 0; i < selectedDates.length; ++i) {
+      const startDate = selectedDates[i].date.toISOString().split("T")[0];
+      const startTime = selectedTimeRange[0];
+      const startDateTime = `${startDate}T${startTime}:00`;
+
+      const endDate = selectedDates[i].date.toISOString().split("T")[0];
+      const endTime = selectedTimeRange[1];
+      const endDateTime = `${endDate}T${endTime}:00`;
+
+      console.log("Selected date", startDateTime, endDateTime);
+
+      array_time_slots.push({
+        start_date: startDateTime,
+        end_date: endDateTime,
+      });
+    }
+    const startTime = selectedTimeRange[0];
+    const endTime = selectedTimeRange[1];
+    const duration = calculateDuration(startTime, endTime);
+    console.log(
+      "data accepted befroe api",
+      title,
+      description,
+      location,
+      duration,
+      formatDeadline(selectedDates[selectedDates.length - 1].date)
+    );
     let data = {
       title: title,
       description: description,
       location: location,
+      duration: duration,
+      video_conferencing: checked,
+      start_date: startDate,
+      deadline: deadline,
+      timeslots: array_time_slots,
     };
+    console.log("after", data);
     try {
-      const result = axios.post(
+      const result = await axios.post(
         "http://127.0.0.1:8000/api/meetings/new/",
         data,
         {
@@ -103,16 +223,19 @@ const CreateGroupPolly = ({ news }) => {
           },
         }
       );
-      alert("Mettting Created successfully !");
+      alert("Meeting Created successfully!");
       navigate("/manage");
       deleteFields();
       console.log(result);
     } catch (e) {
-      console.log(e);
+      console.log("sth failed", e);
     }
   };
   const handleButtonClick = (e) => {
-    if (checkRequirements()) handleApi(e);
+    e.preventDefault();
+    if (checkRequirements()) {
+      handleApi(e);
+    }
   };
 
   const onExpand = (index) => {
@@ -120,8 +243,6 @@ const CreateGroupPolly = ({ news }) => {
     if (index === 0) btn[0].style.marginBottom = "120px";
     else btn[1].style.paddingBottom = "180px";
   };
-
-  console.log("news", news);
 
   const onContraction = (index) => {
     const btn = document.getElementsByClassName("field");
@@ -154,12 +275,56 @@ const CreateGroupPolly = ({ news }) => {
             />
           </div>
           <div className="field">
-            <RangeDate onExpand={onExpand} onContraction={onContraction} />
+            <div style={{ display: "flex" }}>
+              <div style={{ flex: 1 }}>
+                <h1>Add time</h1>
+                <Calendar
+                  onClickDay={(value) => handleDateClick(value)}
+                  value={selectedDates.map((dateObj) => dateObj.date)}
+                  tileDisabled={tileDisabled}
+                />
+              </div>
+              <div style={{ flex: 1, marginLeft: 20 }}>
+                <h2>Selected Dates:</h2>
+                {selectedDates.length > 0 ? (
+                  <ul>
+                    {selectedDates.map((dateObj, index) => (
+                      <li key={index}>
+                        {dateObj.date.toDateString()} from{" "}
+                        {dateObj.timeRange[0]} to {dateObj.timeRange[1]}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p>No dates selected</p>
+                )}
+
+                <div>
+                  <h2>Select Time Range:</h2>
+                  <div>
+                    <TimePicker
+                      onChange={(time) => handleTimeChange(time, 0)}
+                      value={selectedTimeRange[0]}
+                      className="custom-time-picker"
+                    />
+                    <p>Start Time: {selectedTimeRange[0]}</p>
+                  </div>
+                  <div>
+                    <TimePicker
+                      onChange={(time) => handleTimeChange(time, 1)}
+                      value={selectedTimeRange[1]}
+                      className="custom-time-picker"
+                    />
+                    <p>End Time: {selectedTimeRange[1]}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
           <div style={{ textAlign: "end" }}>
             <ColorButton
               style={{ margin: 20, textAlign: "end" }}
-              onClick={handleButtonClick}
+              onClick={(e) => handleButtonClick(e)}
               variant="contained"
               type="submit"
             >

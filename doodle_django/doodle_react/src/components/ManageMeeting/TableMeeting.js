@@ -34,8 +34,6 @@ const TableMeeting = ({ selectedColumn, columnSelection, data }) => {
     }
   };
 
-  console.log("ADATA", data)
-
   const data_group_1 = [
     {
       partecipants: "Fabio Cangeri",
@@ -73,7 +71,19 @@ const TableMeeting = ({ selectedColumn, columnSelection, data }) => {
       >
         <thead>
           <tr>
-            {Object.keys(data).map((column, index) => (
+          {Object.keys(data).map((column, index) => {
+            let start = null
+            let end = null
+
+            if(index !== 0) {
+              const start_date = data["timeslots"][0]["start_date"];
+              const end_date = data["timeslots"][0]["end_date"];
+
+              const regexPattern = /(\d+)-(\d+)\-(\d+)+T(.*?)\+(.*)/;
+              start = regexPattern.exec(start_date);
+              end = regexPattern.exec(end_date);
+            }
+            return (
               <th
                 key={index}
                 style={{ position: "relative", minWidth: "100px"}}
@@ -104,11 +114,11 @@ const TableMeeting = ({ selectedColumn, columnSelection, data }) => {
                       }
                     />
                     <br />
-                    <p>{column}</p>
-                    <p>m* day</p>
-                    <p>day</p>
-                    <p>start_time</p>
-                    <p>end_time</p>
+                    <p>Year: {start[1]}</p>
+                    <p>Month: {start[2]}</p>
+                    <p>Day: {start[3]}</p>
+                    <p>Start: {start[4]}</p>
+                    <p>End: {end[4]}</p>
                     <div className="div_user">
                       <img src={user} alt="user" />
                       <nobr> 2</nobr>
@@ -116,7 +126,8 @@ const TableMeeting = ({ selectedColumn, columnSelection, data }) => {
                   </label>
                 )}
               </th>
-            ))}
+            );
+          })}
           </tr>
         </thead>
         <tbody>

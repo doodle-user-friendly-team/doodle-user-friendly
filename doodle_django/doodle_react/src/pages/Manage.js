@@ -9,15 +9,22 @@ const Manage = ( { meetingId = -1 } ) => {
 
   const getMeeting = async () => {
     try {
-      console.log("meetingID", meetingId)
-      let url = `http://127.0.0.1:8000/api/meeting/?id=${meetingId}`
-      if(meetingId === -1)
-        url = 'http://127.0.0.1:8000/api/meeting/last/'
+      let url = "http://127.0.0.1:8000/api/meetings/"
+
       const response = await fetch(url);
+      
       if (!response.ok)
         throw new Error('Meeting not found');
-        const local_data = await response.json();
-        setData(local_data);
+      
+      const local_data = await response.json();
+      var length = Object.keys (local_data).length
+      
+      let index = meetingId
+      if(meetingId === -1)
+        index = length - 1
+
+      console.log("MEETING index", local_data[index])
+      setData(local_data[index]);
     } catch (error) {
     }
   };
