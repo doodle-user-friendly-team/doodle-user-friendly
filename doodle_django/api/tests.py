@@ -298,7 +298,7 @@ class MeetingTests(APITestCase):
         # Ensure that created_meeting_id is set (you may also check if it's None or not set)
         self.test_create_meeting_successfully()
         self.assertIsNotNone(getattr(self, 'created_meeting_id', None), "created_meeting_id not set")
-        url = reverse('api:api_meetings_delete',args=[13])  # Assuming the meeting with ID 999 does not exist
+        url = reverse('api:api_meetings_delete',args=[99])  # Assuming the meeting with ID 999 does not exist
         response = self.client.delete(url)
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
