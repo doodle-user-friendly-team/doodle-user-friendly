@@ -10,8 +10,3 @@ class SchedulePoolSerializer(serializers.ModelSerializer):
     class Meta:
         model = SchedulePool
         fields = ['id', 'voting_start_date', 'voting_deadline', 'meeting']
-
-class UserFakeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = UserFake
-        fields = ['id', 'name', 'surname', 'email']
