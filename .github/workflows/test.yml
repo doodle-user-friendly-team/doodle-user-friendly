@@ -5,7 +5,7 @@ on:
     pull_request:
         branches: ["group_1", "group_2", "main"]
     push:
-        branches: ["group_2"]
+        branches: ["group_2", "group_2_edit_merge"]
 
 defaults:
   run:
