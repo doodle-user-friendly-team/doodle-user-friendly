@@ -1,6 +1,8 @@
 from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
+from rest_framework.test import APIClient
+
 
 from .models import *
 from .serializer import *
@@ -44,6 +46,68 @@ class VoteViewTest(TestCase):
 
 
 
+class ModifyMyPreferenceViewTest(TestCase):
+    def setUp(self):
+        self.client = APIClient()
 
+        # Creare dati di esempio nel database per il test
+        self.user= UserFake.objects.create(
+            id=1,
+            name="mario",
+            surname="rossi",
+            email="ciao@gmail.com")
+
+        self.meeting= Meeting.objects.create(
+            id=1,
+            name="Prova",
+            description="Questa è una prova")
+
+        self.schedule_pool = SchedulePool.objects.create(
+            id=1,
+            voting_start_date="2023-01-01T00:00:00Z",
+            voting_deadline="2023-01-02T00:00:00Z",
+            meeting_id=self.meeting.id)
+
+        # Creare un oggetto TimeSlot associato a SchedulePool
+        self.time_slot = TimeSlot.objects.create(
+            id=1,
+            start_time="2023-01-01T12:00:00Z",
+            end_time="2023-01-01T14:00:00Z",
+            schedule_pool=self.schedule_pool, 
+            user_id=self.user.id)
+       
+        self.vote = Vote.objects.create(id=1, preference="Available", user_id=self.user.id, time_slot_id=self.time_slot.id)
+
+        self.url = reverse('update_preference')
+
+    def test_modify_preference(self):
+        data = {
+            'id': self.vote.id,
+            'preference': 'Unavailable',
+            'user': self.user.id,
+            'time_slot': self.time_slot.id,
+        }
+
+        response = self.client.put(self.url, data, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, {'message': 'Preferenza aggiornata con successo'})
+
+        # Verifica che il voto nel database sia stato aggiornato correttamente
+        updated_vote = Vote.objects.get(id=self.vote.id)
+        self.assertEqual(updated_vote.preference, 'Unavailable')
+
+    def test_modify_preference_invalid_data(self):
+        # Testa il caso in cui i dati inviati non siano validi
+        invalid_data = {
+            'preference': 'Unavailable',
+            'user': self.user.id,
+            'time_slot': self.time_slot.id,
+        }
+
+        response = self.client.put(self.url, invalid_data, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn('message', response.data)
 
 
