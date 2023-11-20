@@ -61,7 +61,6 @@ const CreateGroupPolly = ({ news }) => {
       ]);
     }
 
-
     // let array_time_slots = [];
     // for (let i = 0; i < selectedDates.length; ++i) {
     //   console.log("selectedDates[i]", selectedDates[i])
@@ -82,7 +81,6 @@ const CreateGroupPolly = ({ news }) => {
     // }
 
     // console.log("array_time_slots ", array_time_slots)
-
   };
 
   const handleTimeChange = (time, index) => {
@@ -202,7 +200,7 @@ const CreateGroupPolly = ({ news }) => {
       const newDate = new Date(selectedDates[i].date);
       newDate.setDate(selectedDates[i].date.getDate() + 1);
 
-      console.log("selectedDates[i]", selectedDates[i])
+      console.log("selectedDates[i]", selectedDates[i]);
       const startDate = newDate.toISOString().split("T")[0];
       const startTime = selectedDates[i].timeRange[0];
       const startDateTime = `${startDate}T${startTime}:00`;
@@ -353,8 +351,7 @@ const CreateGroupPolly = ({ news }) => {
               style={{ margin: 20, textAlign: "end" }}
               onClick={(e) => handleButtonClick(e)}
               variant="contained"
-              type="submit"
-            >
+              type="submit">
               Create Invate and Continue
             </ColorButton>
           </div>

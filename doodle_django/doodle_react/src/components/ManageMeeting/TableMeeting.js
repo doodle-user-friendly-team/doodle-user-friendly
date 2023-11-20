@@ -35,11 +35,26 @@ const TableMeeting = ({ selectedColumn, columnSelection, data }) => {
     }
   };
 
+  const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+
   const time_slots = [
     // Il nuovo valore che desideri aggiungere
-    { },
+    {},
     // ... altri valori esistenti in data["timeslots"]
-    ...(Array.isArray(data["timeslots"]) ? data["timeslots"] : [])
+    ...(Array.isArray(data["timeslots"]) ? data["timeslots"] : []),
   ];
 
   const data_group_1 = [
@@ -75,69 +90,68 @@ const TableMeeting = ({ selectedColumn, columnSelection, data }) => {
           width: "-webkit-fill-available",
           marginRight: "15px",
           marginLeft: "15px",
-        }}
-      >
+        }}>
         <thead>
           <tr>
-          {time_slots && time_slots.map((value, index) => {
-            let start = null
-            let end = null
+            {time_slots &&
+              time_slots.map((value, index) => {
+                let start = null;
+                let end = null;
 
-            if(index !== 0) {
-              console.log("INDEX ", index)
-              console.log("timeslot ", value)
-              const start_date = value["start_date"];
-              const end_date = value["end_date"];
+                if (index !== 0) {
+                  console.log("INDEX ", index);
+                  console.log("timeslot ", value);
+                  const start_date = value["start_date"];
+                  const end_date = value["end_date"];
 
-              const regexPattern = /(\d+)-(\d+)\-(\d+)+T(.*?)\+(.*)/;
-              start = regexPattern.exec(start_date);
-              end = regexPattern.exec(end_date);
-            }
-            return (
-              <th
-                key={index}
-                style={{ position: "relative", minWidth: "100px"}}
-                onClick={() => columnSelection(index)}
-                className={
-                  selectedColumn === index ? "selected_column" : ""
+                  const regexPattern =
+                    /(\d+)-(\d+)\-(\d+)+T(\d{2}:\d{2}).*\+(.*)/;
+                  start = regexPattern.exec(start_date);
+                  end = regexPattern.exec(end_date);
                 }
-              >
-                {index === 0 ? (
-                  <label
-                    style={{
-                      position: "absolute",
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                    }}
-                  >
-                    <h4 id="partecipants_text">Partecipants</h4>
-                  </label>
-                ) : (
-                  <label>
-                    <img
-                      id="star"
-                      className={
-                        selectedColumn === index
-                          ? "img_star_select"
-                          : "img_star_unselect"
-                      }
-                    />
-                    <br />
-                    <p>Year: {start[1]}</p>
-                    <p>Month: {start[2]}</p>
-                    <p>Day: {start[3]}</p>
-                    <p>Start: {start[4]}</p>
-                    <p>End: {end[4]}</p>
-                    <div className="div_user">
-                      <img src={user} alt="user" />
-                      <nobr> 2</nobr>
-                    </div>
-                  </label>
-                )}
-              </th>
-            );
-          })}
+                return (
+                  <th
+                    key={index}
+                    style={{ position: "relative", minWidth: "100px" }}
+                    onClick={() => columnSelection(index)}
+                    className={
+                      selectedColumn === index ? "selected_column" : ""
+                    }>
+                    {index === 0 ? (
+                      <label
+                        style={{
+                          position: "absolute",
+                          left: 0,
+                          right: 0,
+                          bottom: 0,
+                        }}>
+                        <h4 id="partecipants_text">Partecipants</h4>
+                      </label>
+                    ) : (
+                      <label>
+                        <img
+                          id="star"
+                          className={
+                            selectedColumn === index
+                              ? "img_star_select"
+                              : "img_star_unselect"
+                          }
+                        />
+                        <br />
+                        <p>{start[3] + "/" + start[2] + "/" + start[1]}</p>
+                        {/* <p>{months[start[2] - 1]}</p>
+                        <p>{start[3]}</p> */}
+                        <p>{start[4]}</p>
+                        <p>{end[4]}</p>
+                        <div className="div_user">
+                          <img src={user} alt="user" />
+                          <nobr> 2</nobr>
+                        </div>
+                      </label>
+                    )}
+                  </th>
+                );
+              })}
           </tr>
         </thead>
         <tbody>
@@ -148,9 +162,8 @@ const TableMeeting = ({ selectedColumn, columnSelection, data }) => {
                   key={colIndex}
                   onClick={() => columnSelection(colIndex)}
                   className={
-                    selectedColumn  === colIndex ? "selected_column" : ""
-                  }
-                >
+                    selectedColumn === colIndex ? "selected_column" : ""
+                  }>
                   {column === "partecipants" ? (
                     <p className="partecipants">{row[column]}</p>
                   ) : (

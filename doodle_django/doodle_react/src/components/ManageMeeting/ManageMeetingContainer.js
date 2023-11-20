@@ -25,6 +25,8 @@ const Manage = ({ news, data }) => {
   const getToken = () => sessionStorage.getItem("token");
 
   const submitForm = () => {
+    alert("See you in the next sprint!");
+    return;
     console.log("id ", data["id"], selectedColumn);
     let d = {
       id: data["id"],
@@ -74,8 +76,7 @@ const Manage = ({ news, data }) => {
                 <ColorButton
                   style={{ margin: 20, textAlign: "end" }}
                   onClick={submitForm}
-                  variant="contained"
-                >
+                  variant="contained">
                   Book it
                 </ColorButton>
               </div>
