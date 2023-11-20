@@ -8,7 +8,7 @@ export function Recap() {
       <Stack spacing={8}>
         <ContainerTopThree />
         <Divider />
-            <UserRecap />
+            <UserRecap user_id={1} meeting_id={1}/>
       </Stack>
     </Container>
   );
