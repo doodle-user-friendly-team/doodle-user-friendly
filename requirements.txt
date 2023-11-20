@@ -26,3 +26,4 @@ sqlparse==0.4.4
 tzdata==2023.3
 uritemplate==4.1.1
 urllib3==2.1.0
+coreapi==2.3.3
