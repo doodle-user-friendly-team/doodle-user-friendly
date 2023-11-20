@@ -21,5 +21,6 @@ from doodle.views import *
 urlpatterns = [
     path("admin/", admin.site.urls),
     path('timeslots/', TimeSlotView.as_view()),
-    path('api/meeting/recap/', TimeSlotVotatedView.as_view(), name='recap'),
+    path('api/meeting/recap/', TimeSlotVotatedView.as_view(), name='timeslot-votated'),
+    path('api/meeting/<int:meeting_id>/topthree/', TopThreeView.as_view(), name='top-three'),
 ]
