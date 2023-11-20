@@ -25,7 +25,7 @@ urlpatterns = [
     path('timeslots/', TimeSlotView.as_view()),
     path('timeslots/<int:pk>', UpdateTimeSlotView.as_view(), name='updateTimeSlot' ),
     path('timeslots/authorized' , CheckUser.as_view()),
-    path('users/<int:user_id>', UserByIdView.as_view(), name='userbyid')
+    path('users/<int:user_id>', UserByIdView.as_view(), name='userbyid'),
     path('votes/', VotesView.as_view(), name="votes_api"),
     path('timeslots/id/<str:time_slot_id>/', get_timeslot, name='timeslot_detail'),
     path('votes/timeslot/<str:time_slot_id>/', get_preferences, name='timeslot_vote_list'),
