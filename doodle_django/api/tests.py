@@ -292,14 +292,7 @@ class MeetingTests(APITestCase):
         url = reverse('api:api_meetings_delete',args=[self.created_meeting_id])
         response = self.client.delete(url)
 
-        # The expected behavior depends on your API design.
-        # You might choose to return 204 NO CONTENT for a successful deletion.
-
-        # Example: Expecting 204 NO CONTENT
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-
-        # Ensure that the meeting was deleted
-        # self.assertEqual(Meeting.objects.count(), 0)
 
     def test_delete_meeting_unsuccessfully_not_found(self):
         # Ensure that created_meeting_id is set (you may also check if it's None or not set)
@@ -308,10 +301,6 @@ class MeetingTests(APITestCase):
         url = reverse('api:api_meetings_delete',args=[13])  # Assuming the meeting with ID 999 does not exist
         response = self.client.delete(url)
 
-        # The expected behavior depends on your API design.
-        # You might choose to return 404 NOT FOUND for a non-existent resource.
-
-        # Example: Expecting 404 NOT FOUND
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
         # Ensure that no meeting was deleted
