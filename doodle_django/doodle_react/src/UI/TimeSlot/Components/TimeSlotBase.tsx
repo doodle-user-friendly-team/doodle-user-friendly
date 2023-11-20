@@ -4,20 +4,21 @@ import "../CSS/style.css";
 import { TimeSlotComponent, TimeSlotFormComponent } from "./TimeSlotForm";
 import Cookies from "js-cookie";
 
-interface TimeSlotInfo {
-    id: string;
-    start_time: string;
-    end_time: string;
+export interface timeSlotInfo{
+    id: string
+    start_time: string
+    end_time: string
 }
 
 interface TimeSlotBaseProps {
     newData: string;
     updateNewData: (val: string) => void;
+    updatePreferences: (id: string) => void;
 }
 
-const TimeSlotBaseComponent: React.FC<TimeSlotBaseProps> = ({ newData, updateNewData }) => {
+const TimeSlotBaseComponent: React.FC<TimeSlotBaseProps> = ({ newData, updateNewData, updatePreferences }) => {
     const [creationMode, setCreationMode] = useState(false);
-    const [timeSlots, setTimeSlots] = useState<TimeSlotInfo[]>([]);
+    const [timeSlots, setTimeSlots] = useState<timeSlotInfo[]>([]);
 
     useEffect(() => {
         getGetTimeSlots(false);
@@ -36,6 +37,7 @@ const TimeSlotBaseComponent: React.FC<TimeSlotBaseProps> = ({ newData, updateNew
                     setTimeSlots(response.data);
                     setCreationMode(creationMode);
                 });
+
     };
 
     const hideTimeSlotForm = (): void => {
@@ -56,7 +58,7 @@ const TimeSlotBaseComponent: React.FC<TimeSlotBaseProps> = ({ newData, updateNew
             </div>
             <div className="time-slot-container">
                 {timeSlots.map((ts) => (
-                    <TimeSlotComponent key={ts.id} id={ts.id} start_time={ts.start_time} end_time={ts.end_time} />
+                    <TimeSlotComponent key={ts.id} id={ts.id} start_time={ts.start_time} end_time={ts.end_time} callback_update_preferences={updatePreferences} />
                 ))}
                 {creationMode && <TimeSlotFormComponent updateDatabase={updateDatabase} dataSelected={newData} />}
             </div>

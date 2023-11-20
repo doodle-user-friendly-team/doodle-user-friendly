@@ -1,8 +1,0 @@
-.git
-**/.gitignore
-.github
-**/README.md
-**/node_modules
-**/.pytest_cache
-**/__pycache__
-
