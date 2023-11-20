@@ -68,7 +68,6 @@ class ModifyMyPreferenceViewTest(TestCase):
             voting_deadline="2023-01-02T00:00:00Z",
             meeting_id=self.meeting.id)
 
-        # Creare un oggetto TimeSlot associato a SchedulePool
         self.time_slot = TimeSlot.objects.create(
             id=1,
             start_time="2023-01-01T12:00:00Z",
