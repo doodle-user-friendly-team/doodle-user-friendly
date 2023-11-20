@@ -90,8 +90,7 @@ class Meeting(models.Model):
     )
     creation_date = models.DateTimeField(
         db_column="creation_date",
-        blank=False,
-        null=False,
+       auto_now_add=True
     )
     passcode = models.CharField(
         db_column="passcode",
