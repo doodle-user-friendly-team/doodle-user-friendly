@@ -73,7 +73,7 @@ class TimeSlotViewTest(TestCase):
         self.assertRaises(FormatError, self.ts.post, FakeRequest(malformed_data))
         self.assertRaises(TimeLessThanNowError, self.ts.post, FakeRequest(timeLessThanNow))
         
-        self.assertEquals(self.ts.post(FakeRequest(goodRequest)).status_code, status.HTTP_200_OK)
+        self.assertEqual(self.ts.post(FakeRequest(goodRequest)).status_code, status.HTTP_200_OK)
         
 
     def test_get_time_slots(self):
@@ -91,4 +91,4 @@ class TimeSlotViewTest(TestCase):
 
         self.assertRaises(FormatError, self.ts.get, FakeRequest(malformedTime))
         
-        self.assertEquals(self.ts.get(FakeRequest(goodTime)).status_code, status.HTTP_200_OK)
+        self.assertEqual(self.ts.get(FakeRequest(goodTime)).status_code, status.HTTP_200_OK)
