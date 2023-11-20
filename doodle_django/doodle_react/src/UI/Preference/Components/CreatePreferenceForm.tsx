@@ -37,7 +37,7 @@ export function CreatePreferenceForm ({ onSave, onClose, start, end }:CreatePref
 
     return (
         <Dialog open={true} onClose={onClose}>
-            <DialogTitle>Aggiungi preferenza</DialogTitle>
+            <DialogTitle>Add preference</DialogTitle>
             <DialogContent>
 
                 <Typography variant="body1" sx={{ marginBottom: 2 }}>
@@ -73,10 +73,10 @@ export function CreatePreferenceForm ({ onSave, onClose, start, end }:CreatePref
             </DialogContent>
             <DialogActions>
                 <Button onClick={handleClose} color="secondary">
-                    Annulla
+                    Cancel
                 </Button>
                 <Button onClick={handleSave} color="primary" autoFocus>
-                    Salva
+                    Save
                 </Button>
             </DialogActions>
         </Dialog>

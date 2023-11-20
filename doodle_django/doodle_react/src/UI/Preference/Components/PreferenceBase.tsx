@@ -132,8 +132,8 @@ export class PreferenceBaseComponent extends React.Component< preferenceBaseProp
 
             <div className="preferencePanel">
                 <div className="header">
-                    <span>Scritta all'inizio</span>
-                    <button className="add-button" onClick={this.handleCreationForm}>Crea</button>
+                    <span>Preferences</span>
+                    <button className="add-button" onClick={this.handleCreationForm}>Add</button>
                 </div>
                 <div className="preferenceContainer">
                     {

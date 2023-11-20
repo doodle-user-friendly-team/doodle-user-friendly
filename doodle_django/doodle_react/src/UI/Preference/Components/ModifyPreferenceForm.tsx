@@ -65,7 +65,7 @@ export function MofifyPreferenceForm ({id,user,time_slot, selectedPreference, on
 
   return (
     <Dialog open={true} onClose={onClose}>
-      <DialogTitle>Modifica Preferenza</DialogTitle>
+      <DialogTitle>Modify preference</DialogTitle>
       <DialogContent>
       <Typography variant="body2">
         Date: {date}
@@ -103,10 +103,10 @@ export function MofifyPreferenceForm ({id,user,time_slot, selectedPreference, on
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose} color="secondary">
-          Annulla
+          Cancel
         </Button>
         <Button onClick={handleSave} color="primary" autoFocus>
-          Salva
+          Save
         </Button>
       </DialogActions>
     </Dialog>
