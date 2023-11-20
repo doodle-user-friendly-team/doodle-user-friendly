@@ -13,10 +13,10 @@ export interface timeSlotInfo{
 interface TimeSlotBaseProps {
     newData: string;
     updateNewData: (val: string) => void;
-    preferenceData: (id: string) => void;
+    updatePreferences: (id: string) => void;
 }
 
-const TimeSlotBaseComponent: React.FC<TimeSlotBaseProps> = ({ newData, updateNewData, preferenceData }) => {
+const TimeSlotBaseComponent: React.FC<TimeSlotBaseProps> = ({ newData, updateNewData, updatePreferences }) => {
     const [creationMode, setCreationMode] = useState(false);
     const [timeSlots, setTimeSlots] = useState<timeSlotInfo[]>([]);
 
@@ -55,7 +55,7 @@ const TimeSlotBaseComponent: React.FC<TimeSlotBaseProps> = ({ newData, updateNew
             </div>
             <div className="time-slot-container">
                 {timeSlots.map((ts) => (
-                    <TimeSlotComponent key={ts.id} id={ts.id} start_time={ts.start_time} end_time={ts.end_time} callback_update_preferences={preferenceData} />
+                    <TimeSlotComponent key={ts.id} id={ts.id} start_time={ts.start_time} end_time={ts.end_time} callback_update_preferences={updatePreferences} />
                 ))}
                 {creationMode && <TimeSlotFormComponent updateDatabase={updateDatabase} dataSelected={newData} />}
             </div>
