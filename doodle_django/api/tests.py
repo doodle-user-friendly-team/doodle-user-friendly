@@ -7,7 +7,7 @@ from collections import OrderedDict
 from .models import Meeting
 from rest_framework.test import APIClient
 
-
+ 
 
 class MeetingTests(APITestCase):
    
