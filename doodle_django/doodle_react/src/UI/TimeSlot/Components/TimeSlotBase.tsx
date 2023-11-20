@@ -1,81 +1,65 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import axios from 'axios';
 import "../CSS/style.css";
-import {TimeSlotComponent, TimeSlotFormComponent} from "./TimeSlotForm";
+import { TimeSlotComponent, TimeSlotFormComponent } from "./TimeSlotForm";
+import Cookies from "js-cookie";
 
-interface timeSlotInfo{
-    id: string
-    start_time: string
-    end_time: string
+interface TimeSlotInfo {
+    id: string;
+    start_time: string;
+    end_time: string;
 }
 
-interface state{
-    creationMode: boolean
-    timeSlots: timeSlotInfo[]
-    
+interface TimeSlotBaseProps {
+    newData: string;
+    updateNewData: (val: string) => void;
 }
-export class TimeSlotBaseComponent extends React.Component<, state> {
-    
-    constructor(props: {}) {
-        super(props);
-        this.state = {creationMode: false, timeSlots: []};
-    }
-    
-    addNewTimeSlot = () => {
-        this.setState(
-            () => {
-                return {creationMode: true, timeSlots: this.state.timeSlots};
-            }
-        )
-    }
-    
-    _array: timeSlotInfo[] = [];
 
-    
-    getGetTimeSlots =  (creationMode: boolean): void => {
-            axios.get('http://localhost:8000/timeslots/').then((response: { data: timeSlotInfo[]; }) =>{
+const TimeSlotBaseComponent: React.FC<TimeSlotBaseProps> = ({ newData, updateNewData }) => {
+    const [creationMode, setCreationMode] = useState(false);
+    const [timeSlots, setTimeSlots] = useState<TimeSlotInfo[]>([]);
 
-                this._array = response.data.map((x) => x);
-                this.setState(() => {
-                    return {creationMode: creationMode, timeSlots: this._array }
-                })
-            })
+    useEffect(() => {
+        getGetTimeSlots(false);
+    }, [newData]);
+
+    const addNewTimeSlot = () => {
+        setCreationMode(true);
     };
 
-    
-    pushToDatabase = (): void => {
-        
-        this.getGetTimeSlots(false)
-    }
+    const getGetTimeSlots = (creationMode: boolean): void => {
+        const [day, month, year] = newData.split('/');
+        axios.get(`http://localhost:8000/timeslots/?day=${day}&month=${month}&year=${year}`)
+            .then((response: { data: TimeSlotInfo[] }) => {
+                setTimeSlots(response.data);
+                setCreationMode(creationMode);
+            });
+    };
 
-    render() {
-        console.log(this.state.timeSlots)
-        return (
-            <div className="timeslotPanel">
-                <div className="buttonAdd">
-                    <div className="group">
-                        <div className="overlap-group">
-                            <div className="text-wrapper" onClick={() => this.addNewTimeSlot()}>+</div>
-                        </div>
-                    </div>
-                </div>
-                <div className="timeSlotContainer">
-                        {
-                            this.state.timeSlots.map((ts) => {
-                                return <TimeSlotComponent id={ts.id} start_time={ts.start_time} end_time={ts.end_time}/>
-                            })
-                        }
-                    <div className="timeSlotFormContainer">
-                        {this.state.creationMode && <TimeSlotFormComponent confirmTimeFunc={this.pushToDatabase}/>}
-                    </div>
-                </div>
+    const hideTimeSlotForm = (): void => {
+        setCreationMode(false);
+    };
+
+    const updateDatabase = (): void => {
+        getGetTimeSlots(false);
+    };
+
+    return (
+        <div className="timeslot-panel">
+            <div className="add-button">
+                {!creationMode ?
+                    <div className="text" onClick={addNewTimeSlot}>+</div> :
+                    <div className="text" onClick={hideTimeSlotForm}>-</div>
+                }
             </div>
-        );
-    }
+            <div className="time-slot-container">
+                {timeSlots.map((ts) => (
+                    <TimeSlotComponent key={ts.id} id={ts.id} start_time={ts.start_time} end_time={ts.end_time} />
+                ))}
+                {creationMode && <TimeSlotFormComponent updateDatabase={updateDatabase} dataSelected={newData} />}
+            </div>
+        </div>
+    );
+};
 
-    componentDidMount() {
-        this.getGetTimeSlots(false)
-    }
-
-}
-
+export default TimeSlotBaseComponent;

@@ -1,6 +1,7 @@
 import "../CSS/style.css";
 import React from "react";
 import {CalendarDayComponent} from "./CalendarDay";
+import Cookies from "js-cookie";
 
 interface calendarState {
     currentMonth: number;
@@ -8,19 +9,20 @@ interface calendarState {
     month: number;
     year: number;
 }
-interface calendareProps
+interface calendarProps
 {
-    newDataSetter:  React.Dispatch<React.SetStateAction<boolean>>
+    updateNewData:  (val: string) => void
 }
 
-export class CalendarBaseComponent extends React.Component<calendareProps, calendarState> {
-    constructor(props: calendareProps) {
+export class CalendarBaseComponent extends React.Component<calendarProps, calendarState> {
+    constructor(props: calendarProps) {
         super(props);
         this.state = { currentMonth: new Date().getMonth(), currentYear: new Date().getFullYear(), month: new Date().getMonth(), year: new Date().getFullYear()};
     }
-
+    
     dayName = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
     monthName = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    selectedDay = new Date().getDate();
     
     getMonthDays = () => {
         let lastDay = new Date(this.state.year, this.state.month + 1, 0);
@@ -37,6 +39,12 @@ export class CalendarBaseComponent extends React.Component<calendareProps, calen
 
     incrementMonth = (incM: number) => {
         if (this.state.month + incM < this.state.currentMonth && this.state.year === this.state.currentYear)
+            return;
+        
+        if (this.state.month + incM < 0)
+            return;
+        
+        if (this.state.month + incM > 11)
             return;
         
         this.setState(() => {
@@ -60,7 +68,14 @@ export class CalendarBaseComponent extends React.Component<calendareProps, calen
     
     updateTimeslots = (day: string, month: string, year: string) => {
         console.log(day, month, year);
-        this.props.newDataSetter(true)
+        
+        const paddedDay = day.padStart(2, '0');
+        const paddedMonth = month.padStart(2, '0');
+
+        const dateString = `${paddedDay}/${paddedMonth}/${year}`;
+
+        this.selectedDay = parseInt(day);
+        this.props.updateNewData(dateString);
     }
     
     render()
@@ -75,12 +90,14 @@ export class CalendarBaseComponent extends React.Component<calendareProps, calen
                         //make a column for each day
                         this.getMonthDays().map((day) => {
                             if (day[1].toString() === restDays[0] || day[1].toString() === restDays[1]) {
-                                return (<CalendarDayComponent day={day[0].toString()} dayName={day[1].toString()}
-                                                              type={"overlap-group-red"} month={'0'} year={this.state.year.toString()} 
+                                return (<CalendarDayComponent selectedDay={this.selectedDay.toString()} day={day[0].toString()} dayName={day[1].toString()}
+                                                              type={"overlap-group-red"} month={this.state.month.toString()} 
+                                                              year={this.state.year.toString()} 
                                                               callback_update_timeslots={this.updateTimeslots}/>);
                             }
-                            return (<CalendarDayComponent day={day[0].toString()} dayName={day[1].toString()}
-                                                          type={"overlap-group-green"} month={'0'} year={this.state.year.toString()} 
+                            return (<CalendarDayComponent selectedDay={this.selectedDay.toString()} day={day[0].toString()} dayName={day[1].toString()}
+                                                          type={"overlap-group-green"} month={this.state.month.toString()} 
+                                                          year={this.state.year.toString()} 
                                                           callback_update_timeslots={this.updateTimeslots}/>);
                         })
                     }
@@ -104,4 +121,9 @@ export class CalendarBaseComponent extends React.Component<calendareProps, calen
             </div>
         );
     }
-}
+    
+    componentDidMount() {
+        this.selectedDay = new Date().getDate();
+        this.updateTimeslots(this.selectedDay.toString(), this.state.month.toString(), this.state.year.toString());
+    }
+};
