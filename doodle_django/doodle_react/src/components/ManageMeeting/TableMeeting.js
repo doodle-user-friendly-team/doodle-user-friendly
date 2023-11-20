@@ -4,6 +4,7 @@ import waitImage from "../images/wait.png";
 import maybeImage from "../images/maybe.png";
 import user from "../images/user.png";
 import "./manage.css";
+import { useEffect } from "react";
 
 const TableMeeting = ({ selectedColumn, columnSelection, data }) => {
   const renderCellContent = (column, row) => {
@@ -33,6 +34,13 @@ const TableMeeting = ({ selectedColumn, columnSelection, data }) => {
       );
     }
   };
+
+  const time_slots = [
+    // Il nuovo valore che desideri aggiungere
+    { },
+    // ... altri valori esistenti in data["timeslots"]
+    ...(Array.isArray(data["timeslots"]) ? data["timeslots"] : [])
+  ];
 
   const data_group_1 = [
     {
@@ -71,13 +79,15 @@ const TableMeeting = ({ selectedColumn, columnSelection, data }) => {
       >
         <thead>
           <tr>
-          {Object.keys(data).map((column, index) => {
+          {time_slots && time_slots.map((value, index) => {
             let start = null
             let end = null
 
             if(index !== 0) {
-              const start_date = data["timeslots"][0]["start_date"];
-              const end_date = data["timeslots"][0]["end_date"];
+              console.log("INDEX ", index)
+              console.log("timeslot ", value)
+              const start_date = value["start_date"];
+              const end_date = value["end_date"];
 
               const regexPattern = /(\d+)-(\d+)\-(\d+)+T(.*?)\+(.*)/;
               start = regexPattern.exec(start_date);

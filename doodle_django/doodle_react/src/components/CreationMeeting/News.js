@@ -17,8 +17,8 @@ const News = ({ news, start, numberOfDivsNews }) => {
               src={"https://www.unical.it" + item.image}
               alt={item.alt}
             />
-            <h2>{item.title}</h2>
-            <p>{item.subheading}</p>
+            <h3>{item.title}</h3>
+            {/* <p>{item.subheading}</p> */}
           </div>
         </a>
       ))}

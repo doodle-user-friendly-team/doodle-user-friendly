@@ -60,6 +60,29 @@ const CreateGroupPolly = ({ news }) => {
         { date: value, timeRange: [...selectedTimeRange] },
       ]);
     }
+
+
+    // let array_time_slots = [];
+    // for (let i = 0; i < selectedDates.length; ++i) {
+    //   console.log("selectedDates[i]", selectedDates[i])
+    //   const startDate = selectedDates[i].date.toISOString().split("T")[0];
+    //   const startTime = selectedDates[i].timeRange[0];
+    //   const startDateTime = `${startDate}T${startTime}:00`;
+
+    //   const endDate = selectedDates[i].date.toISOString().split("T")[0];
+    //   const endTime = selectedDates[i].timeRange[1];
+    //   const endDateTime = `${endDate}T${endTime}:00`;
+
+    //   console.log("Selected date", startDateTime, endDateTime);
+
+    //   array_time_slots.push({
+    //     start_date: startDateTime,
+    //     end_date: endDateTime,
+    //   });
+    // }
+
+    // console.log("array_time_slots ", array_time_slots)
+
   };
 
   const handleTimeChange = (time, index) => {
@@ -176,15 +199,19 @@ const CreateGroupPolly = ({ news }) => {
     // }));
     let array_time_slots = [];
     for (let i = 0; i < selectedDates.length; ++i) {
-      const startDate = selectedDates[i].date.toISOString().split("T")[0];
-      const startTime = selectedTimeRange[0];
+      const newDate = new Date(selectedDates[i].date);
+      newDate.setDate(selectedDates[i].date.getDate() + 1);
+
+      console.log("selectedDates[i]", selectedDates[i])
+      const startDate = newDate.toISOString().split("T")[0];
+      const startTime = selectedDates[i].timeRange[0];
       const startDateTime = `${startDate}T${startTime}:00`;
 
-      const endDate = selectedDates[i].date.toISOString().split("T")[0];
-      const endTime = selectedTimeRange[1];
+      const endDate = newDate.toISOString().split("T")[0];
+      const endTime = selectedDates[i].timeRange[1];
       const endDateTime = `${endDate}T${endTime}:00`;
 
-      console.log("Selected date", startDateTime, endDateTime);
+      // console.log("Selected date", endDate);
 
       array_time_slots.push({
         start_date: startDateTime,
