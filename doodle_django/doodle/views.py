@@ -144,6 +144,9 @@ class UpdateTimeSlotView(APIView):
     def get(self, request, pk, format=None):
         try:
             timeslot = TimeSlot.objects.get(pk=pk)
+            return Response(timeslot)
+        except TimeSlot.DoesNotExist:
+            return Response({'detail': 'Time slot non trovato'}, status=status.HTTP_404_NOT_FOUND)
 
     def put(self, request, pk, format=None):
         try:
