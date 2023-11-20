@@ -71,6 +71,7 @@ class TimeSlotView(APIView):
             #return Response({'detail': 'end_time deve essere maggiore di adesso'}, status=status.HTTP_400_BAD_REQUEST)
             raise TimeLessThanNowError
 
+
         serializer = TimeSlotSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
