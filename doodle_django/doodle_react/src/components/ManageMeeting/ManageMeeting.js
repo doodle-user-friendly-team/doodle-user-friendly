@@ -13,9 +13,9 @@ import * as React from "react";
 import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import "./manage.css";
+import axios from "axios";
 
-const ManageMeeting = ( {data} ) => {
-
+const ManageMeeting = ({ data }) => {
   const ColorButton = styled(Button)(({ theme }) => ({
     color: theme.palette.getContrastText(grey[600]),
     backgroundColor: grey[600],
@@ -32,6 +32,17 @@ const ManageMeeting = ( {data} ) => {
     },
   }));
 
+  const onDelete = async (id) => {
+    try {
+      let url = "http://127.0.0.1:8000/api/meetings/" + data["id"] + "/delete/";
+
+      await axios.delete(url);
+
+      alert("Meeting deleted");
+      window.location.reload();
+    } catch (error) {}
+  };
+
   return (
     <div className="CreateGroup">
       <Box sx={{ flexGrow: 1 }}>
@@ -39,51 +50,53 @@ const ManageMeeting = ( {data} ) => {
           <Grid item xs={6}>
             <h2>{data["title"]}</h2>
             {/* <p style={{ marginLeft: 24 }}>Owner meeting</p> */}
+
             <div className="manage_div_info">
               <img src={timeImage} alt="time.png" />
               <nobr>{data["duration"]}</nobr>
             </div>
-            <div className="manage_div_info">
-              <img src={locationImage} alt="location.png" />
-              <nobr>{data["location"]}</nobr>
-            </div>
+            {data["location"] !== "" && (
+              <div className="manage_div_info">
+                <img src={locationImage} alt="location.png" />
+                <nobr>{data["location"]}</nobr>
+              </div>
+            )}
             {data["video_conferencing"] === true && (
               <div className="manage_div_info">
                 <img src={videoImage} alt="video.png" />
                 <nobr>{data["video_type_id"]}</nobr>
               </div>
             )}
-            <div className="manage_div_info">
-              <img src={descriptionImage} alt="description.png" />
-              <nobr>{data["description"]}</nobr>
-            </div>
+            {data["description"] !== "" && (
+              <div className="manage_div_info">
+                <img src={descriptionImage} alt="description.png" />
+                <nobr>{data["description"]}</nobr>
+              </div>
+            )}
           </Grid>
           <Grid item xs={6}>
             <div style={{ textAlign: "end" }}>
               <div style={{ width: "-webkit-fill-available" }}>
                 <ColorButton2
                   style={{ width: 100, margin: 20, textAlign: "end" }}
-                  onClick={console.log("edit")}
-                  variant="contained"
-                >
+                  // onClick={console.log("edit")}
+                  variant="contained">
                   Edit
                 </ColorButton2>
               </div>
               <div style={{ width: "-webkit-fill-available" }}>
                 <ColorButton2
                   style={{ width: 100, margin: 20, textAlign: "end" }}
-                  onClick={console.log("delete")}
-                  variant="contained"
-                >
+                  onClick={onDelete}
+                  variant="contained">
                   Delete
                 </ColorButton2>
               </div>
               <div style={{ width: "-webkit-fill-available" }}>
                 <ColorButton
                   style={{ width: 100, margin: 20, textAlign: "end" }}
-                  onClick={console.log("share")}
-                  variant="contained"
-                >
+                  // onClick={console.log("share")}
+                  variant="contained">
                   Share
                 </ColorButton>
               </div>

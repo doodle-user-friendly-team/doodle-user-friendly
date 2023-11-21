@@ -18,12 +18,15 @@ const Manage = ( { meetingId = -1 } ) => {
       
       const local_data = await response.json();
       var length = Object.keys (local_data).length
+
+      // console.log("meetingId", meetingId)
       
       let index = meetingId
       if(meetingId === -1)
         index = length - 1
+        // console.log("index", index)
 
-      console.log("MEETING index", local_data[index])
+      // console.log("MEETING index", local_data[index])
       setData(local_data[index]);
     } catch (error) {
     }

@@ -19,9 +19,6 @@ class MeetingSerializer(serializers.ModelSerializer):
         return value
     
 
-    
-
-
 class TimeSlotSerializer(serializers.ModelSerializer):
     def validate(self, data):
         if 'end_date' in data and 'start_date' in data:
@@ -33,14 +30,13 @@ class TimeSlotSerializer(serializers.ModelSerializer):
     class Meta:
         model = TimeSlot
         fields = '__all__'
+
+
+class MeetingTimeSlotSerializer(MeetingSerializer):
+    timeslots = TimeSlotSerializer(many=True)
+
         
 class SchedulePoolSerializer(serializers.ModelSerializer):
     class Meta:
         model = SchedulePool
-        fields = '__all__'
-
-
-class SchedulePoolSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Vote
         fields = '__all__'

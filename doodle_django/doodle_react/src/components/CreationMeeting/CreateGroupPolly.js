@@ -60,6 +60,27 @@ const CreateGroupPolly = ({ news }) => {
         { date: value, timeRange: [...selectedTimeRange] },
       ]);
     }
+
+    // let array_time_slots = [];
+    // for (let i = 0; i < selectedDates.length; ++i) {
+    //   console.log("selectedDates[i]", selectedDates[i])
+    //   const startDate = selectedDates[i].date.toISOString().split("T")[0];
+    //   const startTime = selectedDates[i].timeRange[0];
+    //   const startDateTime = `${startDate}T${startTime}:00`;
+
+    //   const endDate = selectedDates[i].date.toISOString().split("T")[0];
+    //   const endTime = selectedDates[i].timeRange[1];
+    //   const endDateTime = `${endDate}T${endTime}:00`;
+
+    //   console.log("Selected date", startDateTime, endDateTime);
+
+    //   array_time_slots.push({
+    //     start_date: startDateTime,
+    //     end_date: endDateTime,
+    //   });
+    // }
+
+    // console.log("array_time_slots ", array_time_slots)
   };
 
   const handleTimeChange = (time, index) => {
@@ -176,15 +197,19 @@ const CreateGroupPolly = ({ news }) => {
     // }));
     let array_time_slots = [];
     for (let i = 0; i < selectedDates.length; ++i) {
-      const startDate = selectedDates[i].date.toISOString().split("T")[0];
-      const startTime = selectedTimeRange[0];
+      const newDate = new Date(selectedDates[i].date);
+      newDate.setDate(selectedDates[i].date.getDate() + 1);
+
+      // console.log("selectedDates[i]", selectedDates[i]);
+      const startDate = newDate.toISOString().split("T")[0];
+      const startTime = selectedDates[i].timeRange[0];
       const startDateTime = `${startDate}T${startTime}:00`;
 
-      const endDate = selectedDates[i].date.toISOString().split("T")[0];
-      const endTime = selectedTimeRange[1];
+      const endDate = newDate.toISOString().split("T")[0];
+      const endTime = selectedDates[i].timeRange[1];
       const endDateTime = `${endDate}T${endTime}:00`;
 
-      console.log("Selected date", startDateTime, endDateTime);
+      // console.log("Selected date", endDate);
 
       array_time_slots.push({
         start_date: startDateTime,
@@ -194,14 +219,14 @@ const CreateGroupPolly = ({ news }) => {
     const startTime = selectedTimeRange[0];
     const endTime = selectedTimeRange[1];
     const duration = calculateDuration(startTime, endTime);
-    console.log(
-      "data accepted befroe api",
-      title,
-      description,
-      location,
-      duration,
-      formatDeadline(selectedDates[selectedDates.length - 1].date)
-    );
+    // console.log(
+    //   "data accepted befroe api",
+    //   title,
+    //   description,
+    //   location,
+    //   duration,
+    //   formatDeadline(selectedDates[selectedDates.length - 1].date)
+    // );
     let data = {
       title: title,
       description: description,
@@ -212,7 +237,7 @@ const CreateGroupPolly = ({ news }) => {
       deadline: deadline,
       timeslots: array_time_slots,
     };
-    console.log("after", data);
+    // console.log("after", data);
     try {
       const result = await axios.post(
         "http://127.0.0.1:8000/api/meetings/new/",
@@ -226,9 +251,9 @@ const CreateGroupPolly = ({ news }) => {
       alert("Meeting Created successfully!");
       navigate("/manage");
       deleteFields();
-      console.log(result);
+      // console.log(result);
     } catch (e) {
-      console.log("sth failed", e);
+      // console.log("sth failed", e);
     }
   };
   const handleButtonClick = (e) => {
@@ -326,8 +351,7 @@ const CreateGroupPolly = ({ news }) => {
               style={{ margin: 20, textAlign: "end" }}
               onClick={(e) => handleButtonClick(e)}
               variant="contained"
-              type="submit"
-            >
+              type="submit">
               Create Invate and Continue
             </ColorButton>
           </div>
