@@ -11,7 +11,7 @@ from string import ascii_uppercase, digits
 from . serializers import *
 from . exceptions import *
 
-
+ 
 @api_view(['GET', 'POST'])
 def api_meetings(request):
     if request.method == 'POST' or not request.GET:
