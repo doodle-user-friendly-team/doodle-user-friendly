@@ -1,5 +1,5 @@
 import Grid from "@mui/material/Grid";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import * as React from "react";
 import Box from "@mui/material/Box";
 import "../CreationMeeting/createGroup.css";
@@ -24,28 +24,46 @@ const Manage = ({ news, data }) => {
 
   const getToken = () => sessionStorage.getItem("token");
 
-  const submitForm = () => {
-    alert("See you in the next sprint!");
-    return;
-    console.log("id ", data["id"], selectedColumn);
-    let d = {
-      id: data["id"],
-      time_slots: selectedColumn,
-    };
+  const submitForm = async () => {
+    let variable = null;
+    console.log("selected", selectedColumn);
+    if (selectedColumn !== "")
+      variable = data["timeslots"][selectedColumn - 1]["id"];
+
     try {
-      const result = axios.post("meeting/" + data["id"] + "/book/", d, {
-        headers: {
-          authorization: `Token ${getToken()}`,
+      await axios.post(
+        "http://127.0.0.1:8000/api/meeting/" + data["id"] + "/book/",
+        {
+          final_date: variable,
         },
-      });
-      alert("Mettting Booked !");
-      console.log(result);
+        {
+          headers: {
+            authorization: `Token ${getToken()}`,
+          },
+        }
+      );
+      alert("Timeslot booked!");
+      window.location.reload();
     } catch (e) {
-      console.log(e);
+      // console.log("sth failed", e);
     }
   };
 
   const [selectedColumn, setSelectedColumn] = useState([]);
+
+  useEffect(() => {
+    // console.log("qua");
+    if (data["final_date"] !== null && data["timeslots"]) {
+      for (let i = 0; i < data["timeslots"].length; ++i) {
+        // console.log("index ", i, data["final_date"]);
+        if (data["final_date"] === data["timeslots"][i]["id"]) {
+          setSelectedColumn(i + 1);
+          // console.log(selectedColumn);
+          return;
+        }
+      }
+    }
+  }, [data]);
 
   const columnSelection = (columnName) => {
     if (columnName !== 0) {

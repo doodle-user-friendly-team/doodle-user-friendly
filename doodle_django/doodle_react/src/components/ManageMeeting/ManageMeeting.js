@@ -39,6 +39,7 @@ const ManageMeeting = ({ data }) => {
       await axios.delete(url);
 
       alert("Meeting deleted");
+      window.location.reload();
     } catch (error) {}
   };
 
@@ -78,7 +79,7 @@ const ManageMeeting = ({ data }) => {
               <div style={{ width: "-webkit-fill-available" }}>
                 <ColorButton2
                   style={{ width: 100, margin: 20, textAlign: "end" }}
-                  onClick={console.log("edit")}
+                  // onClick={console.log("edit")}
                   variant="contained">
                   Edit
                 </ColorButton2>
@@ -94,7 +95,7 @@ const ManageMeeting = ({ data }) => {
               <div style={{ width: "-webkit-fill-available" }}>
                 <ColorButton
                   style={{ width: 100, margin: 20, textAlign: "end" }}
-                  onClick={console.log("share")}
+                  // onClick={console.log("share")}
                   variant="contained">
                   Share
                 </ColorButton>

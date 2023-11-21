@@ -303,3 +303,28 @@ class MeetingTests(APITestCase):
 
         # Ensure that no meeting was deleted
         self.assertEqual(Meeting.objects.count(), 1)  # Assuming you have one test meeting created in the setUp method
+
+
+    def test_update_meeting_successfully(self):
+        self.test_create_meeting_successfully()
+    # Ensure that created_meeting_id is set (you may also check if it's None or not set)
+        self.assertIsNotNone(getattr(self, 'created_meeting_id', None), "created_meeting_id not set")
+        updated_data = {
+            "final_date": 1,
+        }
+        url = reverse('api:api_meeting_book', args=[self.created_meeting_id])
+        response = self.client.put(url, updated_data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        
+    def test_update_meeting_unsuccessfully(self):
+        self.test_create_meeting_successfully()
+        self.assertIsNotNone(getattr(self, 'created_meeting_id', None), "created_meeting_id not set")
+        
+        invalid_data = {
+            "final_date": "ricca",  
+        }
+        
+        url = reverse('api:api_meeting_book', args=[self.created_meeting_id])
+        response = self.client.put(url, invalid_data, format='json')
+        
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)

@@ -200,7 +200,7 @@ const CreateGroupPolly = ({ news }) => {
       const newDate = new Date(selectedDates[i].date);
       newDate.setDate(selectedDates[i].date.getDate() + 1);
 
-      console.log("selectedDates[i]", selectedDates[i]);
+      // console.log("selectedDates[i]", selectedDates[i]);
       const startDate = newDate.toISOString().split("T")[0];
       const startTime = selectedDates[i].timeRange[0];
       const startDateTime = `${startDate}T${startTime}:00`;
@@ -219,14 +219,14 @@ const CreateGroupPolly = ({ news }) => {
     const startTime = selectedTimeRange[0];
     const endTime = selectedTimeRange[1];
     const duration = calculateDuration(startTime, endTime);
-    console.log(
-      "data accepted befroe api",
-      title,
-      description,
-      location,
-      duration,
-      formatDeadline(selectedDates[selectedDates.length - 1].date)
-    );
+    // console.log(
+    //   "data accepted befroe api",
+    //   title,
+    //   description,
+    //   location,
+    //   duration,
+    //   formatDeadline(selectedDates[selectedDates.length - 1].date)
+    // );
     let data = {
       title: title,
       description: description,
@@ -237,7 +237,7 @@ const CreateGroupPolly = ({ news }) => {
       deadline: deadline,
       timeslots: array_time_slots,
     };
-    console.log("after", data);
+    // console.log("after", data);
     try {
       const result = await axios.post(
         "http://127.0.0.1:8000/api/meetings/new/",
@@ -251,9 +251,9 @@ const CreateGroupPolly = ({ news }) => {
       alert("Meeting Created successfully!");
       navigate("/manage");
       deleteFields();
-      console.log(result);
+      // console.log(result);
     } catch (e) {
-      console.log("sth failed", e);
+      // console.log("sth failed", e);
     }
   };
   const handleButtonClick = (e) => {

@@ -4,7 +4,6 @@ import waitImage from "../images/wait.png";
 import maybeImage from "../images/maybe.png";
 import user from "../images/user.png";
 import "./manage.css";
-import { useEffect } from "react";
 
 const TableMeeting = ({ selectedColumn, columnSelection, data }) => {
   const renderCellContent = (column, row) => {
@@ -99,8 +98,6 @@ const TableMeeting = ({ selectedColumn, columnSelection, data }) => {
                 let end = null;
 
                 if (index !== 0) {
-                  console.log("INDEX ", index);
-                  console.log("timeslot ", value);
                   const start_date = value["start_date"];
                   const end_date = value["end_date"];
 

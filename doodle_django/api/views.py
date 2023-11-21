@@ -46,22 +46,18 @@ def api_meeting(request):
         except Meeting.DoesNotExist:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-@api_view(['POST'])
+@api_view(['POST', 'PUT'])
 def api_meeting_book(request, meeting_id):
     try:
         meeting = get_object_or_404(Meeting, pk=meeting_id)
+
+        serializer = MeetingSerializer(meeting, data={'final_date': request.data.get('final_date')}, partial=True)
         
-        if "final_date" in request.data:
-            time_slot_id = request.data["final_date"]
-            
-            time_slot, created = TimeSlot.objects.get_or_create(pk=time_slot_id)
-
-            meeting.final_date = time_slot
-            meeting.save()
-
-            return Response(status=status.HTTP_200_OK)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST, data={"error": "final_date is required in the request data"})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     except Meeting.DoesNotExist:
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
