@@ -5,8 +5,8 @@ from django.urls import reverse
 from django.utils.timezone import now, timedelta
 from collections import OrderedDict
 from .models import Meeting
-from rest_framework import status
 from rest_framework.test import APIClient
+
 
 class MeetingTests(APITestCase):
    
@@ -75,8 +75,6 @@ class MeetingTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
         self.assertEqual(Meeting.objects.count(), 0)
-
-    
 
     def test_create_meeting_unsuccessfully_past_deadline(self):
         """
@@ -280,7 +278,6 @@ class MeetingTests(APITestCase):
 
         response = self.client.put(url, updated_data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-   
     def test_delete_meeting_successfully(self):
         self.test_create_meeting_successfully()
        # Ensure that created_meeting_id is set (you may also check if it's None or not set)
@@ -288,7 +285,7 @@ class MeetingTests(APITestCase):
         url = reverse('api:api_meetings_delete',args=[self.created_meeting_id])
         response = self.client.delete(url)
 
-        
+
         # Example: Expecting 204 NO CONTENT
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
@@ -300,8 +297,34 @@ class MeetingTests(APITestCase):
         url = reverse('api:api_meetings_delete',args=[13])  # Assuming the meeting with ID 999 does not exist
         response = self.client.delete(url)
 
+
         # Example: Expecting 404 NOT FOUND
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
         # Ensure that no meeting was deleted
         self.assertEqual(Meeting.objects.count(), 1)  # Assuming you have one test meeting created in the setUp method
+
+
+    def test_update_meeting_successfully(self):
+        self.test_create_meeting_successfully()
+    # Ensure that created_meeting_id is set (you may also check if it's None or not set)
+        self.assertIsNotNone(getattr(self, 'created_meeting_id', None), "created_meeting_id not set")
+        updated_data = {
+            "final_date": 1,
+        }
+        url = reverse('api:api_meeting_book', args=[self.created_meeting_id])
+        response = self.client.put(url, updated_data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        
+    def test_update_meeting_unsuccessfully(self):
+        self.test_create_meeting_successfully()
+        self.assertIsNotNone(getattr(self, 'created_meeting_id', None), "created_meeting_id not set")
+        
+        invalid_data = {
+            "final_date": "ricca",  
+        }
+        
+        url = reverse('api:api_meeting_book', args=[self.created_meeting_id])
+        response = self.client.put(url, invalid_data, format='json')
+        
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
