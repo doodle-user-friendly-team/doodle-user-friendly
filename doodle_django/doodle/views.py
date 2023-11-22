@@ -1,3 +1,4 @@
+from urllib import response
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view, renderer_classes
@@ -7,6 +8,8 @@ from .models import *
 from rest_framework.response import Response
 from .serializer import *
 from django.shortcuts import get_object_or_404
+from rest_framework import status
+
 
 #per l'autenticazione
 from django.contrib.auth import authenticate, login
@@ -15,6 +18,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework import status
 from datetime import datetime, timedelta
 
+from rest_framework.generics import CreateAPIView
 
 class FormatError(Exception):
     pass
@@ -34,7 +38,7 @@ class TimeSlotView(APIView):
         month = request.GET.get('month', '0')
         year = request.GET.get('year', '0')
         start_time = f"{int(year):04d}-{int(month) + 1:02d}-{int(day) :02d}T23:59:59Z"
-        end_time =  f"{int(year):04d}-{int(month) + 1:02d}-{(int(day)):02d}T00:00:00Z"
+        end_time =  f"{int(year):04d}-{int(month) + 1:02d}-{(int(day)):02d}T23:59:59Z"
 
         try:
             start_time = datetime.strptime(start_time, "%Y-%m-%dT%H:%M:%SZ") - timedelta(days=1)
@@ -42,7 +46,7 @@ class TimeSlotView(APIView):
         except:
             raise FormatError
 
-        ts = [ {"id": timeslot.id,"start_time": timeslot.start_time, "end_time": timeslot.end_time}
+        ts = [ {"id": timeslot.id,"start_time": timeslot.start_time, "end_time": timeslot.end_time, "user": timeslot.user.id}
                    for timeslot in TimeSlot.objects.raw(f'SELECT * FROM doodle_timeslot WHERE start_time between "{start_time}" and  "{end_time}"')]
         
         return Response(ts)
@@ -78,45 +82,41 @@ class TimeSlotView(APIView):
         serializer = TimeSlotSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
-            return Response(serializer.data)
-
+            return Response(serializer.data) 
 
 class GetUserByIdView(APIView):
-    def get(self, request, user_id):
+    @permission_classes([AllowAny])
+    def get(self, request):
+        user_id = request.GET.get('id', '')
         user = get_object_or_404(UserFake, id=user_id)
         serializer = UserFakeSerializer(user)
         return Response(serializer.data)
-
 
 
 class UserAuthenticationView(APIView):
     serializer_class = UserFakeSerializer
 
     @permission_classes([AllowAny])
-    def post(self, request):
-        serializer = self.serializer_class(data=request.data)
-        if serializer.is_valid(raise_exception=True):
-            email = serializer.validated_data['email']
-            name = serializer.validated_data['name']
-            surname = serializer.validated_data['surname']
+    def get(self, request):
+        # Estrai l'email dalla stringa di query
+        email = request.GET.get('email', '')
 
-            try:
-                user = UserFake.objects.get(email=email, name=name, surname=surname)
-            except UserFake.DoesNotExist:
-                user = None
-
-            if user is not None:
-                return Response({'message': 'User authenticated successfully'})
-            else:
-                return Response({'message': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+        # Verifica se l'email è presente nel database
+        try:
+            user = UserFake.objects.get(email=email)
+            return Response({'message': 'User authenticated successfully'})
+        except UserFake.DoesNotExist:
+            return Response({'message': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
 
 
-class UserRegistrationView(APIView):
+class UserRegistrationView(CreateAPIView):
     serializer_class = UserFakeSerializer
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request):
         # Chiamiamo il metodo create del serializer per gestire la creazione dell'utente
+        print(request.data)
+        
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
@@ -124,17 +124,62 @@ class UserRegistrationView(APIView):
         # Ritorniamo una risposta di successo con i dati dell'utente appena creato
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-
+    
+    
+    
 class UpdateTimeSlotView(APIView):
 
     def get(self, request, pk, format=None):
+        
         try:
             timeslot = TimeSlot.objects.get(pk=pk)
-            serializer = TimeSlotSerializer(timeslot)
-            return Response(serializer.data)
+            return Response(timeslot)
         except TimeSlot.DoesNotExist:
             return Response({'detail': 'Time slot non trovato'}, status=status.HTTP_404_NOT_FOUND)
 
+    def put(self, request, pk, format=None):
+        try:
+            timeslot = TimeSlot.objects.get(pk=pk)
+            print('Data received:', request.data)
+
+            # Usa request.data invece di updated_data
+            serializer = TimeSlotSerializer(timeslot, data=request.data)
+
+            # Verifica la validità del serializer
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            else:
+                print('Serializer errors:', serializer.errors)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except TimeSlot.DoesNotExist:
+            return Response({'detail': 'Time slot non trovato'}, status=status.HTTP_404_NOT_FOUND)
+        except TimeSlot.DoesNotExist:
+            return Response({'detail': 'Time slot non trovato'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            # Gestisci altre eccezioni
+            print('Exception:', e)
+            print('Response status code:', status.HTTP_500_INTERNAL_SERVER_ERROR)
+            print('Response content:', response.content)
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+class CheckUser(APIView):
+    
+    def login_view(request):
+        request.session['email'] = UserFake.email
+        print(UserFake.email)
+        return Response({'message': 'Login successful'})
+
+
+class UserByIdView(APIView):
+    
+    def get(self, request, user_id):
+        user = get_object_or_404(UserFake, id = user_id)
+        
+        serializer = UserFakeSerializer(user)
+       
+        return Response(serializer.data)
+     
     def put(self, request, pk, format=None):
         try:
             timeslot = TimeSlot.objects.get(pk=pk)
@@ -145,7 +190,6 @@ class UpdateTimeSlotView(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except TimeSlot.DoesNotExist:
             return Response({'detail': 'Time slot non trovato'}, status=status.HTTP_404_NOT_FOUND)
-            return Response(serializer.data)
 
 
 class VotesView(APIView):
@@ -214,5 +258,4 @@ def get_timeslot(request, time_slot_id):
     specified_time_slot = TimeSlot.objects.get(id=time_slot_id)
     serializer_result = TimeSlotSerializer(specified_time_slot)
     return Response(serializer_result.data)
-
 

@@ -8,6 +8,7 @@ export interface timeSlotInfo{
     id: string
     start_time: string
     end_time: string
+    user: string
 }
 
 interface TimeSlotBaseProps {
@@ -30,15 +31,15 @@ const TimeSlotBaseComponent: React.FC<TimeSlotBaseProps> = ({ newData, updateNew
 
     const getGetTimeSlots = (creationMode: boolean): void => {
         const [day, month, year] = newData.split('/');
-        
+
         if (day !== undefined && month !== undefined && year !== undefined)
             axios.get(`http://localhost:8000/timeslots/?day=${day}&month=${month}&year=${year}`)
-                .then((response: { data: TimeSlotInfo[] }) => {
+                .then((response: { data: timeSlotInfo[] }) => {
                     setTimeSlots(response.data);
                     setCreationMode(creationMode);
                 });
+    }
 
-    };
 
     const hideTimeSlotForm = (): void => {
         setCreationMode(false);
@@ -58,7 +59,7 @@ const TimeSlotBaseComponent: React.FC<TimeSlotBaseProps> = ({ newData, updateNew
             </div>
             <div className="time-slot-container">
                 {timeSlots.map((ts) => (
-                    <TimeSlotComponent key={ts.id} id={ts.id} start_time={ts.start_time} end_time={ts.end_time} callback_update_preferences={updatePreferences} />
+                    <TimeSlotComponent key={ts.id} id={ts.id} start_time={ts.start_time} end_time={ts.end_time} user={ts.user} callback_update_preferences={updatePreferences}/>
                 ))}
                 {creationMode && <TimeSlotFormComponent updateDatabase={updateDatabase} dataSelected={newData} />}
             </div>

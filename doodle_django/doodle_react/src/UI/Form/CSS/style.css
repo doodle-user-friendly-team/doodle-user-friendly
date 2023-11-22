@@ -8,20 +8,20 @@
     border: 1px solid #ccc;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     z-index: 1000;
-  }
+}
 
 
 
-  input[type=text], input[type=email] {
+input[type=text], input[type=email] {
     width: 100%;
     padding: 12px 20px;
     margin: 8px 0;
     display: inline-block;
     border: 1px solid #ccc;
     box-sizing: border-box;
-  }
-  
-  button {
+}
+
+button {
     background-color: #04AA6D;
     color: white;
     padding: 14px 20px;
@@ -29,21 +29,52 @@
     border: none;
     cursor: pointer;
     width: 100%;
-  }
-  
-  button:hover {
+}
+
+button:hover {
     opacity: 0.8;
-  }
-  
-  
-  
-  
-  .container {
+}
+
+
+
+
+.container {
     padding: 16px;
-  }
-  
-  span.psw {
+}
+
+span.psw {
     float: right;
     padding-top: 16px;
-  }
-  
+}
+
+
+/*aggiunti per alert*/
+.alert-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* Allinea l'alert nella parte superiore del container */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* sfondo semitrasparente */
+    z-index: 1000; /* assicura che sia sopra gli altri elementi */
+}
+
+.alert-box {
+    width: 100%; /* Fai in modo che l'alert sia largo quanto il container */
+    max-width: 400px; /* Imposta una larghezza massima per l'alert se necessario */
+    margin: auto; /* Centra orizzontalmente l'alert nella finestra */
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    z-index: 1001; /* un livello sopra l'elemento di sfondo */
+}
+
+/* Stile per il pulsante */
+.alert-box button {
+    display: block;
+    margin: 16px auto 0; /* Centra il pulsante nella parte superiore dell'alert */
+}
