@@ -175,7 +175,6 @@ class UpdateTimeSlotViewTest(TestCase):
         updated_timeslot = TimeSlot.objects.get(pk=self.timeslot.pk)
 
     def test_get_timeslot(self):
-        """
         url = reverse('updateTimeSlot', args=[1])
         response = self.client.get(url)
         # Verifica che la risposta abbia uno status code 200 (OK)
@@ -183,8 +182,6 @@ class UpdateTimeSlotViewTest(TestCase):
         # Verifica che i dati restituiti siano corretti
         expected_data = TimeSlotSerializer(self.timeslot).data
         self.assertEqual(response.data, expected_data)
-        """
-        assert True
 
 
 

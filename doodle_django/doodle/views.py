@@ -133,7 +133,8 @@ class UpdateTimeSlotView(APIView):
         
         try:
             timeslot = TimeSlot.objects.get(pk=pk)
-            return Response(timeslot)
+            serializer = TimeSlotSerializer(timeslot)
+            return Response(serializer.data)
         except TimeSlot.DoesNotExist:
             return Response({'detail': 'Time slot non trovato'}, status=status.HTTP_404_NOT_FOUND)
 
