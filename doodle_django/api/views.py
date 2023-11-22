@@ -1,17 +1,14 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-
 from django.utils.crypto import get_random_string
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
-
 from string import ascii_uppercase, digits
-
 from . serializers import *
 from . exceptions import *
 
- 
+
 @api_view(['GET', 'POST'])
 def api_meetings(request):
     if request.method == 'POST' or not request.GET:

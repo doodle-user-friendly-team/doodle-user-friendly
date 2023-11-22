@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import timeImage from "../images/time.png";
 import locationImage from "../images/location.png";
 import videoImage from "../images/video.png";
@@ -9,13 +10,17 @@ import maybeImage from "../images/maybe.png";
 import Button from "@mui/material/Button";
 import { grey } from "@mui/material/colors";
 import Grid from "@mui/material/Grid";
-import * as React from "react";
+// import * as React from "react";
 import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import "./manage.css";
 import axios from "axios";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import DeleteConfirmation from "./DeleteConfirmation";
 
 const ManageMeeting = ({ data }) => {
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const ColorButton = styled(Button)(({ theme }) => ({
     color: theme.palette.getContrastText(grey[600]),
     backgroundColor: grey[600],
@@ -33,16 +38,49 @@ const ManageMeeting = ({ data }) => {
   }));
 
   const onDelete = async (id) => {
-    try {
-      let url = "http://127.0.0.1:8000/api/meetings/" + data["id"] + "/delete/";
-
-      await axios.delete(url);
-
-      alert("Meeting deleted");
-      window.location.reload();
-    } catch (error) {}
+    // Show the confirmation box
+    setShowDeleteConfirmation(true);
   };
 
+  const handleCancelDelete = () => {
+    // Hide the confirmation box
+    setShowDeleteConfirmation(false);
+  };
+
+  const handleConfirmDelete = async () => {
+    try {
+      // Perform the deletion logic immediately
+      let url = `http://127.0.0.1:8000/api/meetings/${data.id}/delete/`;
+      await axios.delete(url);
+
+      // Notify the user with a success message
+      toast.success("Meeting deleted successfully", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        style: {
+          backgroundColor: "#4CAF50",
+          color: "white",
+        },
+      });
+      // After deletion, hide the confirmation box
+      // After deletion, hide the confirmation box
+      setShowDeleteConfirmation(false);
+
+      // Display the toast message before reloading the page
+      setTimeout(() => {
+        window.location.reload();
+      }, 1); // Wait for 1 second before reloading the page
+    } catch (error) {
+      console.error("Error deleting meeting:", error);
+      // Handle error if needed
+      toast.error("Error deleting meeting")
+    }
+  };
   return (
     <div className="CreateGroup">
       <Box sx={{ flexGrow: 1 }}>
@@ -126,6 +164,14 @@ const ManageMeeting = ({ data }) => {
                   <img src={waitImage} alt="wait.png" />
                   <nobr>Wait</nobr>
                 </nobr>
+              </Grid>
+              <Grid container spacing={2}>
+               <DeleteConfirmation
+                 show={showDeleteConfirmation}
+                 onCancel={handleCancelDelete}
+                 onConfirm={handleConfirmDelete}
+                 meetingTitle={data.title} // Pass the meeting title to the confirmation box
+               />
               </Grid>
             </Grid>
           </Box>
