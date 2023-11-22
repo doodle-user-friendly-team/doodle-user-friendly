@@ -15,29 +15,29 @@ interface TimeSlotInfo {
 interface formProps{
     dataSelected: string
     updateDatabase: () => void
-    confirmTimeFunc: () => void;
 }
 
-interface FormState {
+interface formState {
   startTime: string;
   endTime: string;
-  confirmTimeFunc: () => void;
+  updateDatabase: () => void;
 }
 
 interface TimeSlotComponentState extends TimeSlotInfo {
-  showProposedTimeSlot: boolean;
-  formData: {
-    name: string;
-    surname: string;
-    email: string;
-  };
+    showProposedTimeSlot: boolean;
+    formData: {
+        name: string;
+        surname: string;
+        email: string;
+    };
+}
   
 interface timeSlotProps{
     start_time: string
     end_time: string
     id: string
+    user: string
     callback_update_preferences: (id: string) => void
-
 }
 
 export class TimeSlotFormComponent extends React.Component<formProps, formState >{
@@ -47,7 +47,7 @@ export class TimeSlotFormComponent extends React.Component<formProps, formState 
 
     constructor(props: formProps) {
         super(props);
-        this.state = {startTime: "00:00", endTime: "23:00", confirmTimeFunc: this.props.updateDatabase};
+        this.state = {startTime: "00:00", endTime: "23:00", updateDatabase:props.updateDatabase};
     }
     
     convertTimeToString = (time: number): string => {
@@ -88,7 +88,7 @@ export class TimeSlotFormComponent extends React.Component<formProps, formState 
             start_time = end_time - this.INCR;
         
         this.setState(() => {
-            return {startTime: this.convertTimeToString(start_time), endTime: this.state.endTime, confirmTimeFunc: this.state.confirmTimeFunc};
+            return {startTime: this.convertTimeToString(start_time)};
         });
     }
 
@@ -109,7 +109,7 @@ export class TimeSlotFormComponent extends React.Component<formProps, formState 
             end_time = start_time + this.INCR;
 
         this.setState(() => {
-            return {startTime: this.state.startTime, endTime: this.convertTimeToString(end_time), confirmTimeFunc: this.state.confirmTimeFunc};
+            return {endTime: this.convertTimeToString(end_time)};
         });
     }
     
@@ -133,7 +133,7 @@ export class TimeSlotFormComponent extends React.Component<formProps, formState 
 
         const headers = {
             'X-CSRFToken': csrfToken,
-            'Content-Type': 'application/json' // Specifica il tipo di contenuto
+            'Content-Type': 'application/json',
         };
 
         axios.post('http://localhost:8000/timeslots/', postData, { headers })
@@ -179,26 +179,20 @@ export class TimeSlotFormComponent extends React.Component<formProps, formState 
         );
     }
 }
+export class TimeSlotComponent extends React.Component<timeSlotProps, TimeSlotComponentState> {
 
-export class TimeSlotComponent extends React.Component<TimeSlotInfo, TimeSlotComponentState> {
-  constructor(props: TimeSlotInfo) {
-    super(props);
-    this.state = {
-      ...props,
-      showProposedTimeSlot: false,
-      formData: {
-        name: "",
-        surname: "",
-        email: "",
-      },
-    };
-  }
-
-export class TimeSlotComponent extends React.Component<timeSlotProps, timeSlotInfo> {
-    
     constructor(props: timeSlotProps) {
         super(props);
-        this.state = {start_time: props.start_time, end_time: props.end_time, id: props.id}
+        this.state = {
+            ...props,
+            showProposedTimeSlot: false,
+            formData: {
+                name:  "",
+                surname: "",
+                email: "",
+            },
+            user: ""
+        };
     }
     
     getTimeFromDateTime = (dateTime: string): string => {
@@ -213,13 +207,10 @@ export class TimeSlotComponent extends React.Component<timeSlotProps, timeSlotIn
     };
 
     showTimeSlotForm = () => {
+        console.log("state:")
+        console.log(this.state)
       this.setState({
-        showProposedTimeSlot: true,
-        formData: {
-          name: '',
-          surname: '',
-          email: '',
-        },
+        showProposedTimeSlot: true
       });
     };
 
@@ -228,17 +219,7 @@ export class TimeSlotComponent extends React.Component<timeSlotProps, timeSlotIn
         showProposedTimeSlot: false,
       });
     };
-
-    handleFormSubmit = (data: { name: string; surname: string; email: string }) => {
-      this.setState({
-        formData: {
-          name: data.name,
-          surname: data.surname,
-          email: data.email,
-        },
-      });
-    };
-
+    
     render() {
         return (
             <div className="selection-hour-container" onClick={() =>
@@ -253,7 +234,7 @@ export class TimeSlotComponent extends React.Component<timeSlotProps, timeSlotIn
               <ModifyProposedTimeSlot
                 onDialogClose={this.closeTimeSlotForm}
                 formData={this.state.formData}
-                timeSlot={this.props}
+                timeSlot={{...this.props, user: this.props.user}}
                 updateTimeslot={this.updateTimeslot}
               />
             )}
@@ -261,10 +242,17 @@ export class TimeSlotComponent extends React.Component<timeSlotProps, timeSlotIn
         );
     }
     
-    componentDidUpdate(prevProps: Readonly<timeSlotInfo>, prevState: Readonly<timeSlotInfo>, snapshot?: any) {
+    componentDidUpdate() {
         if (this.state.start_time !== this.props.start_time || this.state.end_time !== this.props.end_time) {
             if (this.props.start_time !== undefined && this.props.end_time !== undefined)
                 this.setState({start_time: this.props.start_time, end_time: this.props.end_time})
         }
+    }
+    componentDidMount() {
+        this.setState({formData: {
+                name: Cookies.get('name') || "",
+                surname: Cookies.get('surname') || "",
+                email: Cookies.get('email') || "",
+            }})
     }
 }

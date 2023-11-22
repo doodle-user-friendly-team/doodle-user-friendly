@@ -8,6 +8,7 @@ import DoneIcon from '@mui/icons-material/Done';
 import CloseIcon from '@mui/icons-material/Close';
 import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
 import axios from 'axios';
+import Cookies from "js-cookie";
 
 
 interface ModifyPreferenceProps {
@@ -29,12 +30,19 @@ export function MofifyPreferenceForm ({id,user,time_slot, selectedPreference, on
 
   const handleUpdatePreference = () => { // decidere se farlo asincrono o meno (async + await)
     const preference = selectedButton;
+      const csrfToken = Cookies.get('csrftoken');
+
+      const headers = {
+          'X-CSRFToken': csrfToken,
+          'Content-Type': 'application/json' // Specifica il tipo di contenuto
+      };
+      
     axios.put('http://localhost:8000/api/update_preference/', {
         id,
         preference,
         user,
         time_slot
-      })
+      }, { headers })
       .then((response) => {
         if (response.status >= 200 && response.status < 300) {
           console.log('Successo:', response.data);

@@ -51,6 +51,8 @@ interface ModifyProposedTimeSlotState {
 export class ModifyProposedTimeSlot extends Component<ModifyProposedTimeSlotProps, ModifyProposedTimeSlotState> {
   constructor(props: ModifyProposedTimeSlotProps) {
     super(props);
+    
+    console.log('props:', props)
 
     this.state = {
       open: true,
@@ -75,9 +77,17 @@ export class ModifyProposedTimeSlot extends Component<ModifyProposedTimeSlotProp
 
   getUserForTimeSlot = () => {
     const { timeSlot } = this.props;
-    console.log('sono prima di axios get' + timeSlot.user);
+    console.log('timeSlot:', timeSlot)
+
+    const csrfToken = Cookies.get('csrftoken');
+
+    const headers = {
+      'X-CSRFToken': csrfToken,
+      'Content-Type': 'application/json' // Specifica il tipo di contenuto
+    };
+    
     axios
-      .get(`http://localhost:8000/users/${timeSlot.user}`)
+      .get(`http://localhost:8000/users/${timeSlot.user}`, { headers })
       .then((response: AxiosResponse) => {
         console.log('rispostaApi:', response.data);
         this.setState({
@@ -87,6 +97,7 @@ export class ModifyProposedTimeSlot extends Component<ModifyProposedTimeSlotProp
       .catch((error: AxiosError) => {
         console.error('Errore durante la richiesta utente:', error);
       });
+    
   };
 
   
@@ -102,12 +113,17 @@ export class ModifyProposedTimeSlot extends Component<ModifyProposedTimeSlotProp
       start_time: modifiedStartTime,
       end_time: modifiedEndTime,
       schedule_pool: modifiedSchedulePool,
-      user: { id: modifiedUser }, // Modifica questa parte per inviare un oggetto invece di una stringa
+      user: modifiedUser , // Modifica questa parte per inviare un oggetto invece di una stringa
     };
-    
     
     console.log('Modified Schedule Pool:', modifiedSchedulePool);
     const updateUrl = `http://localhost:8000/timeslots/${sanitizedId}`;
+    const csrfToken = Cookies.get('csrftoken');
+
+    const headers = {
+      'X-CSRFToken': csrfToken,
+      'Content-Type': 'application/json' // Specifica il tipo di contenuto
+    };
   
     axios
       .put<ModifiedTimeSlot>(updateUrl, modifiedTimeSlot)
@@ -153,6 +169,7 @@ export class ModifyProposedTimeSlot extends Component<ModifyProposedTimeSlotProp
 
   render() {
     const { modifiedStartTime, modifiedEndTime } = this.state;
+    
 
     return (
       <Dialog open={this.state.open} onClose={this.props.onDialogClose} maxWidth="xs">

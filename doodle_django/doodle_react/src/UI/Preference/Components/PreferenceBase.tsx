@@ -43,11 +43,11 @@ interface preferenceBaseProps{
 export class PreferenceBaseComponent extends React.Component< preferenceBaseProps, state> {
 
     _array : preferenceInfo[] = []
-    _timeSlot: timeSlotInfo = {id: "", start_time: "", end_time: ""}
+    _timeSlot: timeSlotInfo = {id: "", start_time: "", end_time: "", user: ""}
 
     constructor(props: preferenceBaseProps) {
         super(props);
-        this.state = {newData: props.newData, creationMode: false, preferences: [], timeSlot: {id: "", start_time: "", end_time: ""}};
+        this.state = {newData: props.newData, creationMode: false, preferences: [], timeSlot: {id: "", start_time: "", end_time: "", user: ""}};
     }
 
     handleCreationForm = () => {
@@ -133,7 +133,7 @@ export class PreferenceBaseComponent extends React.Component< preferenceBaseProp
             <div className="preferencePanel">
                 <div className="header">
                     <span>Scritta all'inizio</span>
-                    <button className="add-button" onClick={this.handleCreationForm}>Crea</button>
+                    <button className="add-button-pref" onClick={this.handleCreationForm}>Crea</button>
                 </div>
                 <div className="preferenceContainer">
                     {
@@ -153,9 +153,7 @@ export class PreferenceBaseComponent extends React.Component< preferenceBaseProp
     }
 
     componentDidUpdate(){
-        console.log("ciaciacoacia")
         if (this.props.newData !== this.state.newData) {
-            console.log("sono entrato")
             this.getTimeSlot(false, this.props.newData)
             this.getTimeSlotPreferences(false, this.props.newData)
         }

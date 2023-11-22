@@ -25,11 +25,13 @@ urlpatterns = [
     path('timeslots/', TimeSlotView.as_view()),
     path('timeslots/<int:pk>', UpdateTimeSlotView.as_view(), name='updateTimeSlot' ),
     path('timeslots/authorized' , CheckUser.as_view()),
-    path('users/<int:user_id>', UserByIdView.as_view(), name='userbyid'),
     path('votes/', VotesView.as_view(), name="votes_api"),
     path('timeslots/id/<str:time_slot_id>/', get_timeslot, name='timeslot_detail'),
     path('votes/timeslot/<str:time_slot_id>/', get_preferences, name='timeslot_vote_list'),
     path('api/update_preference/', ModifyMyPreferenceView.as_view(),name='update_preference'),
+    path('users/<int:user_id>', UserByIdView.as_view(), name='get_user_by_id'),
+    path('authenticate/', UserAuthenticationView.as_view(), name='user_authentication'),
+    path('register/', UserRegistrationView.as_view(), name='register_user'),
 
     # add react path
     # but I think it's better to do it when we have finished the website
