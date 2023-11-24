@@ -1,98 +1,119 @@
-import React, { useState } from "react";
-import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogTitle from "@mui/material/DialogTitle";
-import TextField from "@mui/material/TextField";
-import { grey } from "@mui/material/colors";
-import { styled } from "@mui/material/styles";
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
-const ColorButton = styled(Button)(({ theme }) => ({
-  color: theme.palette.getContrastText(grey[600]),
-  backgroundColor: grey[600],
-  "&:hover": {
-    backgroundColor: grey[700],
-  },
-}));
+const EditableMeeting = () => {
+  const [meeting, setMeeting] = useState({
+    title: '',
+    location: '',
+    video_conferencing: false,
+    duration: '',
+    description: '',
+    deadline: '',
+    passcode: '',
+    // Add other fields as needed
+  });
 
-const EditFormDialog = ({ open, onClose, data, onSubmit }) => {
-  const [editedData, setEditedData] = useState({ ...data });
+  const [updateStatus, setUpdateStatus] = useState({
+    success: false,
+    error: null,
+  });
+
+  useEffect(() => {
+    fetchLastMeeting();
+  }, []);
+
+  const fetchLastMeeting = async () => {
+    try {
+      const response = await axios.get('http://127.0.0.1:8000/api/meetings/');
+      const lastMeeting = response.data[response.data.length - 1];
+      setMeeting({
+        title: lastMeeting.title,
+        location: lastMeeting.location,
+        video_conferencing: lastMeeting.video_conferencing,
+        duration: lastMeeting.duration,
+        description: lastMeeting.description,
+        deadline: lastMeeting.deadline,
+        passcode: lastMeeting.passcode,
+        id: lastMeeting.id,
+        // Update other fields as needed
+      });
+    } catch (error) {
+      console.error('Error fetching last meeting:', error);
+    }
+  };
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setEditedData({ ...editedData, [name]: value });
+    setMeeting({
+      ...meeting,
+      [e.target.name]: e.target.value,
+    });
   };
 
-  const handleFormSubmit = () => {
-    onSubmit(editedData);
-    onClose();
+  const handleCheckboxChange = (e) => {
+    setMeeting({
+      ...meeting,
+      [e.target.name]: e.target.checked,
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.put(`http://127.0.0.1:8000/api/meetings/${meeting.id}/`, meeting);
+      console.log('Meeting updated successfully:', response.data);
+
+      setUpdateStatus({
+        success: true,
+        error: null,
+      });
+    } catch (error) {
+      console.error('Error updating meeting:', error);
+
+      setUpdateStatus({
+        success: false,
+        error: 'Fill the required fields. Please try again.',
+      });
+    }
   };
 
   return (
-    <Dialog open={open} onClose={onClose}>
-      <DialogTitle>Edit Meeting</DialogTitle>
-      <DialogContent>
-        <TextField
-          label="Meeting Title"
-          name="title"
-          value={editedData.title}
-          onChange={handleInputChange}
-          fullWidth
-        />
-        {/* Add more fields as needed */}
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
-        <ColorButton onClick={handleFormSubmit}>Save</ColorButton>
-      </DialogActions>
-    </Dialog>
-  );
-};
-
-const Manage = ({ news, data }) => {
-  const [editDialogOpen, setEditDialogOpen] = useState(false);
-
-  const handleEditClick = () => {
-    setEditDialogOpen(true);
-  };
-
-  const handleEditFormSubmit = (editedData) => {
-    // Perform axios request to update the meeting data
-    // ...
-
-    // Handle the updated data as needed
-    console.log("Edited Data: ", editedData);
-  };
-
-  const handleEditDialogClose = () => {
-    setEditDialogOpen(false);
-  };
-
-  // ... (other code)
-
-  return (
-    <div className="CreateGroup">
-      {/* ... (other code) */}
-      <div style={{ textAlign: "end" }}>
-        <ColorButton
-          style={{ margin: 20, textAlign: "end" }}
-          onClick={handleEditClick}
-          variant="contained"
-        >
-          Edit
-        </ColorButton>
-      </div>
-
-      {/* Edit Form Dialog */}
-      <EditFormDialog
-        open={editDialogOpen}
-        onClose={handleEditDialogClose}
-        data={data}
-        onSubmit={handleEditFormSubmit}
-      />
+    <div>
+      <h2>Edit Meeting</h2>
+      <form onSubmit={handleSubmit}>
+        <label>
+          Title:
+          <input type="text" name="title" value={meeting.title} onChange={handleInputChange} />
+        </label>
+        <br />
+        <label>
+          Location:
+          <input type="text" name="location" value={meeting.location} onChange={handleInputChange} />
+        </label>
+        <br />
+        {/* Add other input fields as needed */}
+        <label>
+          Video Conferencing:
+          <input type="checkbox" name="video_conferencing" checked={meeting.video_conferencing} onChange={handleCheckboxChange} />
+        </label>
+        <br />
+        <label>
+          Duration:
+          <input type="text" name="duration" value={meeting.duration} onChange={handleInputChange} />
+        </label>
+        <br />
+        <label>
+          Description:
+          <input type="text" name="description" value={meeting.description} onChange={handleInputChange} />
+        </label>
+        <br />
+        {/* Add other input fields as needed */}
+        <button type="submit">Update</button>
+        
+        {updateStatus.success && <p>Meeting updated successfully!</p>}
+        {updateStatus.error && <p style={{ color: 'red' }}>{updateStatus.error}</p>}
+      </form>
     </div>
   );
 };
 
-export default Manage;
+export default EditableMeeting;
