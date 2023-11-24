@@ -106,10 +106,8 @@ def api_meetings_create(request):
 
 @api_view(['GET', 'POST', 'PUT'])
 def api_meetings_edit(request, meeting_id, meeting=None):
-    '''
-        Get single meeting (No editing)
-    '''
     if request.method == 'GET':
+        print("ID ", meeting_id)
         meeting = get_object_or_404(Meeting, pk=meeting_id)
         timeslots = TimeSlot.objects.filter(schedule_pool_id__meeting_id=meeting.pk)
         meeting.timeslots = timeslots

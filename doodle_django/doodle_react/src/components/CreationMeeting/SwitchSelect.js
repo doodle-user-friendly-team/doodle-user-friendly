@@ -35,7 +35,12 @@ const IconOption = (props) => (
       style={{ width: 16, marginBottom: -2 }}
       alt={props.data.label}
     />
-    <nobr style={{ marginLeft: 5, marginTop: "auto", marginBottom: "auto" }}>
+    <nobr
+      style={{
+        marginLeft: 5,
+        marginTop: "auto",
+        marginBottom: "auto",
+      }}>
       {props.data.label}
     </nobr>
   </Option>
@@ -48,7 +53,7 @@ const IconSingleValue = (props) => (
       style={{ width: 16, marginBottom: -2 }}
       alt={props.data.label}
     />
-    <nobr style={{ marginLeft: 5 }}>{props.data.label}</nobr>
+    <nobr style={{ marginLeft: 5, color: "#757575" }}>{props.data.label}</nobr>
   </SingleValue>
 );
 

@@ -78,7 +78,12 @@ const ManageMeeting = ({ data }) => {
             <div style={{ textAlign: "end" }}>
               <div style={{ width: "-webkit-fill-available" }}>
                 <ColorButton2
-                  style={{ width: 100, margin: 20, textAlign: "end" }}
+                  style={{
+                    width: 100,
+                    margin: 20,
+                    textAlign: "end",
+                    color: "#757575",
+                  }}
                   // onClick={console.log("edit")}
                   variant="contained">
                   Edit
@@ -86,7 +91,12 @@ const ManageMeeting = ({ data }) => {
               </div>
               <div style={{ width: "-webkit-fill-available" }}>
                 <ColorButton2
-                  style={{ width: 100, margin: 20, textAlign: "end" }}
+                  style={{
+                    width: 100,
+                    margin: 20,
+                    textAlign: "end",
+                    color: "#757575",
+                  }}
                   onClick={onDelete}
                   variant="contained">
                   Delete

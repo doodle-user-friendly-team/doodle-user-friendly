@@ -1,0 +1,66 @@
+.card_meeting > div {
+  width: "-webkit-fill-available";
+}
+
+.card_meeting {
+  display: block;
+  justify-content: start;
+  padding-left: 20px;
+}
+
+.all_meeting_div_img > img {
+  width: 18px;
+  margin-top: 3px;
+  height: fit-content;
+}
+
+.all_meeting_div_img > p {
+  margin-top: 0px;
+  margin-left: 5px;
+  margin-bottom: 7px;
+}
+
+.all_meeting_div_img {
+  display: flex;
+  justify-content: start;
+}
+
+.card_meeting {
+  margin: 20px;
+  background-color: white;
+  border: 1px solid #858585;
+  border-radius: 10px;
+}
+
+.container {
+  display: flex;
+  align-items: center;
+}
+
+.title {
+  margin-right: 20px;
+}
+
+.select-container {
+  margin-right: 20px;
+}
+
+.search {
+  position: relative;
+}
+
+.search-icon {
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+input {
+  padding: 10px 10px 10px 30px;
+  border: 1px solid #9d9d9d;
+  border-radius: 5px;
+  width: 200px;
+  outline: none;
+}

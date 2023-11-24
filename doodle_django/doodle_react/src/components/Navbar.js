@@ -29,7 +29,7 @@ function Navbar() {
   };
   return (
     <div className="navbar">
-      <h1>
+      <h1 style={{ color: "#585858 " }}>
         <img className="img" src="/doodle-favicon.svg" alt="imag" />
         Doodle
       </h1>
@@ -55,8 +55,7 @@ function Navbar() {
                 horizontal: "right",
               }}
               open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
-            >
+              onClose={handleCloseUserMenu}>
               {settings.map((setting) => (
                 <MenuItem key={setting} onClick={handleCloseUserMenu}>
                   <Typography textAlign="center">{setting}</Typography>

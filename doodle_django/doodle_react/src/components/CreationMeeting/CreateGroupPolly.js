@@ -7,10 +7,8 @@ import Button from "@mui/material/Button";
 import { grey } from "@mui/material/colors";
 import { styled } from "@mui/material/styles";
 import CreateGroup from "./CreateGroup.js";
-import RangeDate from "../Date/RangeDate";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import TimePicker from "react-time-picker";
@@ -328,6 +326,7 @@ const CreateGroupPolly = ({ news }) => {
                   <h2>Select Time Range:</h2>
                   <div>
                     <TimePicker
+                      style={{ color: "#757575" }}
                       onChange={(time) => handleTimeChange(time, 0)}
                       value={selectedTimeRange[0]}
                       className="custom-time-picker"
@@ -336,6 +335,7 @@ const CreateGroupPolly = ({ news }) => {
                   </div>
                   <div>
                     <TimePicker
+                      style={{ color: "#757575" }}
                       onChange={(time) => handleTimeChange(time, 1)}
                       value={selectedTimeRange[1]}
                       className="custom-time-picker"

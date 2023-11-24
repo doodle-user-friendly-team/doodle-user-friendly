@@ -62,12 +62,12 @@
 
 .img_star_select {
   content: url("../images/star_full.png");
-  alt: "star"
+  alt: "star";
 }
 
 .img_star_unselect {
   content: url("../images/star_empty.png");
-  alt: "star"
+  alt: "star";
 }
 
 .table_image {
@@ -79,5 +79,3 @@
 .manage_nobr_info > nobr {
   margin-right: 30px;
 }
-
-
