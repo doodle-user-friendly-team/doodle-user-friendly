@@ -1,0 +1,5 @@
+[tool.semantic_release]
+version_variables= ["doodle_django/__init__.py:__version__"]
+
+[tool.semantic_release.commit_parser_options]
+allowed_tags = ["ci", "feat", "fix", "refactor", "test"]
