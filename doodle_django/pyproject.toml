@@ -5,6 +5,6 @@ version_variables= ["doodle_django/__init__.py:__version__"]
 allowed_tags = ["ci", "feat", "fix", "refactor", "test"]
 
 [tool.semantic_release.branches."ci-cd-test"]
-match = "ci-cd"
+match = "ci_cd_test"
 prerelease = true
 prerelease_token = "rc"
