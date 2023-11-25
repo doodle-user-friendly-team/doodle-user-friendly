@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const EditableMeeting = () => {
+const EditableMeeting = ({ setEditConfirmation, setEditMode, setUpdatedMeeting }) =>{
   const [meeting, setMeeting] = useState({
     title: '',
     location: '',
@@ -66,6 +66,18 @@ const EditableMeeting = () => {
         success: true,
         error: null,
       });
+      // Fetch the updated meeting details
+      const updatedResponse = await axios.get(`http://127.0.0.1:8000/api/meetings/${meeting.id}/`);
+      const updatedMeeting = updatedResponse.data;
+
+      // Update the state with the updated meeting details
+      setUpdatedMeeting(updatedMeeting);
+      setEditConfirmation(true);
+      // Delay the reset of edit mode and confirmation message
+      setTimeout(() => {
+        setEditConfirmation(false); // Reset editConfirmation
+        setEditMode(false); // Reset editMode
+      }, 2000); // Adjust the duration as needed
     } catch (error) {
       console.error('Error updating meeting:', error);
 

@@ -37,10 +37,14 @@ const ManageMeeting = ({ data }) => {
       backgroundColor: grey[50],
     },
   }));
+  const [editConfirmation, setEditConfirmation] = useState(false);
+  const [updatedMeeting, setUpdatedMeeting] = useState(null);
   const [editMode, setEditMode] = React.useState(false);
   const onEdit = () => {
     setEditMode(!editMode);
   };
+  
+  
   const onDelete = async (id) => {
     // Show the confirmation box
     setShowDeleteConfirmation(true);
@@ -90,46 +94,92 @@ const ManageMeeting = ({ data }) => {
       <Box sx={{ flexGrow: 1 }}>
         <Grid container spacing={2}>
         <Grid item xs={6}>
-            {editMode ? <EditableMeeting/> : (
-              // Render meeting details in non-edit mode
-              <>
-                <h2>{data["title"]}</h2>
-                {/* Add other meeting details display */}
-                <div className="manage_div_info">
-                  <img src={timeImage} alt="time.png" />
-                  <nobr>{data["duration"]}</nobr>
-                </div>
-                {data["location"] !== "" && (
+        {editMode ? (
+  <EditableMeeting
+    setEditConfirmation={setEditConfirmation}
+    setEditMode={setEditMode}
+    setUpdatedMeeting={setUpdatedMeeting} // Ensure this line is present
+  />
+) : (
+  <>
+    {editConfirmation && <p>Edit successful! Returning to non-editable mode.</p>}
+    {updatedMeeting && (
+      <>
+        <h2>{updatedMeeting.title}</h2>
+        <div className="manage_div_info">
+          <img src={timeImage} alt="time.png" />
+          <nobr>{updatedMeeting.duration}</nobr>
+        </div>
+        {updatedMeeting.location !== "" && (
+          <div className="manage_div_info">
+            <img src={locationImage} alt="location.png" />
+            <nobr>{updatedMeeting.location}</nobr>
+          </div>
+        )}
+        {updatedMeeting.video_conferencing === true && (
+          <div className="manage_div_info">
+            <img src={videoImage} alt="video.png" />
+            <nobr>{updatedMeeting.video_type_id}</nobr>
+          </div>
+        )}
+        {/* Add other properties as needed */}
+        {updatedMeeting.description !== "" && (
                   <div className="manage_div_info">
-                    <img src={locationImage} alt="location.png" />
-                    <nobr>{data["location"]}</nobr>
+                    <img src={descriptionImage} alt="description.png" />
+                    <nobr>{updatedMeeting.description}</nobr>
                   </div>
                 )}
-                {data["video_conferencing"] === true && (
-                  <div className="manage_div_info">
-                    <img src={videoImage} alt="video.png" />
-                    <nobr>{data["video_type_id"]}</nobr>
-                  </div>
-                )}
-                {data["description"] !== "" && (
+      </>
+    )}
+    {!editConfirmation && !updatedMeeting && (
+      <>
+        <h2>{data.title}</h2>
+        <div className="manage_div_info">
+          <img src={timeImage} alt="time.png" />
+          <nobr>{data.duration}</nobr>
+        </div>
+        {data.location !== "" && (
+          <div className="manage_div_info">
+            <img src={locationImage} alt="location.png" />
+            <nobr>{data.location}</nobr>
+          </div>
+        )}
+        {data.video_conferencing === true && (
+          <div className="manage_div_info">
+            <img src={videoImage} alt="video.png" />
+            <nobr>{data.video_type_id}</nobr>
+          </div>
+        )}
+         {data["description"] !== "" && (
                   <div className="manage_div_info">
                     <img src={descriptionImage} alt="description.png" />
                     <nobr>{data["description"]}</nobr>
                   </div>
                 )}
-              </>
-            )}
+        {/* Add other properties as needed */}
+      </>
+    )}
+  </>
+)}
           </Grid>
           <Grid item xs={6}>
             <div style={{ textAlign: "end" }}>
               <div style={{ width: "-webkit-fill-available" }}>
-                <ColorButton2
+                {/* <ColorButton2
                   style={{ width: 100, margin: 20, textAlign: "end" }}
                   onClick={onEdit}
                   variant="contained"
                 >
                   Edit
-                </ColorButton2>
+                </ColorButton2> */}
+                <ColorButton2
+                style={{ width: 100, margin: 20, textAlign: "end" }}
+                onClick={() => onEdit()} // Corrected the onClick event
+                variant="contained"
+                    >
+                      Edit
+                    </ColorButton2>
+
               </div>
               <div style={{ width: "-webkit-fill-available" }}>
                 <ColorButton2
