@@ -1,35 +1,46 @@
 import ManageMeetingContainer from "../components/ManageMeeting/ManageMeetingContainer";
-import news from "../news.json"
+import news from "../news.json";
 import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 
-const Manage = ( { meetingId = -1 } ) => {
+const Manage = () => {
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+
+  const meetingId =
+    searchParams.get("id") !== null ? searchParams.get("id") : -1;
+
+  // console.log("FROM", meetingId);
+
   news.sort(() => Math.random() - 0.5);
 
   const [data, setData] = useState([]);
 
   const getMeeting = async () => {
     try {
-      let url = "http://127.0.0.1:8000/api/meetings/"
+      console.log("meetingID", meetingId);
+      let url = "http://127.0.0.1:8000/api/meetings/";
 
       const response = await fetch(url);
-      
-      if (!response.ok)
-        throw new Error('Meeting not found');
-      
+
+      if (!response.ok) throw new Error("Meeting not found");
+
       const local_data = await response.json();
-      var length = Object.keys (local_data).length
+      var length = Object.keys(local_data).length;
 
       // console.log("meetingId", meetingId)
-      
-      let index = meetingId
-      if(meetingId === -1)
-        index = length - 1
-        // console.log("index", index)
 
-      // console.log("MEETING index", local_data[index])
-      setData(local_data[index]);
-    } catch (error) {
-    }
+      if (meetingId !== -1) {
+        for (let i = 0; i < local_data.length; ++i) {
+          // console.log("Confronto id:", local_data[i].id, meetingId);
+          if (String(local_data[i].id) === String(meetingId)) {
+            setData(local_data[i]);
+            return;
+          }
+        }
+      }
+      setData(local_data[length - 1]);
+    } catch (error) {}
   };
 
   useEffect(() => {
@@ -38,7 +49,7 @@ const Manage = ( { meetingId = -1 } ) => {
 
   return (
     <div>
-      <ManageMeetingContainer news={news} data={data}/>
+      <ManageMeetingContainer news={news} data={data} />
     </div>
   );
 };

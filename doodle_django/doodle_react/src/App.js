@@ -5,13 +5,10 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ReactDOM from "react-dom";
 import React from "react";
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Creation from "./pages/Creation";
 import Manage from "./pages/Manage";
+
 
 ReactDOM.render(
   <React.StrictMode>
@@ -29,6 +26,7 @@ function App() {
           <Route exact path="/" element={<Welcome />} />
           <Route path="/create" element={<Creation />} />
           <Route path="/manage" element={<Manage />} />
+          <Route path="/dashboard" element={<Dashboard />} />
         </Routes>
       </Router>{" "}
     </div>
