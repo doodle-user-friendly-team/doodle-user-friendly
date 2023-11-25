@@ -36,7 +36,10 @@ const ManageMeeting = ({ data }) => {
       backgroundColor: grey[50],
     },
   }));
-
+  const [editMode, setEditMode] = React.useState(false);
+  const onEdit = () => {
+    setEditMode(!editMode);
+  };
   const onDelete = async (id) => {
     // Show the confirmation box
     setShowDeleteConfirmation(true);
@@ -116,14 +119,10 @@ const ManageMeeting = ({ data }) => {
             <div style={{ textAlign: "end" }}>
               <div style={{ width: "-webkit-fill-available" }}>
                 <ColorButton2
-                  style={{
-                    width: 100,
-                    margin: 20,
-                    textAlign: "end",
-                    color: "#757575",
-                  }}
-                  // onClick={console.log("edit")}
-                  variant="contained">
+                  style={{ width: 100, margin: 20, textAlign: "end" }}
+                  onClick={onEdit}
+                  variant="contained"
+                >
                   Edit
                 </ColorButton2>
               </div>
