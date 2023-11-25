@@ -17,6 +17,7 @@ import "./manage.css";
 import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import EditableMeeting from "./EditMeetingForm";
 import DeleteConfirmation from "./DeleteConfirmation";
 
 const ManageMeeting = ({ data }) => {
@@ -88,31 +89,35 @@ const ManageMeeting = ({ data }) => {
     <div className="CreateGroup">
       <Box sx={{ flexGrow: 1 }}>
         <Grid container spacing={2}>
-          <Grid item xs={6}>
-            <h2>{data["title"]}</h2>
-            {/* <p style={{ marginLeft: 24 }}>Owner meeting</p> */}
-
-            <div className="manage_div_info">
-              <img src={timeImage} alt="time.png" />
-              <nobr>{data["duration"]}</nobr>
-            </div>
-            {data["location"] !== "" && (
-              <div className="manage_div_info">
-                <img src={locationImage} alt="location.png" />
-                <nobr>{data["location"]}</nobr>
-              </div>
-            )}
-            {data["video_conferencing"] === true && (
-              <div className="manage_div_info">
-                <img src={videoImage} alt="video.png" />
-                <nobr>{data["video_type_id"]}</nobr>
-              </div>
-            )}
-            {data["description"] !== "" && (
-              <div className="manage_div_info">
-                <img src={descriptionImage} alt="description.png" />
-                <nobr>{data["description"]}</nobr>
-              </div>
+        <Grid item xs={6}>
+            {editMode ? <EditableMeeting/> : (
+              // Render meeting details in non-edit mode
+              <>
+                <h2>{data["title"]}</h2>
+                {/* Add other meeting details display */}
+                <div className="manage_div_info">
+                  <img src={timeImage} alt="time.png" />
+                  <nobr>{data["duration"]}</nobr>
+                </div>
+                {data["location"] !== "" && (
+                  <div className="manage_div_info">
+                    <img src={locationImage} alt="location.png" />
+                    <nobr>{data["location"]}</nobr>
+                  </div>
+                )}
+                {data["video_conferencing"] === true && (
+                  <div className="manage_div_info">
+                    <img src={videoImage} alt="video.png" />
+                    <nobr>{data["video_type_id"]}</nobr>
+                  </div>
+                )}
+                {data["description"] !== "" && (
+                  <div className="manage_div_info">
+                    <img src={descriptionImage} alt="description.png" />
+                    <nobr>{data["description"]}</nobr>
+                  </div>
+                )}
+              </>
             )}
           </Grid>
           <Grid item xs={6}>

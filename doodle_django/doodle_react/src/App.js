@@ -26,7 +26,7 @@ function App() {
           <Route exact path="/" element={<Welcome />} />
           <Route path="/create" element={<Creation />} />
           <Route path="/manage" element={<Manage />} />
-          <Route path="/dashboard" element={<Dashboard />} />
+          {/* <Route path="/dashboard" element={<Dashboard />} /> */}
         </Routes>
       </Router>{" "}
     </div>
