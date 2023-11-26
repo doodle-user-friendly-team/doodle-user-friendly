@@ -3,8 +3,8 @@ version_variables= ["doodle_django/__init__.py:__version__"]
 
 [tool.semantic_release.commit_parser_options]
 allowed_tags = ["ci", "feat", "fix", "refactor", "test"]
+minor_tags = ["feat"]
+patch_tags = ["fix"]
 
 [tool.semantic_release.branches."ci-cd-test"]
 match = "ci_cd_test"
-prerelease = true
-prerelease_token = "rc"
