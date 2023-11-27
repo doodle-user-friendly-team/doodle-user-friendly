@@ -31,7 +31,7 @@ jobs:
               password: ${{secrets.GITHUB_TOKEN}}
         
         
-          - name: Apply semantic-release tag
+          - name: Apply semantic-release tags
             id: semver
             uses: python-semantic-release/python-semantic-release@master
             with:
