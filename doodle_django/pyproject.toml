@@ -1,5 +1,9 @@
+__version__ = "0.0.0"
+
 [tool.semantic_release]
-version_variables= ["doodle_django/__init__.py:__version__"]
+version_toml = [
+    "pyproject.toml:__version__"
+]
 
 [tool.semantic_release.commit_parser_options]
 allowed_tags = ["ci", "feat", "fix", "refactor", "test"]
@@ -7,6 +11,11 @@ minor_tags = ["feat"]
 patch_tags = ["fix"]
 
 [tool.semantic_release.branches.main]
-match = "(group_1|ci_cd_test)"
+match = "(group_1)"
 prerelease_token = "rc"
 prerelease = false
+
+[tool.semantic_release.branches.test]
+match = "ci_cd_test"
+prerelease = true
+prerelease_token = "alpha"
