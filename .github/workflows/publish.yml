@@ -32,10 +32,10 @@ jobs:
         
         
           - name: Apply semantic-release tag
+            id: semver
             uses: python-semantic-release/python-semantic-release@master
             with:
               github_token: ${{secrets.GITHUB_TOKEN}}
-
             
 
           - name: Extract metadata (tags, labels) for Docker
@@ -50,5 +50,5 @@ jobs:
               context: .
               file: .docker/build.DockerFile
               push: true
-              tags: ${{ steps.meta.outputs.tags }}
+              tags: ${{steps.semver.outputs.tag}} 
               labels: ${{ steps.meta.outputs.labels }}
