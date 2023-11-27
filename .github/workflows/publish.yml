@@ -50,5 +50,5 @@ jobs:
               context: .
               file: .docker/build.DockerFile
               push: true
-              tags: ${{steps.semver.outputs.tag}} 
+              tags: ${{steps.meta.outputs.tags}} 
               labels: ${{ steps.meta.outputs.labels }}
