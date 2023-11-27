@@ -2,6 +2,13 @@
 
 
 
+## v0.1.0-alpha.3 (2023-11-27)
+
+### Fix
+
+* fix(ci-cd): fix broken workflow ([`a1d87d6`](https://github.com/doodle-user-friendly-team/doodle-user-friendly/commit/a1d87d6d53780b3154af1c4117984ce117308432))
+
+
 ## v0.1.0-alpha.2 (2023-11-27)
 
 ### Fix
