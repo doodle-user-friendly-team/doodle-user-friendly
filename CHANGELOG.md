@@ -2,6 +2,13 @@
 
 
 
+## v0.1.0-alpha.2 (2023-11-27)
+
+### Fix
+
+* fix(ci-cd): add missing .docker folder ([`96eafa7`](https://github.com/doodle-user-friendly-team/doodle-user-friendly/commit/96eafa775b7f5bf0ef7f8ebdfd4cc6378e4fef7d))
+
+
 ## v0.1.0-alpha.1 (2023-11-27)
 
 ### Feature
