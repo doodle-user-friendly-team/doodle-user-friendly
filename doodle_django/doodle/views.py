@@ -8,10 +8,9 @@ from .models import *
 from rest_framework.response import Response
 from .serializer import *
 from django.shortcuts import get_object_or_404
-from rest_framework import status
+from rest_framework import status, generics
 
-
-#per l'autenticazione
+# per l'autenticazione
 from django.contrib.auth import authenticate, login
 from rest_framework.decorators import permission_classes, authentication_classes
 from rest_framework.permissions import AllowAny
@@ -28,6 +27,58 @@ class TimeError(Exception):
 
 class TimeLessThanNowError(Exception):
     pass
+
+
+class MeetingDetailView(APIView):
+    serializer_class = MeetingSerializer
+
+    def get(self, request, link):
+        meeting = Meeting.objects.get(organizer_link=link)
+        serializer = MeetingSerializer(meeting)
+        return Response(serializer.data)
+
+    def put(self, request, link):
+        meeting = Meeting.objects.get(organizer_link=link)
+        serializer = MeetingSerializer(meeting, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+
+    def delete(self, request, link):
+        meeting = Meeting.objects.get(organizer_link=link)
+        meeting.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class MeetingView(APIView):
+
+    def post(self, request):
+
+        if not UserFake.objects.filter(email=request.data['organizer_email']).exists():
+            user = UserFake.objects.create(name=request.data['organizer_name'], surname=request.data['organizer_surname'], email=request.data['organizer_email'])
+            user.save()
+        user = UserFake.objects.filter(email=request.data['organizer_email'])
+        print(user[0])
+        meeting = Meeting.objects.create(name=request.data['name'], description=request.data['description'], location=request.data['location'], duration=request.data['duration'], period_start_date=request.data['period_start_date'], period_end_date=request.data['period_end_date'], organizer_link=request.data['organizer_link'], user=user[0])
+        result = MeetingSerializer(meeting)
+        return Response(result.data)
+
+
+class AuthMeetingView(APIView):
+    serializer_class = MeetingSerializer
+    queryset = Meeting.objects.all()
+
+    def get(self, request):
+        meetings = Meeting.objects.all()
+        serializer_result = MeetingSerializer(meetings, many=True)
+        return Response(serializer_result.data)
+
+    def post(self, request):
+        serializer = MeetingSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data)
+
 
 class TimeSlotView(APIView):
 

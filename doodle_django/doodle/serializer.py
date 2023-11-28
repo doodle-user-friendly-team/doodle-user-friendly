@@ -1,6 +1,20 @@
 from rest_framework import serializers
 from .models import *
 
+
+class MeetingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Meeting
+        fields = ['id', 'name', 'description', 'location', 'duration', 'period_start_date', 'period_end_date', 'organizer_link', 'user']
+
+
+class CreateMeetingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Meeting
+        fields = ['organizer_name','organizer_surname', 'organizer_email', 'id', 'name', 'description',
+                  'location', 'duration', 'period_start_date', 'period_end_date', 'organizer_link']
+
+
 class UserFakeSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserFake
