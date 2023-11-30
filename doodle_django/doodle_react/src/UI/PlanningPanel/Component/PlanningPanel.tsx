@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import {CalendarBaseComponent} from "../../Calendar/Components/CalendarBase";
-import TimeSlotBaseComponent from "../../TimeSlot/Components/TimeSlotBase";
+
+import {PreferenceBaseComponent} from "../../Preference/Components/PreferenceBase";
+import { CalendarBaseComponent } from '../../Calendar/Components/CalendarBase';
+import TimeSlotBaseComponent from '../../TimeSlot/Components/TimeSlotBase';
 
 import "../CSS/style.css";
-import {PreferenceBaseComponent} from "../../Preference/Components/PreferenceBase";
 
 export const PlanningPanelComponent = () => {
     const [newData, setNewData] = useState("");
