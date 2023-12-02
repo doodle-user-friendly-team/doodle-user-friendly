@@ -1,31 +1,24 @@
+// App.tsx
 import React from 'react';
-import { FormComponent } from './UI/Form/Component/FormIdentification';
-import logo from './logo.svg';
 import './App.css';
-import {PlanningPanelComponent} from "./UI/PlanningPanel/Component/PlanningPanel";
-import { BrowserRouter as Router, Routes, Route} from 'react-router-dom';
-import Cookies from 'js-cookie';
-//{Cookies.get('email') === undefined && <FormComponent />}
-//{Cookies.get('email') !== undefined && <PlanningPanelComponent />}
+
+import { MeetingRecap } from './UI/MeetingRecap/Component/MeetingRecap';
+
+
+import ScrollPage from './UI/WelcomePage/Component/ScrolPage';
+
+
+
 function App() {
   return (
-    <div className="App">
-      <Router>
-        <Routes>
-            {
-                Cookies.get('email') === undefined ?
-                    <>
-                        <Route path='/' element={<FormComponent />} />
-                    </>
-                :
-                    <>
-                        <Route path='/login' element={<FormComponent />}/>
-                        <Route path='/' element={<PlanningPanelComponent />} />
-                    </>
-            }
-        </Routes>
-      </Router>
-    </div>
+     
+    <MeetingRecap/>
+    
+    //<VerticalTabs/>
+     //<MeetingCreation/>
+   // <ScrollPage/>
+     
+     
   );
 }
 
