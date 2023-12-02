@@ -8,9 +8,6 @@ interface WelcomePageState {
 
 
 class WelcomePage extends Component<{}, WelcomePageState> {
-  
-  
-
 
   render() {
     return (
@@ -26,10 +23,6 @@ class WelcomePage extends Component<{}, WelcomePageState> {
       <div>
         <h3>Simplify your meetings with our platform!</h3>
       </div>
-
-      {/* <Button id="loginButton" >
-        Login
-      </Button> */}
 
       </div>
     );
