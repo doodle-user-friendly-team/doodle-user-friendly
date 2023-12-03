@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import *
 
+from django.contrib.auth import get_user_model
 
 class UserFakeSerializer(serializers.ModelSerializer):
     class Meta:
@@ -88,3 +89,9 @@ class TimeSlotRecapSerializer(serializers.ModelSerializer):
     class Meta:
         model = TimeSlot
         fields = ['id', 'start_time', 'end_date', 'schedule_pool', 'user', 'votes']
+
+
+class djangoUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = get_user_model()
+        fields = ['id', 'username', 'email', 'password']

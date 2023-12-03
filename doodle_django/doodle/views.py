@@ -14,6 +14,10 @@ from django.shortcuts import get_object_or_404
 from rest_framework import status, generics
 from .utils import *
 
+from rest_framework.permissions import IsAuthenticated
+
+import requests
+
 from django.db.models import Q
 from django.contrib.auth import get_user_model
 from django.contrib.auth.backends import ModelBackend
@@ -356,31 +360,32 @@ def get_timeslot(request, time_slot_id):
     serializer_result = TimeSlotSerializer(specified_time_slot)
     return Response(serializer_result.data)
 
-@csrf_exempt
-@api_view(('GET',))
-@renderer_classes((TemplateHTMLRenderer, JSONRenderer))
-def get_userDjango(request, email, password):
-    UserModel = get_user_model()
+class djangoUsers(APIView):
+
+    serializers_class = djangoUserSerializer
     
-    try:
-        # below line gives query set,you can change the queryset as per your requirement
-        user = UserModel.objects.filter(
-            Q(username__iexact=email) |
-            Q(email__iexact=email)
-        ).distinct()
-
-    except UserModel.DoesNotExist:
-        return Response(None, status=status.HTTP_401_UNAUTHORIZED)
-
-    if user.exists():
-        ''' get the user object from the underlying query set,
-        there will only be one object since username and email
-        should be unique fields in your models.'''
-        user_obj = user.first()
-        if user_obj.check_password(password):
-            #auth.login(request,user)
-            return Response(user_obj)
-        return Response(None, status=status.HTTP_401_UNAUTHORIZED)
-    else:
-        return Response(None, status=status.HTTP_401_UNAUTHORIZED)
+    def get(self, request):
+        email = request.GET.get('email', '')
+        password = request.GET.get('password', '')
+        
+        UserModel = get_user_model()
+    
+        try:
+            # below line gives query set,you can change the queryset as per your requirement
+            user = UserModel.objects.filter(
+                Q(username__iexact=email) |
+                Q(email__iexact=email)
+            ).distinct()
+    
+        except UserModel.DoesNotExist:
+            return Response({'message': 'user not found (user model empty)'}, status=status.HTTP_401_UNAUTHORIZED)
+    
+        if user.exists():
+            user_obj = user.first()
+            if user_obj.check_password(password):
+                login(request, user_obj)
+                return Response(requests.post("http://localhost:8000/api/v1/auth/login/", data={'username': user_obj, 'password': password}).json())
+            return Response({'message': 'wrong password'}, status=status.HTTP_401_UNAUTHORIZED)
+        else:
+            return Response({'message': 'user not found'}, status=status.HTTP_401_UNAUTHORIZED)
 
