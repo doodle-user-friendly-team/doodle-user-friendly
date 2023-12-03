@@ -20,7 +20,7 @@ function App() {
                     <>
                         <Route path='/login' element={<FormComponent />}/>
                         <Route path='/' element={<PlanningPanelComponent />} />
-                        <Route path='/meeting' element={<Calendar currentDate={new Date(Date.now())} startDate={new Date("2023-11-30")} />} />
+                        <Route path={'/schedulePool/:pool_link'} element={<Calendar />} />
                     </>
             }
         </Routes>
