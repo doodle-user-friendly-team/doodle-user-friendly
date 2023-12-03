@@ -22,12 +22,12 @@ export function SigninFormComponent () {
         };
 
         axios.post('http://localhost:8000/register/', {
-            name: data.get('name'),
-            surname: data.get('surname'),
+            username: data.get('username'),
+            lastname: data.get('lastname'),
             email: data.get('email'),
             password: CryptoJS.SHA3(data.get('password'))
         }, {headers}).then((response) => {
-
+            
             window.location.assign("/")
         }).catch((error) => {
             console.error('Errore nella risposta del server:', error);
