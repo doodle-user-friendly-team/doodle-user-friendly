@@ -5,10 +5,12 @@ import Button from "@mui/material/Button";
 import React, {FormEvent} from "react";
 import Cookies from "js-cookie";
 import axios from "axios";
-import { Box } from "@mui/material";
+import {Alert, Box } from "@mui/material";
 const CryptoJS = require("crypto-js");
 
 export function SigninFormComponent () {
+    
+    const [errorString, setErrorString] = React.useState('');
     const handleSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
         e.preventDefault();
 
@@ -21,16 +23,20 @@ export function SigninFormComponent () {
             'Content-Type': 'application/json' // Specifica il tipo di contenuto
         };
 
-        axios.post('http://localhost:8000/register/', {
-            username: data.get('username'),
-            lastname: data.get('lastname'),
+        axios.post('http://localhost:8000/api/v1/auth/registration/', {
+            username:  data.get('username') + '_' + data.get('lastname'),
             email: data.get('email'),
-            password: CryptoJS.SHA3(data.get('password'))
+            password1: data.get('password'),
+            password2: data.get('password')
         }, {headers}).then((response) => {
             
             window.location.assign("/")
         }).catch((error) => {
-            console.error('Errore nella risposta del server:', error);
+           //get the first error and display it
+            
+            error.response.data['username'] && setErrorString('Username: ' + error.response.data['username'][0]);
+            error.response.data['email'] && setErrorString( 'Email: ' + error.response.data['email'][0]);
+            error.response.data['password1'] && setErrorString( 'Password: ' + error.response.data['password1'][0]);
         });
     };
 
@@ -47,7 +53,7 @@ export function SigninFormComponent () {
                 fullWidth
                 id="username"
                 label="Username"
-                name="Username"
+                name="username"
                 autoComplete="username"
                 autoFocus
             />
@@ -57,7 +63,7 @@ export function SigninFormComponent () {
                 fullWidth
                 id="lastname"
                 label="Lastname"
-                name="Lastname"
+                name="lastname"
                 autoComplete="lastname"
                 autoFocus
             />
@@ -81,10 +87,7 @@ export function SigninFormComponent () {
                 id="password"
                 autoComplete="current-password"
             />
-            <FormControlLabel
-                control={<Checkbox value="remember" color="primary" />}
-                label="Remember me"
-            />
+            {errorString !== '' && <Alert severity="error">{errorString}</Alert>}
             <Button
                 type="submit"
                 fullWidth

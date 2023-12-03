@@ -39,7 +39,7 @@ urlpatterns = [
 
     path('api/v1/users/<int:user_id>', UserByIdView.as_view(), name='get_user_by_id'),
 
-    path('api/v1/authenticate/', UserAuthenticationView.as_view(), name='user_authentication'),
+    path('api/v1/authenticate/<str:email>&<str:password>', get_userDjango, name='user_authentication'),
     path('api/v1/auth/registration/', include('dj_rest_auth.registration.urls')),
 
     # add react path

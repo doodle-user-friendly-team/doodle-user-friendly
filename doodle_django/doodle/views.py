@@ -2,6 +2,7 @@ from urllib import response
 from django.shortcuts import render
 from django.utils import timezone
 from django.utils.timezone import get_current_timezone
+from django.contrib.auth.models import BaseUserManager, AbstractUser
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view, renderer_classes, action
 from rest_framework.renderers import TemplateHTMLRenderer, JSONRenderer
@@ -12,6 +13,10 @@ from .serializer import *
 from django.shortcuts import get_object_or_404
 from rest_framework import status, generics
 from .utils import *
+
+from django.db.models import Q
+from django.contrib.auth import get_user_model
+from django.contrib.auth.backends import ModelBackend
 
 # per l'autenticazione
 from django.contrib.auth import authenticate, login
@@ -240,7 +245,6 @@ class UserAuthenticationView(APIView):
         except UserFake.DoesNotExist:
             return Response({'message': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
-
 class UserRegistrationView(CreateAPIView):
     serializer_class = UserFakeSerializer
 
@@ -352,5 +356,31 @@ def get_timeslot(request, time_slot_id):
     serializer_result = TimeSlotSerializer(specified_time_slot)
     return Response(serializer_result.data)
 
+@csrf_exempt
+@api_view(('GET',))
+@renderer_classes((TemplateHTMLRenderer, JSONRenderer))
+def get_userDjango(request, email, password):
+    UserModel = get_user_model()
+    
+    try:
+        # below line gives query set,you can change the queryset as per your requirement
+        user = UserModel.objects.filter(
+            Q(username__iexact=email) |
+            Q(email__iexact=email)
+        ).distinct()
 
+    except UserModel.DoesNotExist:
+        return Response(None, status=status.HTTP_401_UNAUTHORIZED)
+
+    if user.exists():
+        ''' get the user object from the underlying query set,
+        there will only be one object since username and email
+        should be unique fields in your models.'''
+        user_obj = user.first()
+        if user_obj.check_password(password):
+            #auth.login(request,user)
+            return Response(user_obj)
+        return Response(None, status=status.HTTP_401_UNAUTHORIZED)
+    else:
+        return Response(None, status=status.HTTP_401_UNAUTHORIZED)
 

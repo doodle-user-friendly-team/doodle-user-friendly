@@ -21,9 +21,8 @@ export const WelcomePage = () => {
     return (
         <>
       <div id="second-element">
-        <Fab color="primary" aria-label="login" sx={{position: 'absolute', top: '5%', left: '90%', padding: '3em'}}
-        onClick={() => window.location.assign("/login")}>
-          <LoginIcon />
+        <Fab color="primary" aria-label="login" sx={{position: 'absolute', top: '5%', left: '90%', padding: '3em'}}>
+          <LoginIcon onClick={() => window.location.assign("/login")}/>
         </Fab>
         <Fab color="primary" aria-label="scrolldown" sx={
           {position: 'absolute', top: '80%', left: '50%', padding: '2em', backgroundColor: 'transparent',
@@ -45,48 +44,16 @@ export const WelcomePage = () => {
       </div>
 
       </div>
-            <Box
-                sx={{
-                    display: 'flex',
-                    width: 'max',
-                    
-                    bgcolor: 'background.paper',
-                    color: 'text.secondary',
-                    '& svg': {
-                        m: 1.5,
-                    },
-                    '& hr': {
-                        mx: 0.5,
-                    },
-                    
-                    paddingTop: '5%',
-                }}
-                ref={ref}
-            >
-                <h2>Create an account to access and make your meetings!</h2>
-               
-                <Divider orientation="vertical" sx={{color: 'transparent'}} />
-                <FormComponent startValue={formValue} />
-            </Box>
-            <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa.
+            
+            <h2 ref={ref} style={{paddingTop: '5%'}}> Create an account to access and make your meetings! </h2>
+            <FormComponent startValue={formValue}/>
+            <p style={{paddingTop: '5%', paddingBottom: '10%'}}>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa.
                 Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec,
                 pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget,
                 arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. </p>
 
-
-
-            <Divider sx={{paddingTop: "2%", paddingBottom: "2%"}}>
-                OR
-            </Divider>
-
-
-          <Paper elevation={0} sx = {{padding: '10%'}}>
-              You can just try the platform without login!
-              <PlanningPanelComponent />
-          </Paper>
-
           <footer style={{backgroundColor: "gray", paddingBottom: "10%"}}>
-              hello footer
+              Doodle © 2023
           </footer>
       </>
     );

@@ -23,6 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = "django-insecure-%jk^anc8av3wt22tn8(pfg3#p0($03o6f(-=xpbp5k384^u9ga"
 
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -45,6 +46,8 @@ INSTALLED_APPS = [
     "rest_framework.authtoken",
     "corsheaders",
     "doodle_react",
+    'allauth',
+    'allauth.account',
     "doodle"
 ]
 
@@ -57,6 +60,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "corsheaders.middleware.CorsMiddleware",
+    'allauth.account.middleware.AccountMiddleware'
 ]
 
 ROOT_URLCONF = "doodle_django.urls"

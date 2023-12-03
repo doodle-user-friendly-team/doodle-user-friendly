@@ -5,10 +5,11 @@ import Button from "@mui/material/Button";
 import React, {FormEvent} from "react";
 import Cookies from "js-cookie";
 import axios from "axios";
-import { Box } from "@mui/material";
+import {Alert, Box} from "@mui/material";
 const CryptoJS = require("crypto-js");
 
 export const LoginFormComponent = () => {
+    const [errorString, setErrorString] = React.useState('');
     const handleSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
         e.preventDefault();
 
@@ -21,14 +22,13 @@ export const LoginFormComponent = () => {
             'Content-Type': 'application/json' // Specifica il tipo di contenuto
         };
 
-        const queryString = `?email=${data.get('email')}&password=${CryptoJS.SHA3(data.get('password'))}`;
-        axios.get(`http://localhost:8000/authenticate/${queryString}`,
+        const queryString = `?email=${data.get('email')}&password=${data.get('password')}`;
+        axios.get(`http://localhost:8000/api/v1/authenticate/${queryString}`,
             {headers}).then((response) => {
 
             window.location.assign("/")
         }).catch((error) => {
-            console.error('Errore nell\'autenticazione dell\'utente');
-            console.error('Errore nella risposta del server:', error);
+            error.response.data['message'] && setErrorString(error.response.data['message']);
         });
     };
     
@@ -59,10 +59,7 @@ export const LoginFormComponent = () => {
                 id="password"
                 autoComplete="current-password"
             />
-            <FormControlLabel
-                control={<Checkbox value="remember" color="primary" />}
-                label="Remember me"
-            />
+            {errorString !== '' && <Alert severity="error">{errorString}</Alert>}
             <Button
                 type="submit"
                 fullWidth
