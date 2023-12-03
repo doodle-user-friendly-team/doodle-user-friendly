@@ -11,6 +11,7 @@ from rest_framework.response import Response
 from .serializer import *
 from django.shortcuts import get_object_or_404
 from rest_framework import status, generics
+from .utils import *
 
 # per l'autenticazione
 from django.contrib.auth import authenticate, login
@@ -43,6 +44,9 @@ class MeetingDetailView(APIView):
         serializer = MeetingSerializer(meeting)
         return Response(serializer.data)
 
+    #@action(methods=['get'], detail=False, url_path='timeslots', url_name='meeting_timeslot_list')
+
+
     def put(self, request, link):
         meeting = Meeting.objects.get(organizer_link=link)
         serializer = MeetingSerializer(meeting, data=request.data)
@@ -56,18 +60,49 @@ class MeetingDetailView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+class MeetingTimeSlotsView(APIView):
+    serializer_class = TimeSlotSerializer
+
+    def get(self, request, link):
+        meeting = Meeting.objects.get(organizer_link=link)
+        schedule_pool = SchedulePool.objects.get(meeting=meeting)
+        time_slots = TimeSlot.objects.filter(schedule_pool=schedule_pool)
+        serializer_result = TimeSlotSerializer(time_slots, many=True)
+        return Response(serializer_result.data)
+
+
 class MeetingView(APIView):
 
     def post(self, request):
-
         if not UserFake.objects.filter(email=request.data['organizer_email']).exists():
-            user = UserFake.objects.create(name=request.data['organizer_name'], surname=request.data['organizer_surname'], email=request.data['organizer_email'])
-            user.save()
+            user = UserFake.objects.create(name=request.data['organizer_name'],
+                                           surname=request.data['organizer_surname'],
+                                           email=request.data['organizer_email'])
         user = UserFake.objects.filter(email=request.data['organizer_email'])
-        print(user[0])
-        meeting = Meeting.objects.create(name=request.data['name'], description=request.data['description'], location=request.data['location'], duration=request.data['duration'], period_start_date=request.data['period_start_date'], period_end_date=request.data['period_end_date'], organizer_link=request.data['organizer_link'], user=user[0])
-        result = MeetingSerializer(meeting)
-        return Response(result.data)
+
+        link = genera_codice_recap()
+        Meeting.objects.create(name=request.data['name'], description=request.data['description'],
+                               location=request.data['location'], duration=request.data['duration'],
+                               period_start_date=request.data['period_start_date'],
+                               period_end_date=request.data['period_end_date'], organizer_link=link, user=user[0])
+        meeting = Meeting.objects.get(organizer_link=link)
+        serializer = MeetingSerializer(meeting)
+        schedule_pool = SchedulePool.objects.create(voting_start_date=datetime.now().date(),
+                                                    voting_deadline=datetime.strptime(
+                                                        request.data['period_start_date'],
+                                                        '%Y-%m-%d').date() - timedelta(days=2),
+                                                    pool_link=genera_codice_invito(), meeting=meeting)
+        return Response(serializer.data)
+
+
+class SchedulePoolView(APIView):
+    serializer_class = SchedulePoolSerializer
+    queryset = SchedulePool.objects.all()
+
+    def get(self, request, link):
+        schedule_pool = SchedulePool.objects.filter(pool_link=link)
+        serializer_result = CompleteSchedulePoolSerializer(schedule_pool, many=True)
+        return Response(serializer_result.data)
 
 
 class AuthMeetingView(APIView):
@@ -80,9 +115,19 @@ class AuthMeetingView(APIView):
         return Response(serializer_result.data)
 
     def post(self, request):
+        meeting = Meeting.objects.create(name=request.data['name'], description=request.data['description'],
+                                         location=request.data['location'], duration=request.data['duration'],
+                                         period_start_date=request.data['period_start_date'],
+                                         period_end_date=request.data['period_end_date'],
+                                         organizer_link=genera_codice_recap(),
+                                         user=UserFake.objects.get(id=request.data['user']))
         serializer = MeetingSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
-            serializer.save()
+            schedule_pool = SchedulePool.objects.create(voting_start_date=datetime.now().date(),
+                                                        voting_deadline=datetime.strptime(
+                                                            request.data['period_start_date'],
+                                                            '%Y-%m-%d').date() - timedelta(days=2),
+                                                        pool_link=genera_codice_invito(), meeting=meeting)
             return Response(serializer.data)
 
 
