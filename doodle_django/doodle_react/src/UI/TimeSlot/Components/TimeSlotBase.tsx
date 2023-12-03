@@ -33,7 +33,7 @@ const TimeSlotBaseComponent: React.FC<TimeSlotBaseProps> = ({ newData, updateNew
         const [day, month, year] = newData.split('/');
 
         if (day !== undefined && month !== undefined && year !== undefined)
-            axios.get(`http://localhost:8000/timeslots/?day=${day}&month=${month}&year=${year}`)
+            axios.get(`http://localhost:8000/api/v1/timeslots/${day}_${month}_${year}`)
                 .then((response: { data: timeSlotInfo[] }) => {
                     setTimeSlots(response.data);
                     setCreationMode(creationMode);

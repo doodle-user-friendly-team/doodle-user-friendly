@@ -11,7 +11,6 @@ from rest_framework.response import Response
 from .serializer import *
 from django.shortcuts import get_object_or_404
 from rest_framework import status, generics
-from .utils import *
 
 # per l'autenticazione
 from django.contrib.auth import authenticate, login
@@ -22,6 +21,7 @@ from datetime import datetime, timedelta
 
 from rest_framework.generics import CreateAPIView
 
+from rest_framework import viewsets
 
 class FormatError(Exception):
     pass
@@ -43,9 +43,6 @@ class MeetingDetailView(APIView):
         serializer = MeetingSerializer(meeting)
         return Response(serializer.data)
 
-    #@action(methods=['get'], detail=False, url_path='timeslots', url_name='meeting_timeslot_list')
-
-
     def put(self, request, link):
         meeting = Meeting.objects.get(organizer_link=link)
         serializer = MeetingSerializer(meeting, data=request.data)
@@ -59,49 +56,18 @@ class MeetingDetailView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class MeetingTimeSlotsView(APIView):
-    serializer_class = TimeSlotSerializer
-
-    def get(self, request, link):
-        meeting = Meeting.objects.get(organizer_link=link)
-        schedule_pool = SchedulePool.objects.get(meeting=meeting)
-        time_slots = TimeSlot.objects.filter(schedule_pool=schedule_pool)
-        serializer_result = TimeSlotSerializer(time_slots, many=True)
-        return Response(serializer_result.data)
-
-
 class MeetingView(APIView):
 
     def post(self, request):
+
         if not UserFake.objects.filter(email=request.data['organizer_email']).exists():
-            user = UserFake.objects.create(name=request.data['organizer_name'],
-                                           surname=request.data['organizer_surname'],
-                                           email=request.data['organizer_email'])
+            user = UserFake.objects.create(name=request.data['organizer_name'], surname=request.data['organizer_surname'], email=request.data['organizer_email'])
+            user.save()
         user = UserFake.objects.filter(email=request.data['organizer_email'])
-
-        link = genera_codice_recap()
-        Meeting.objects.create(name=request.data['name'], description=request.data['description'],
-                               location=request.data['location'], duration=request.data['duration'],
-                               period_start_date=request.data['period_start_date'],
-                               period_end_date=request.data['period_end_date'], organizer_link=link, user=user[0])
-        meeting = Meeting.objects.get(organizer_link=link)
-        serializer = MeetingSerializer(meeting)
-        schedule_pool = SchedulePool.objects.create(voting_start_date=datetime.now().date(),
-                                                    voting_deadline=datetime.strptime(
-                                                        request.data['period_start_date'],
-                                                        '%Y-%m-%d').date() - timedelta(days=2),
-                                                    pool_link=genera_codice_invito(), meeting=meeting)
-        return Response(serializer.data)
-
-
-class SchedulePoolView(APIView):
-    serializer_class = SchedulePoolSerializer
-    queryset = SchedulePool.objects.all()
-
-    def get(self, request, link):
-        schedule_pool = SchedulePool.objects.filter(pool_link=link)
-        serializer_result = CompleteSchedulePoolSerializer(schedule_pool, many=True)
-        return Response(serializer_result.data)
+        print(user[0])
+        meeting = Meeting.objects.create(name=request.data['name'], description=request.data['description'], location=request.data['location'], duration=request.data['duration'], period_start_date=request.data['period_start_date'], period_end_date=request.data['period_end_date'], organizer_link=request.data['organizer_link'], user=user[0])
+        result = MeetingSerializer(meeting)
+        return Response(result.data)
 
 
 class AuthMeetingView(APIView):
@@ -114,29 +80,24 @@ class AuthMeetingView(APIView):
         return Response(serializer_result.data)
 
     def post(self, request):
-        meeting = Meeting.objects.create(name=request.data['name'], description=request.data['description'],
-                                         location=request.data['location'], duration=request.data['duration'],
-                                         period_start_date=request.data['period_start_date'],
-                                         period_end_date=request.data['period_end_date'],
-                                         organizer_link=genera_codice_recap(),
-                                         user=UserFake.objects.get(id=request.data['user']))
         serializer = MeetingSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
-            schedule_pool = SchedulePool.objects.create(voting_start_date=datetime.now().date(),
-                                                        voting_deadline=datetime.strptime(
-                                                            request.data['period_start_date'],
-                                                            '%Y-%m-%d').date() - timedelta(days=2),
-                                                        pool_link=genera_codice_invito(), meeting=meeting)
+            serializer.save()
             return Response(serializer.data)
 
 
-class TimeSlotView(APIView):
+class TimeSlotView(viewsets.ViewSet):
+
     serializer_class = TimeSlotSerializer
 
-    def get(self, request):
-        day = request.GET.get('day', '0')
-        month = request.GET.get('month', '0')
-        year = request.GET.get('year', '0')
+    def get_all(self, request):
+        timeslots = TimeSlot.objects.all()
+        serializer_result = TimeSlotSerializer(timeslots, many=True)
+        return Response(serializer_result.data)
+
+    def get_data(self, request, _data):
+        day, month, year = _data.split('_')
+
         start_time = f"{int(year):04d}-{int(month) + 1:02d}-{int(day) :02d}T23:59:59Z"
         end_time = f"{int(year):04d}-{int(month) + 1:02d}-{(int(day)):02d}T23:59:59Z"
 
@@ -146,10 +107,8 @@ class TimeSlotView(APIView):
         except:
             raise FormatError
 
-        ts = [{"id": timeslot.id, "start_time": timeslot.start_time, "end_time": timeslot.end_time,
-               "user": timeslot.user.id}
-              for timeslot in TimeSlot.objects.raw(
-                f'SELECT * FROM doodle_timeslot WHERE start_time between "{start_time}" and  "{end_time}"')]
+        ts = [ {"id": timeslot.id,"start_time": timeslot.start_time, "end_time": timeslot.end_time, "user": timeslot.user.id}
+               for timeslot in TimeSlot.objects.raw(f'SELECT * FROM doodle_timeslot WHERE start_time between "{start_time}" and  "{end_time}"')]
 
         return Response(ts)
 
@@ -184,6 +143,32 @@ class TimeSlotView(APIView):
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data)
+
+    def put(self, request, pk, format=None):
+        try:
+            timeslot = TimeSlot.objects.get(pk=pk)
+            print('Data received:', request.data)
+
+            # Usa request.data invece di updated_data
+            serializer = TimeSlotSerializer(timeslot, data=request.data)
+
+            # Verifica la validità del serializer
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            else:
+                print('Serializer errors:', serializer.errors)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except TimeSlot.DoesNotExist:
+            return Response({'detail': 'Time slot non trovato'}, status=status.HTTP_404_NOT_FOUND)
+        except TimeSlot.DoesNotExist:
+            return Response({'detail': 'Time slot non trovato'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            # Gestisci altre eccezioni
+            print('Exception:', e)
+            print('Response status code:', status.HTTP_500_INTERNAL_SERVER_ERROR)
+            print('Response content:', response.content)
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class GetUserByIdView(APIView):
@@ -227,44 +212,6 @@ class UserRegistrationView(CreateAPIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
-class UpdateTimeSlotView(APIView):
-
-    def get(self, request, pk, format=None):
-
-        try:
-            timeslot = TimeSlot.objects.get(pk=pk)
-            serializer = TimeSlotSerializer(timeslot)
-            return Response(serializer.data)
-        except TimeSlot.DoesNotExist:
-            return Response({'detail': 'Time slot non trovato'}, status=status.HTTP_404_NOT_FOUND)
-
-    def put(self, request, pk, format=None):
-        try:
-            timeslot = TimeSlot.objects.get(pk=pk)
-            print('Data received:', request.data)
-
-            # Usa request.data invece di updated_data
-            serializer = TimeSlotSerializer(timeslot, data=request.data)
-
-            # Verifica la validità del serializer
-            if serializer.is_valid():
-                serializer.save()
-                return Response(serializer.data)
-            else:
-                print('Serializer errors:', serializer.errors)
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        except TimeSlot.DoesNotExist:
-            return Response({'detail': 'Time slot non trovato'}, status=status.HTTP_404_NOT_FOUND)
-        except TimeSlot.DoesNotExist:
-            return Response({'detail': 'Time slot non trovato'}, status=status.HTTP_404_NOT_FOUND)
-        except Exception as e:
-            # Gestisci altre eccezioni
-            print('Exception:', e)
-            print('Response status code:', status.HTTP_500_INTERNAL_SERVER_ERROR)
-            print('Response content:', response.content)
-            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
 class CheckUser(APIView):
 
     def login_view(request):
@@ -276,7 +223,7 @@ class CheckUser(APIView):
 class UserByIdView(APIView):
 
     def get(self, request, user_id):
-        user = get_object_or_404(UserFake, id=user_id)
+        user = get_object_or_404(UserFake, id = user_id)
 
         serializer = UserFakeSerializer(user)
 
@@ -312,15 +259,17 @@ class VotesView(APIView):
 class ModifyMyPreferenceView(APIView):
     serializer_class = VoteSerializer
 
-    # @permission_classes([IsAuthenticated])
-    # @authentication_classes([SessionAuthentication, BasicAuthentication])
+    serializer_class = VoteSerializer
+
+    #@permission_classes([IsAuthenticated])
+    #@authentication_classes([SessionAuthentication, BasicAuthentication])
     def put(self, request):
 
-        # todo: sistemare con serializer
+        #todo: sistemare con serializer
 
         serializer = VoteSerializer(data=request.data)
-        # print(request.data)
-        # print(serializer)
+        #print(request.data)
+        #print(serializer)
 
         voto_id = request.data.get('id')
         preference = request.data.get('preference')
@@ -329,7 +278,7 @@ class ModifyMyPreferenceView(APIView):
 
         try:
             # Verifica se esiste il voto e il time slot
-            print("->" + str(voto_id))
+            print("->"+str(voto_id))
             voto = Vote.objects.get(id=voto_id, user=user_id)
             timeslot = TimeSlot.objects.get(id=timeslot_id)
 
@@ -340,14 +289,12 @@ class ModifyMyPreferenceView(APIView):
         except (Vote.DoesNotExist, TimeSlot.DoesNotExist):
             return Response({'message': 'Voto o time slot non trovato'}, status=404)
 
-
 @csrf_exempt
 @api_view(('GET',))
 @renderer_classes((TemplateHTMLRenderer, JSONRenderer))
 def get_preferences(request, time_slot_id):
     specified_time_slot = TimeSlot.objects.get(id=time_slot_id)
     votes = Vote.objects.filter(time_slot=specified_time_slot)
-    print(votes)
     serializer_result = DetailedVoteSerializer(votes, many=True)
     return Response(serializer_result.data)
 

@@ -60,7 +60,7 @@ export class PreferenceBaseComponent extends React.Component< preferenceBaseProp
     };
 
     getTimeSlot =  (creationMode: boolean, time_slot_id: string): void => {
-        axios.get(`http://localhost:8000/timeslots/id/${time_slot_id}/`).then((response: { data: timeSlotInfo; }) =>{
+        axios.get(`http://localhost:8000/api/v1/timeslots/id/${time_slot_id}`).then((response: { data: timeSlotInfo; }) =>{
 
             this._timeSlot = response.data;
             console.log(response.data)
@@ -72,7 +72,7 @@ export class PreferenceBaseComponent extends React.Component< preferenceBaseProp
     }
 
     getTimeSlotPreferences = (creationMode: boolean, time_slot_id: string): void => {
-        axios.get(`http://localhost:8000/votes/timeslot/${time_slot_id}/`).then((response: { data: preferenceInfo[]; }) =>{
+        axios.get(`http://localhost:8000/api/v1/votes/timeslot/${time_slot_id}`).then((response: { data: preferenceInfo[]; }) =>{
 
             this._array = response.data.map((x) => x);
             console.log(response.data)
@@ -98,7 +98,7 @@ export class PreferenceBaseComponent extends React.Component< preferenceBaseProp
         };
 
 
-        axios.post('http://localhost:8000/votes/', postData, { headers })
+        axios.post('http://localhost:8000/api/v1/votes/', postData, { headers })
             .then((response) => {
                 console.log("res:" + response);
                 let saved_preference: preferenceInfo = response.data
@@ -139,7 +139,7 @@ export class PreferenceBaseComponent extends React.Component< preferenceBaseProp
                     {
                         this.state.preferences.map((p) => {
                             return <PreferenceComponent id={p.id} preference={p.preference} time_slot={p.time_slot} user={p.user} start_time={this._timeSlot.start_time} end_time={this._timeSlot.end_time} date={""}/>
-                        }) 
+                        })
                     }
                 </div>
                 <div className="preferenceCreateForm">

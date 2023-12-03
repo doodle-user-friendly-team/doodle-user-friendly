@@ -23,23 +23,26 @@ from rest_framework.schemas import get_schema_view
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("meetings/", MeetingView.as_view()),
-    path("authenticatedMeetings/", AuthMeetingView.as_view()),
     path("meetings/<str:link>", MeetingDetailView.as_view(), name="meeting_detail"),
-    path("schedulePools/<str:link>", SchedulePoolView.as_view(), name="schedulepool_detail"),
-    path('timeslots/', TimeSlotView.as_view()),
-    path('timeslots/<int:pk>', UpdateTimeSlotView.as_view(), name='updateTimeSlot' ),
-    path('timeslots/authorized' , CheckUser.as_view()),
-    path('votes/', VotesView.as_view(), name="votes_api"),
-    path('timeslots/id/<str:time_slot_id>/', get_timeslot, name='timeslot_detail'),
-    path('meetings/timeslots/<str:link>/', MeetingTimeSlotsView.as_view(), name='timeslot_list'),
-    path('votes/timeslot/<str:time_slot_id>/', get_preferences, name='timeslot_vote_list'),
-    path('api/update_preference/', ModifyMyPreferenceView.as_view(),name='update_preference'),
-    path('users/<int:user_id>', UserByIdView.as_view(), name='get_user_by_id'),
-    path('authenticate/', UserAuthenticationView.as_view(), name='user_authentication'),
-    path('register/', UserRegistrationView.as_view(), name='register_user'),
+    path("authenticatedMeetings/", AuthMeetingView.as_view()),
+    path("api-auth/", include("rest_framework.urls")),
+    path("api/v1/auth/", include("dj_rest_auth.urls")),
+
+    path('api/v1/timeslots/', TimeSlotView.as_view({'get': 'get_all'})),
+    path('api/v1/timeslots/<str:_data>', TimeSlotView.as_view({'get': 'get_data'})),
+
+    path('api/v1/timeslots/id/<int:time_slot_id>', get_timeslot, name='timeslot_vote_list'),
+
+    path('api/v1/votes/', VotesView.as_view(), name="votes_api"),
+    path('api/v1/update_preference/', ModifyMyPreferenceView.as_view(),name='update_preference'),
+    path('api/v1/votes/timeslot/<str:time_slot_id>', get_preferences, name='timeslot_vote_list'),
+
+    path('api/v1/users/<int:user_id>', UserByIdView.as_view(), name='get_user_by_id'),
+
+    path('api/v1/authenticate/', UserAuthenticationView.as_view(), name='user_authentication'),
+    path('api/v1/auth/registration/', include('dj_rest_auth.registration.urls')),
 
     # add react path
     # but I think it's better to do it when we have finished the website
     # since we have to build the react app first
-
 ]
