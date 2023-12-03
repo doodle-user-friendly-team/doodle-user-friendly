@@ -17,9 +17,13 @@ import {Container, Tab, Tabs} from "@mui/material";
 import {LoginFormComponent} from "./LoginFormComponent";
 import {SigninFormComponent} from "./SigninFormComponent";
 
-export const FormComponent = () => {
+interface propsInterface {
+    startValue: string
+}
 
-    const [value, setValue] = React.useState('login');
+export const FormComponent = (props: propsInterface) => {
+
+    const [value, setValue] = React.useState(props.startValue);
 
     const handleChange = (event: React.SyntheticEvent, newValue: string) => {
         setValue(newValue);

@@ -23,15 +23,15 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem;
 }
 
 .logo {
-  font-family: 'Poppins, sans-serif';
-  font-size: 1.5rem;
+  font-family: "PT Sans", Calibri, Tahoma, sans-serif;
+  font-size: 2rem;
   font-weight: bold;
   color: #fff; /* Imposta il colore del logo */
   transition: color 0.5s; 
+  user-select: none;
 }
 
 .nav-links {

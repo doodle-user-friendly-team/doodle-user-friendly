@@ -6,7 +6,6 @@
   justify-content: center;
 }
 
-
 #second-element {
   height: 100vh;
   overflow: hidden; /* Impedisce lo scrolling */
@@ -22,27 +21,29 @@
   z-index: -1;
 }
 #title {
-  font-family: 'Poppins, sans-serif';
+  font-family: "PT Sans", Calibri, Tahoma, sans-serif;
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  top: 20%;
+  left: 5%;
   color: white;
   font-weight: bold;
-  font-size: 13em; /* Modifica la dimensione del testo secondo le tue preferenze */
-  text-align: center;
+  font-size: 7em; /* Modifica la dimensione del testo secondo le tue preferenze */
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8); /* Ombra per migliorare la leggibilità */
   z-index: 1; /* Assicura che il titolo sia sopra il video (z-index -1) */
+  user-select: none;
 }
-#title + div h3 {
-  font-family: 'Poppins, sans-serif';
+
+
+div h3 {
+  font-family: "PT Sans", Calibri, Tahoma, sans-serif;
   position: absolute;
-  top: calc(50% + 120px); /* Imposta la distanza desiderata tra il titolo e l'h3 */
-  left: 50%;
+  top: 35%; /* Imposta la distanza desiderata tra il titolo e l'h3 */
+  left: 25%;
   transform: translateX(-50%);
   color: white;
   font-size: 2em; /* Modifica la dimensione del testo secondo le tue preferenze */
   text-align: center;
+  user-select: none;
 }
 
 #loginButton {
@@ -62,4 +63,16 @@
 
 #loginButton:hover {
   background-color: #1565C0; /* Cambia il colore al passaggio del mouse */
+}
+
+@keyframes bounce {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.3);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
