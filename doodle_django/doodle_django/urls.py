@@ -22,9 +22,10 @@ from rest_framework.schemas import get_schema_view
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("meetings/", MeetingView.as_view()),
-    path("meetings/<str:link>", MeetingDetailView.as_view(), name="meeting_detail"),
-    path("authenticatedMeetings/", AuthMeetingView.as_view()),
+    path("api/v1/meetings/", MeetingView.as_view()),
+    path("api/v1/meetings/timeslots/<str:link>", MeetingTimeSlotsView.as_view()),
+    path("api/v1/meetings/<str:link>", MeetingDetailView.as_view(), name="meeting_detail"),
+    path("api/v1/authenticatedMeetings/", AuthMeetingView.as_view()),
     path("api-auth/", include("rest_framework.urls")),
     path("api/v1/auth/", include("dj_rest_auth.urls")),
 

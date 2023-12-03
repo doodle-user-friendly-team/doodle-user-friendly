@@ -46,11 +46,8 @@ class MeetingDetailView(APIView):
 
     def get(self, request, link):
         meeting = Meeting.objects.get(organizer_link=link)
-        serializer = MeetingSerializer(meeting)
+        serializer = CompleteMeetingSerializer(meeting)
         return Response(serializer.data)
-
-    #@action(methods=['get'], detail=False, url_path='timeslots', url_name='meeting_timeslot_list')
-
 
     def put(self, request, link):
         meeting = Meeting.objects.get(organizer_link=link)
@@ -72,7 +69,7 @@ class MeetingTimeSlotsView(APIView):
         meeting = Meeting.objects.get(organizer_link=link)
         schedule_pool = SchedulePool.objects.get(meeting=meeting)
         time_slots = TimeSlot.objects.filter(schedule_pool=schedule_pool)
-        serializer_result = TimeSlotSerializer(time_slots, many=True)
+        serializer_result = DetailedTimeSlotSerializer(time_slots, many=True)
         return Response(serializer_result.data)
 
 
