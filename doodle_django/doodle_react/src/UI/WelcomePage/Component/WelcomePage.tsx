@@ -4,6 +4,7 @@ import '../CSS/style.css';
 
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import LoginIcon from '@mui/icons-material/Login';
+import AddIcon from '@mui/icons-material/Add';
 import Fab from '@mui/material/Fab';
 import Paper from "@mui/material/Paper";
 import {FormComponent} from "../../Form/Component/FormIdentification";
@@ -21,6 +22,9 @@ export const WelcomePage = () => {
     return (
         <>
       <div id="second-element">
+          <Fab color="primary" aria-label="Create meeting" sx={{position: 'absolute', top: '5%', left: '85%', padding: '3em'}}>
+              <AddIcon onClick={() => window.location.assign("/create-meeting")}/>
+          </Fab>
         <Fab color="primary" aria-label="login" sx={{position: 'absolute', top: '5%', left: '90%', padding: '3em'}}>
           <LoginIcon onClick={() => window.location.assign("/login")}/>
         </Fab>
@@ -45,7 +49,7 @@ export const WelcomePage = () => {
 
       </div>
             
-            <h2 ref={ref} style={{paddingTop: '5%'}}> Create an account to access and make your meetings! </h2>
+            <h2 ref={ref} style={{paddingTop: '5%'}}> Create an account to access your meetings in a faster way! </h2>
             <FormComponent startValue={formValue}/>
             <p style={{paddingTop: '5%', paddingBottom: '10%'}}>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa.
                 Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec,

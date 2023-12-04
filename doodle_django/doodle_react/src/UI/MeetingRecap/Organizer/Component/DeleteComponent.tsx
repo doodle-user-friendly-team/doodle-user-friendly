@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+/* import React, { useState } from 'react';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -57,5 +57,6 @@ const AlertDialog: React.FC = () => {
     </>
   );
 };
-
-export default AlertDialog;
+*/
+//export default AlertDialog;
+export {}

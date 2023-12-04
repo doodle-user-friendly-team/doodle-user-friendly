@@ -1,7 +1,6 @@
 // App.tsx
 import React from 'react';
 import './App.css';
-import { MeetingRecap } from './UI/MeetingRecap/Component/MeetingRecap';
 import Cookies from 'js-cookie';
 import {WelcomePage} from "./UI/WelcomePage/Component/WelcomePage";
 import {BrowserRouter, Route, Router, Routes} from "react-router-dom";
@@ -10,6 +9,7 @@ import {LoginFormComponent} from "./UI/Form/Component/LoginFormComponent";
 import {SigninFormComponent} from "./UI/Form/Component/SigninFormComponent";
 import {PlanningPanelComponent} from "./UI/PlanningPanel/Component/PlanningPanel";
 import {FormComponent} from "./UI/Form/Component/FormIdentification";
+import {MeetingCreation} from "./UI/MeetingCreation/Component/MeetingCreationForm";
 function App() {
   return (
     <div className="App">
@@ -18,8 +18,8 @@ function App() {
                 <Route path={"/"} element={<WelcomePage />}/>
                     <Route path="/login" element={<FormComponent startValue={"login"} />}/>
                     <Route path="/signin" element={<FormComponent startValue={"signin"} />}/>
-                    <Route path='/create-meeting' element={<h1>qua ci va il component della creazione meeting</h1>}/>
-                    <Route path='/recap-meeting/:id' element={<MeetingRecap/>}/>
+                    <Route path='/create-meeting' element={<MeetingCreation/>}/>
+                    <Route path='/recap-meeting/:id' element={<h1>qua ci va il component del recap meeting</h1>}/>
                     <Route path='/pool-meeting/:id' element={<h1>qua ci va il component del pool meeting</h1>}/>
             </Routes>
         </BrowserRouter>.

@@ -1,5 +1,5 @@
 import React, { ChangeEvent, FormEvent } from 'react';
-import {Button, CssBaseline, TextField, Box, Typography, Container, Alert, AlertTitle} from '@mui/material'
+import {AppBar, Toolbar, Button, CssBaseline, TextField, Box, Typography, Container, Alert, AlertTitle} from '@mui/material'
 
 import '../CSS/style.css'
 
@@ -11,6 +11,10 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { Link } from 'react-router-dom';
+import axios from "axios";
+import Cookies from "js-cookie";
+import {WelcomePage} from "../../WelcomePage/Component/WelcomePage";
 
 
 
@@ -59,6 +63,16 @@ export class MeetingCreation extends React.Component<{}, MeetingFormState & Aler
       showWarningAlert: false,
       showErrorAlert: false,
     };
+  }
+
+  ottieniAnnoMeseGiornoDaStringaData(dataStringa: string): string {
+    const data = new Date(dataStringa);
+
+    const anno = data.getFullYear();
+    const mese = String(data.getMonth() + 1).padStart(2, '0'); // I mesi partono da 0, aggiungiamo 1 e formattiamo.
+    const giorno = String(data.getDate()).padStart(2, '0'); // Formattiamo il giorno.
+
+    return `${anno}-${mese}-${giorno}`;
   }
 
   handleSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -112,6 +126,39 @@ export class MeetingCreation extends React.Component<{}, MeetingFormState & Aler
           this.alertRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
       });
+
+      let [ore, minuti] = this.state.timeValue.split(':').map(Number);
+
+      let meetingDuration = ore * 60 + minuti;
+      let dateStart = this.ottieniAnnoMeseGiornoDaStringaData(this.state.dateStart.toString());
+      let dateEnd = this.ottieniAnnoMeseGiornoDaStringaData(this.state.dateEnd.toString());
+
+      const postData = {
+        organizer_name: this.state.name,
+        organizer_surname: this.state.surname,
+        organizer_email: this.state.email,
+        name: this.state.meetingTitle,
+        description: this.state.meetingDescription,
+        location: this.state.meetingPlace,
+        duration: meetingDuration,
+        period_start_date: dateStart,
+        period_end_date: dateEnd,
+      };
+
+      const csrfToken = Cookies.get('csrftoken');
+
+      const headers = {
+        'X-CSRFToken': csrfToken,
+        'Content-Type': 'application/json',
+      };
+
+      axios.post('http://localhost:8000/api/v1/meetings/', postData, {headers})
+          .then((response) => {
+            console.log("res:" + response);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
     }
   };
 
@@ -131,11 +178,11 @@ export class MeetingCreation extends React.Component<{}, MeetingFormState & Aler
   handleDateStartChange = (date: Date | null) => {
     this.setState({ dateStart: date });
   };
-  
+
   handleDateEndChange = (date: Date | null) => {
     this.setState({ dateEnd: date });
   };
-  
+
   alertRef = React.createRef<HTMLDivElement>();
 
   render() {
@@ -144,6 +191,16 @@ export class MeetingCreation extends React.Component<{}, MeetingFormState & Aler
         <Box className="background-image" />
         <Container component="main" maxWidth="xs">
           <CssBaseline />
+          <AppBar position="static">
+            <Toolbar>
+              <Typography variant="h6" style={{ flexGrow: 1 }}>
+                Doodle
+              </Typography>
+              <Button color="inherit" component={Link} to="/">
+                Return to Homepage
+              </Button>
+            </Toolbar>
+          </AppBar>
 
           {this.state.showSuccessAlert && (
             <Alert severity="success" className='successAlert' ref={this.alertRef}>
@@ -171,7 +228,7 @@ export class MeetingCreation extends React.Component<{}, MeetingFormState & Aler
             <Typography component="h1" variant="h4" className='title' gutterBottom>
               Create New Meeting
             </Typography>
-            
+
             <Box component="form" onSubmit={this.handleSubmit} noValidate className='form'>
               <TextField
                 margin="normal"
@@ -233,7 +290,7 @@ export class MeetingCreation extends React.Component<{}, MeetingFormState & Aler
                 onChange={this.handleInputChange('meetingPlace')}
               />
 
-              
+
               <TextField
                 margin="normal"
                 label="Meeting duration"
@@ -251,7 +308,7 @@ export class MeetingCreation extends React.Component<{}, MeetingFormState & Aler
                 Date Range To Vote
               </Typography>
               <Box className= 'datePickerContainer'>
-                
+
                 <div className="datePickerWrapperStart">
 
                   <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -272,7 +329,7 @@ export class MeetingCreation extends React.Component<{}, MeetingFormState & Aler
               </Box>
 
 
-              
+
               <Button
                 type="submit"
                 fullWidth

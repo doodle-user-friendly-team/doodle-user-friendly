@@ -22,6 +22,21 @@ class TimeSlotSerializer(serializers.ModelSerializer):
         fields = ['id', 'start_time', 'schedule_pool', 'end_time', 'user']
 
 
+
+
+class TimeSlotUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=UserFake
+        fields = ['name', 'surname']
+
+class MeetingTimeSlotSerializer(serializers.ModelSerializer):
+    user = TimeSlotUserSerializer()
+    class Meta:
+        model = TimeSlot
+        fields = ['id', 'start_time', 'schedule_pool', 'end_time', 'user']
+
+
+
 class DetailedVoteSerializer(serializers.ModelSerializer):
     user = UserFakeSerializer()
 
@@ -39,12 +54,14 @@ class DetailedTimeSlotSerializer(serializers.ModelSerializer):
         fields = ['id', 'start_time', 'schedule_pool', 'end_time', 'user', 'preferences']
 
 
+
 class SchedulePoolSerializer(serializers.ModelSerializer):
-    time_slots = DetailedTimeSlotSerializer(many=True, read_only=True, source='timeslot_set')
+    time_slots = MeetingTimeSlotSerializer(many=True, read_only=True, source='timeslot_set')
 
     class Meta:
         model = SchedulePool
         fields = ['id', 'voting_start_date', 'voting_deadline', 'pool_link', 'meeting', 'time_slots']
+
 
 
 class VoteSerializer(serializers.ModelSerializer):

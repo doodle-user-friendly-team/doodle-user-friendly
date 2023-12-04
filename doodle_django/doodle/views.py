@@ -354,7 +354,7 @@ def get_preferences(request, time_slot_id):
 @renderer_classes((TemplateHTMLRenderer, JSONRenderer))
 def get_timeslot(request, time_slot_id):
     specified_time_slot = TimeSlot.objects.get(id=time_slot_id)
-    serializer_result = TimeSlotSerializer(specified_time_slot)
+    serializer_result = DetailedTimeSlotSerializer(specified_time_slot)
     return Response(serializer_result.data)
 
 class djangoUsers(APIView):
