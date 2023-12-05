@@ -39,31 +39,12 @@ div h3 {
   position: absolute;
   top: 35%; /* Imposta la distanza desiderata tra il titolo e l'h3 */
   left: 25%;
-  transform: translateX(-50%);
   color: white;
   font-size: 2em; /* Modifica la dimensione del testo secondo le tue preferenze */
   text-align: center;
   user-select: none;
 }
 
-#loginButton {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  background-color: #2196F3; /* Colore blu Material UI di default */
-  color: white;
-  font-size: 1em; /* Modifica la dimensione del testo secondo le tue preferenze */
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  outline: none;
-  transition: background-color 0.3s;
-}
-
-#loginButton:hover {
-  background-color: #1565C0; /* Cambia il colore al passaggio del mouse */
-}
 
 @keyframes bounce {
   0% {
