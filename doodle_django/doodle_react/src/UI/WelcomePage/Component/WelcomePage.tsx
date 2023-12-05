@@ -22,7 +22,7 @@ export const WelcomePage = () => {
     return (
         <>
       <div id="second-element">
-          <Fab color="primary" aria-label="Create meeting" sx={{position: 'absolute', top: '5%', left: '85%', padding: '3em'}}>
+          <Fab color="primary" aria-label="Create meeting" sx={{position: 'absolute', top: '5%', left: '83%', padding: '3em'}}>
               <AddIcon onClick={() => window.location.assign("/create-meeting")}/>
           </Fab>
         <Fab color="primary" aria-label="login" sx={{position: 'absolute', top: '5%', left: '90%', padding: '3em'}}>

@@ -63,15 +63,17 @@ export class MeetingRecap extends React.Component<MeetingState, MeetingState> {
   
 
   alertRef = React.createRef<HTMLDivElement>();
+  
+  //className="background-image"
 
   render() {
     return (
       <ThemeProvider theme={customTheme}>
-        <Box className="background-image" />
-        <Container component="main" maxWidth="xs">
+        <Box sx={{width: "80%"}}/>
+        <Container component="main" >
           <CssBaseline />
 
-          <Box className="container">
+          <Box className="container" >
             <Typography component="h1" variant="h4" className="title" gutterBottom>
               Recap Meeting
             </Typography>

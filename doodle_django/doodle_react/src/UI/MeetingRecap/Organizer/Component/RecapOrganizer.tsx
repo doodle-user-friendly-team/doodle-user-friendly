@@ -5,6 +5,8 @@ import {useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import { Paper, Box, CircularProgress } from '@mui/material';
+import {TopBarComponent} from "../../../Dashboard/Component/TopBarComponent";
+import * as React from "react";
 
 
 
@@ -153,17 +155,20 @@ export function RecapOrganizer() {
 
     
     return (
-        <Box display="flex" flexDirection="column" alignItems="center" mt={4}>
-            {loading && <CircularProgress />}
-            {meetingStateData && !loading && (
-               
-                <MeetingRecap {...meetingStateData} />
-            )}
-            {meetingData && !loading && (
-                <Paper elevation={3} style={{ padding: 16, backgroundColor: '#f5f5f5', width: '80%' }}>
-                <ContainerTimeSlots {...meetingData} />
-                </Paper>
-            )}
-        </Box>
+        <>
+            <TopBarComponent/>
+            <Box display="flex" flexDirection="row" alignItems="center" mt={4} sx={{marginTop: "3.5em", padding:"2.5em", backgroundColor: "#0088d2"}}>
+                {loading && <CircularProgress />}
+                {meetingStateData && !loading && (
+                   
+                    <MeetingRecap {...meetingStateData} />
+                )}
+                {meetingData && !loading && (
+                    <Paper elevation={3} style={{ padding: 8, backgroundColor: '#f5f5f5', margin: "2em"}}>
+                    <ContainerTimeSlots {...meetingData} />
+                    </Paper>
+                )}
+            </Box>
+        </>
     );
 }

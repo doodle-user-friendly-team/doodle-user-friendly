@@ -24,9 +24,7 @@ export const LoginFormComponent = () => {
         const queryString = `?email=${data.get('email')}&password=${data.get('password')}`;
         axios.get(`http://localhost:8000/api/v1/authenticate/${queryString}`,
             {headers}).then((response) => {
-            const token = response.data['token'];
-            const email = response.data['email'];
-            window.location.assign("/")
+            window.location.assign("/dashboard")
         }).catch((error) => {
             error.response.data['message'] && setErrorString(error.response.data['message']);
         });

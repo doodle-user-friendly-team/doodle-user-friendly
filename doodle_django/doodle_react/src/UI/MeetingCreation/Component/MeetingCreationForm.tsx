@@ -18,6 +18,8 @@ import {WelcomePage} from "../../WelcomePage/Component/WelcomePage";
 
 
 
+import {TopBarComponent} from "../../Dashboard/Component/TopBarComponent";
+
 const customTheme= createTheme({
   typography: {
     fontFamily: 'Poppins, sans-serif',
@@ -191,37 +193,7 @@ export class MeetingCreation extends React.Component<{}, MeetingFormState & Aler
         <Box className="background-image" />
         <Container component="main" maxWidth="xs">
           <CssBaseline />
-          <AppBar position="static">
-            <Toolbar>
-              <Typography variant="h6" style={{ flexGrow: 1 }}>
-                Doodle
-              </Typography>
-              <Button color="inherit" component={Link} to="/">
-                Return to Homepage
-              </Button>
-            </Toolbar>
-          </AppBar>
-
-          {this.state.showSuccessAlert && (
-            <Alert severity="success" className='successAlert' ref={this.alertRef}>
-              <AlertTitle>Success</AlertTitle>
-              Meeting created successfully — <strong> check it out! </strong>
-            </Alert>
-          )}
-
-          {this.state.showWarningAlert && (
-            <Alert severity="warning" className= 'warningAlert' ref={this.alertRef}>
-              <AlertTitle>Warning</AlertTitle>
-              Fill in the required fields before proceeding.
-            </Alert>
-          )}
-
-          {this.state.showErrorAlert && (
-            <Alert severity="error" className= 'errorAlert' ref={this.alertRef}>
-              <AlertTitle>Error</AlertTitle>
-              The entered email is invalid, please enter another one.
-            </Alert>
-          )}
+          <TopBarComponent/>
 
 
           <Box className= "container">
@@ -340,6 +312,26 @@ export class MeetingCreation extends React.Component<{}, MeetingFormState & Aler
               </Button>
             </Box>
           </Box>
+          {this.state.showSuccessAlert && (
+              <Alert severity="success" className='successAlert' ref={this.alertRef}>
+                <AlertTitle>Success</AlertTitle>
+                Meeting created successfully — <strong> check it out! </strong>
+              </Alert>
+          )}
+
+          {this.state.showWarningAlert && (
+              <Alert severity="warning" className= 'warningAlert' ref={this.alertRef}>
+                <AlertTitle>Warning</AlertTitle>
+                Fill in the required fields before proceeding.
+              </Alert>
+          )}
+
+          {this.state.showErrorAlert && (
+              <Alert severity="error" className= 'errorAlert' ref={this.alertRef}>
+                <AlertTitle>Error</AlertTitle>
+                The entered email is invalid, please enter another one.
+              </Alert>
+          )}
         </Container>
       </ThemeProvider>
     );
