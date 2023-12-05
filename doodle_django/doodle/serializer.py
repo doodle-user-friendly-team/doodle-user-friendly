@@ -22,12 +22,55 @@ class TimeSlotSerializer(serializers.ModelSerializer):
         fields = ['id', 'start_time', 'schedule_pool', 'end_time', 'user']
 
 
+
+
+class TimeSlotUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=UserFake
+        fields = ['name', 'surname']
+
+class MeetingTimeSlotSerializer(serializers.ModelSerializer):
+    user = TimeSlotUserSerializer()
+    class Meta:
+        model = TimeSlot
+        fields = ['id', 'start_time', 'schedule_pool', 'end_time', 'user']
+
+
+
+class DetailedVoteSerializer(serializers.ModelSerializer):
+    user = UserFakeSerializer()
+
+    class Meta:
+        model = Vote
+        fields = ['id', 'preference', 'time_slot', 'user']
+
+
+class DetailedTimeSlotSerializer(serializers.ModelSerializer):
+    user = UserFakeSerializer()
+    preferences = DetailedVoteSerializer(many=True, source='vote_set')
+
+    class Meta:
+        model = TimeSlot
+        fields = ['id', 'start_time', 'schedule_pool', 'end_time', 'user', 'preferences']
+
+
+
 class SchedulePoolSerializer(serializers.ModelSerializer):
-    time_slots = TimeSlotSerializer(many=True, read_only=True, source='timeslot_set')
+    time_slots = MeetingTimeSlotSerializer(many=True, read_only=True, source='timeslot_set')
 
     class Meta:
         model = SchedulePool
         fields = ['id', 'voting_start_date', 'voting_deadline', 'pool_link', 'meeting', 'time_slots']
+
+
+
+class VoteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Vote
+        fields = ['id', 'preference', 'time_slot', 'user']
+
+
+
 
 
 class MeetingSerializer(serializers.ModelSerializer):
@@ -61,20 +104,6 @@ class CreateMeetingSerializer(serializers.ModelSerializer):
         model = Meeting
         fields = ['organizer_name', 'organizer_surname', 'organizer_email', 'id', 'name', 'description',
                   'location', 'duration', 'period_start_date', 'period_end_date', 'organizer_link']
-
-
-class DetailedVoteSerializer(serializers.ModelSerializer):
-    user = UserFakeSerializer()
-
-    class Meta:
-        model = Vote
-        fields = ['id', 'preference', 'time_slot', 'user']
-
-
-class VoteSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Vote
-        fields = ['id', 'preference', 'time_slot', 'user']
 
 
 class CreateVoteSerializer(serializers.ModelSerializer):

@@ -6,7 +6,6 @@ import React, {FormEvent} from "react";
 import Cookies from "js-cookie";
 import axios from "axios";
 import {Alert, Box } from "@mui/material";
-const CryptoJS = require("crypto-js");
 
 export function SigninFormComponent () {
     

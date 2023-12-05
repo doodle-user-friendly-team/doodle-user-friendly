@@ -1,7 +1,6 @@
 // App.tsx
 import React from 'react';
 import './App.css';
-import { MeetingRecap } from './UI/MeetingRecap/Component/MeetingRecap';
 import Cookies from 'js-cookie';
 import {WelcomePage} from "./UI/WelcomePage/Component/WelcomePage";
 import {BrowserRouter, Route, Router, Routes} from "react-router-dom";

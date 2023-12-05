@@ -34,21 +34,24 @@ interface MeetingState {
   meetingTitle: string;
   meetingDescription: string;
   meetingPlace: string;
+  meetingDate: string;
   timeValue: string;
   isDeleteDialogOpen: boolean;
 }
 
-export class MeetingRecap extends React.Component<{}, MeetingState> {
+export class MeetingRecap extends React.Component<MeetingState, MeetingState> {
 
-  constructor(props: {}) {
+  constructor(props: MeetingState) {
     super(props);
-
+    
+    
     this.state = {
-      meetingTitle: '',
-      meetingDescription: '',
-      meetingPlace: '',
-      timeValue: '',
-      isDeleteDialogOpen: false,
+      meetingTitle: props.meetingTitle,
+      meetingDescription: props.meetingDescription,
+      meetingPlace: props.meetingPlace,
+      meetingDate: props.meetingDate,
+      timeValue: props.timeValue,
+      isDeleteDialogOpen: props.isDeleteDialogOpen,
     
     };
   } 
@@ -76,23 +79,20 @@ export class MeetingRecap extends React.Component<{}, MeetingState> {
             <Box component="form" noValidate className="form">
             <div className="info">
                 {/* questo titolo deve essere preso dal db */}
-                <h2 className="titleMeeting">Title </h2>
+                <h2 className="titleMeeting">{this.state.meetingTitle}</h2>
 
                 <CustomTableCell>
                   <CustomIcon>
                     <DescriptionIcon />
                   </CustomIcon>
-
-                    {/* questa descrizione deve essere preso dal db */}
-                  Descrizione
+                  {this.state.meetingDescription}
                 </CustomTableCell>
               <br/>
                 <CustomTableCell>
                   <CustomIcon>
                     <CalendarMonthIcon />
                   </CustomIcon>
-                     {/* questa data deve essere preso dal db */}
-                  Data
+                     {this.state.meetingDate}
                 </CustomTableCell>
                 <br/>
 
@@ -100,8 +100,7 @@ export class MeetingRecap extends React.Component<{}, MeetingState> {
                   <CustomIcon>
                     <AccessTimeIcon />
                   </CustomIcon>
-                         {/* questa durata deve essere preso dal db */}
-                  Durata
+                  {this.state.timeValue}
                 </CustomTableCell>
                 <br/>
 
@@ -110,7 +109,7 @@ export class MeetingRecap extends React.Component<{}, MeetingState> {
                     <Place />
                   </CustomIcon>
                    {/* questo luogo deve essere preso dal db */}
-                  Luogo
+                  {this.state.meetingPlace}
                 </CustomTableCell>
               </div>
 
