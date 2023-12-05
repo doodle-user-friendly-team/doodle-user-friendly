@@ -10,6 +10,7 @@ import {SigninFormComponent} from "./UI/Form/Component/SigninFormComponent";
 import {PlanningPanelComponent} from "./UI/PlanningPanel/Component/PlanningPanel";
 import {FormComponent} from "./UI/Form/Component/FormIdentification";
 import {MeetingCreation} from "./UI/MeetingCreation/Component/MeetingCreationForm";
+import {RecapOrganizer} from "./UI/MeetingRecap/Organizer/Component/RecapOrganizer";
 function App() {
   return (
     <div className="App">
@@ -19,7 +20,7 @@ function App() {
                     <Route path="/login" element={<FormComponent startValue={"login"} />}/>
                     <Route path="/signin" element={<FormComponent startValue={"signin"} />}/>
                     <Route path='/create-meeting' element={<MeetingCreation/>}/>
-                    <Route path='/recap-meeting/:id' element={<h1>qua ci va il component del recap meeting</h1>}/>
+                    <Route path='/recap-meeting/:link_meeting' element={<RecapOrganizer/>}/>
                     <Route path='/pool-meeting/:id' element={<h1>qua ci va il component del pool meeting</h1>}/>
             </Routes>
         </BrowserRouter>.
