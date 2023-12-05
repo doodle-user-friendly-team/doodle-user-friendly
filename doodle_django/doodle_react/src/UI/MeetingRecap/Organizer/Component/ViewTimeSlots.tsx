@@ -44,7 +44,7 @@ function getTimeslotsByDay(timeslots: MyTimeSlot[], date: Date) {
   const timeslotsByDay: MyTimeSlot[] = [];
   timeslots.forEach((timeslot) => {
     const start = new Date(timeslot.startDate);
-    if(start.getDay() === date.getDay() && start.getMonth() === date.getMonth() && start.getFullYear() === date.getFullYear()){
+    if(start.getDate() === date.getDate() && start.getMonth() === date.getMonth() && start.getFullYear() === date.getFullYear()){
       timeslotsByDay.push(timeslot);
     }
   });
@@ -151,25 +151,7 @@ function convertPreferencesToMyTimeSlot(preferences: Preference[]): MyTimeSlotWi
   };
 }
 
-/*
-const convertTimeSlotWithPreferencesToMyTimeSlotWithPreferences = (
-  timeSlotWithPreferences: TimeSlotWithPreferences): MyTimeSlotWithPreferences => {
-  // Funzione di conversione per un singolo oggetto di tipo Preference
-  const convertPreference = (preference: Preference): MyPreference => ({
-    id: preference.id,
-    preference: preference.preference,
-    name_user: `${preference.user.name} ${preference.user.surname}`,
-  });
 
-  // Mappa le preferences utilizzando la funzione di conversione
-  const myPreferences = timeSlotWithPreferences.preferences.map(convertPreference);
-
-  // Restituisci l'oggetto convertito
-  return {
-    id: timeSlotWithPreferences.id,
-    preferences: myPreferences,
-  };
-};*/
 const convertTimeSlotWithPreferencesToMyTimeSlotWithPreferences = (
   timeSlotWithPreferences: TimeSlotWithPreferences | undefined): MyTimeSlotWithPreferences | undefined => {
   // Verifica se timeSlotWithPreferences è undefined o null
@@ -380,7 +362,7 @@ function CustomDialogPreferences({ isOpen, handleClose, timeslot, preferences }:
       </DialogTitle>
       <DialogContent style={{ paddingBottom: 16, paddingLeft: 16, paddingRight: 16, paddingTop: 0, overflowY: 'auto', maxHeight: 400 }}>
       <List>
-        {preferences.map((preference: MyPreference) => (
+        {preferences&&preferences.map((preference: MyPreference) => (
           <ListItem
             key={preference.id}
             style={{ border: '1px solid #ccc', borderRadius: 8, marginBottom: 8 }}
@@ -488,7 +470,7 @@ function CustomDialogTimeSlots ({ isOpen, handleClose, timeslots }:PropDialog) {
       </DialogTitle>
       <DialogContent style={{ padding: 16, overflowY: 'auto', maxHeight: 400 }}>
         <List>
-          {timeslots.map((timeslot: MyTimeSlot) => (
+          {timeslots&&timeslots.map((timeslot: MyTimeSlot) => (
             <ListItem
               key={timeslot.id}
               onClick={() => handleItemClick(timeslot)}
