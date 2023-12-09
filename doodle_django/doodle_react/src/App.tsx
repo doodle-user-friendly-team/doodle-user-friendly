@@ -12,6 +12,7 @@ import {FormComponent} from "./UI/Form/Component/FormIdentification";
 import {MeetingCreation} from "./UI/MeetingCreation/Component/MeetingCreationForm";
 import {DashboardComponent} from "./UI/Dashboard/Component/dashboardComponent";
 import {RecapOrganizer} from "./UI/MeetingRecap/Organizer/Component/RecapOrganizer";
+import Calendar from './UI/Calendar/Components/Calendar';
 
 function App() {
   return (
@@ -23,11 +24,11 @@ function App() {
                     <Route path="/signin" element={<FormComponent startValue={"signin"} />}/>
                     <Route path='/create-meeting' element={<MeetingCreation />}/>
                     <Route path='/recap-meeting/:link_meeting' element={<RecapOrganizer/>}/>
-                    <Route path='/pool-meeting/:id' element={<h1>qua ci va il component del pool meeting</h1>}/>
                     <Route path='/dashboard' element={<DashboardComponent/>}/>
-                    
+                    <Route path={'/schedulePool/:pool_link'} element={<Calendar />} />
             </Routes>
         </BrowserRouter>.
+                        
     </div>
   );
 }
