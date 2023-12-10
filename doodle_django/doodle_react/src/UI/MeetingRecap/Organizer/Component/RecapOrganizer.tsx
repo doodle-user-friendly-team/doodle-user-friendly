@@ -1,12 +1,12 @@
 
 import { ContainerTimeSlots } from "./ViewTimeSlots";
-import { MeetingRecap } from "./MeetingRecap";
 import {useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import { Paper, Box, CircularProgress } from '@mui/material';
 import {TopBarComponent} from "../../../Dashboard/Component/TopBarComponent";
 import * as React from "react";
+import { ContainerTitle } from "./ViewMeeting";
 
 
 
@@ -26,16 +26,21 @@ interface Meeting{
     timeslots: TimeSlot[]
 }
 
-
-// PROP per MeetingRecap
-interface MeetingState {
-    meetingTitle: string;
-    meetingDescription: string;
-    meetingPlace: string;
-    meetingDate: string;
-    timeValue: string;
-    isDeleteDialogOpen: boolean;
+// PROP per ContainerTitle
+interface ContainerTitleProps {
+    id: number; //meeting_id
+    title: string;
+    description: string; 
+    location: string;
+    date: string; //data decisa dal creatore, default: "In fase di votazione"
+    duration: number; //durata meeting
+    period_start_date: string; //data inizio periodo votazione
+    period_end_date: string; //data fine periodo votazione
+    organizer_link: string; //pool_link
+    link: string; //meeting_link
+    user: number; //user_id
 }
+
 
 // PROP Richiesta HTTP
 interface MeetingResponse{
@@ -106,14 +111,25 @@ function convertMeetingResponseToMeeting(meetingResponse: MeetingResponse): Meet
     };
 }
 
-function convertMeetingResponseToMeetingState(meetingResponse: MeetingResponse): MeetingState {
+
+
+
+
+function extractContainerTitleProps(meeting: MeetingResponse): ContainerTitleProps {
+    const pool = meeting.schedule_pool[0]; // Assuming there's only one schedule pool
+  
     return {
-        meetingTitle: meetingResponse.name,
-        meetingDescription: meetingResponse.description,
-        meetingPlace: meetingResponse.location,
-        meetingDate: "In fase di votazione",
-        timeValue: meetingResponse.duration.toString(),
-        isDeleteDialogOpen: false // Imposta un valore predefinito per isDeleteDialogOpen
+        id: meeting.id,
+        title: meeting.name,
+        description: meeting.description,
+        location: meeting.location,
+        date: 'In fase di votazione (possibile tra: ' + meeting.period_start_date + ' e ' + meeting.period_end_date + ')',
+        duration:  meeting.duration,
+        period_start_date: meeting.period_start_date,
+        period_end_date: meeting.period_end_date,
+        organizer_link: meeting.organizer_link,
+        user: meeting.user.id,
+        link: pool.pool_link,
     };
 }
 
@@ -123,7 +139,7 @@ function convertMeetingResponseToMeetingState(meetingResponse: MeetingResponse):
 
 export function RecapOrganizer() {
     const [meetingData, setMeetingData] = useState<Meeting | null>(null);
-    const [meetingStateData, setMeetingStateData] = useState<MeetingState | null>(null);
+    const [meetingInfo, setMeetingInfo] = useState<ContainerTitleProps | null>(null);
     const [loading, setLoading] = useState(true);
 
     const {link_meeting} = useParams();
@@ -140,10 +156,11 @@ export function RecapOrganizer() {
             const response = await axios.get<MeetingResponse>(`http://localhost:8000/api/v1/meetings/${link_meeting}`);
 
             const transformedMeeting = convertMeetingResponseToMeeting(response.data);
-            const transformedMeetingState = convertMeetingResponseToMeetingState(response.data);
+            const transformedMeetingData = extractContainerTitleProps(response.data);
 
             setMeetingData(transformedMeeting);
-            setMeetingStateData(transformedMeetingState);
+            setMeetingInfo(transformedMeetingData);
+            //setMeetingStateData(transformedMeetingState);
             setLoading(false);
         } catch (error) {
             console.error('Errore nella richiesta HTTP:', error);
@@ -156,19 +173,30 @@ export function RecapOrganizer() {
     
     return (
         <>
-            <TopBarComponent/>
-            <Box display="flex" flexDirection="row" alignItems="center" mt={4} sx={{marginTop: "3.5em", padding:"2.5em", backgroundColor: "#0088d2"}}>
-                {loading && <CircularProgress />}
-                {meetingStateData && !loading && (
-                   
-                    <MeetingRecap {...meetingStateData} />
-                )}
-                {meetingData && !loading && (
-                    <Paper elevation={3} style={{ padding: 8, backgroundColor: '#f5f5f5', margin: "2em"}}>
-                    <ContainerTimeSlots {...meetingData} />
+            <TopBarComponent />
+                <Box
+                    display="flex"
+                    flexDirection="column"
+                    alignItems="center"
+                    sx={{ marginTop: '3.5em', padding: '2.5em', backgroundColor: '#0088d2' }}
+                >
+                    {loading && <CircularProgress />}
+                    {meetingInfo && !loading && (
+                    <Paper elevation={3} style={{ padding: 8, backgroundColor: '#f5f5f5', marginTop: '2em', width:'100%' }}>
+                        <Box textAlign="center">
+                        <ContainerTitle  {...meetingInfo} />
+                        </Box>
                     </Paper>
-                )}
-            </Box>
+                    )}
+                    {meetingData && !loading && (
+                    <Paper elevation={3} style={{ padding: 8, backgroundColor: '#f5f5f5', margin: '2em' , width: '100%'}}>
+                        <Box textAlign="center">
+                        <ContainerTimeSlots {...meetingData} />
+                        </Box>
+                    </Paper>
+                    )}
+                </Box>
         </>
     );
+
 }
