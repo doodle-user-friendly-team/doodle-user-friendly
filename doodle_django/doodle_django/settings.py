@@ -28,7 +28,7 @@ SECRET_KEY = "django-insecure-%jk^anc8av3wt22tn8(pfg3#p0($03o6f(-=xpbp5k384^u9ga
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    "localhost"
+    "127.0.0.1"
 ]
 
 
@@ -48,6 +48,8 @@ INSTALLED_APPS = [
     "doodle_react",
     'allauth',
     'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
     "doodle"
 ]
 
@@ -156,4 +158,24 @@ CORS_ALLOWED_ORIGINS = [
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = 'none' #optional
 SITE_ID = 1
+
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend'
+]
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        }
+    }
+}
 

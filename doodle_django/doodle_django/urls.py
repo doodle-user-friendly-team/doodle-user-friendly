@@ -19,6 +19,8 @@ from django.urls import path, include
 from doodle.views import *
 from rest_framework.documentation import include_docs_urls
 from rest_framework.schemas import get_schema_view
+from django.contrib.auth.views import LogoutView
+
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -42,6 +44,9 @@ urlpatterns = [
 
     path('api/v1/authenticate/', djangoUsers.as_view(), name='user_authentication'),
     path('api/v1/auth/registration/', include('dj_rest_auth.registration.urls')),
+
+    path('accounts/', include('allauth.urls')),
+    path('logout', LogoutView.as_view()),
 
     # add react path
     # but I think it's better to do it when we have finished the website
