@@ -39,7 +39,7 @@ interface SchedulePool {
   id: number;
   voting_start_date: Date;
   voting_deadline: Date;
-  time_slots: TimeSlot[];
+  time_slots: DetailedTimeSlot[];
   meeting: MeetingStartDate;
 }
 interface MeetingStartDate {
@@ -50,6 +50,14 @@ interface TimeSlot {
   start_time: Date;
   end_time: Date;
   user: User;
+}
+
+interface DetailedTimeSlot {
+  id: number;
+  start_time: Date;
+  end_time: Date;
+  user: User;
+  preferences: Preference[];
 }
 
 interface User {
@@ -116,6 +124,7 @@ export default function Calendar() {
   //util function to count number of users's preferences in a specific timeslot, grouped by availability
   function countAvailability(ts_id: number): PreferencesCount {
     if (!votes) {
+      console.log("No votes")
       return { available: 0, maybe: 0, unavailable: 0 };
     }
     return {
@@ -260,15 +269,15 @@ export default function Calendar() {
     ((response) => {
       console.log(response.data);
       setPool(response.data[0]);
-      /*axios.get("http://localhost:8000/api/v1/votes/timeslot/" + response.data[0].id).then
-      ((response) => response.data).then((votes: Preference[]) => {
-        console.log(votes);
-        let schedulepool_votes = votes.filter((v) =>
-            response.data[0].time_slots.some((t) => t.id === v.time_slot)
-        );
-        console.log(schedulepool_votes);
-        setVotes(schedulepool_votes);
-      });*/
+      
+      let scp: SchedulePool = response.data[0];
+      var votes: Preference[] = [];
+      scp.time_slots.forEach((ts: DetailedTimeSlot) => {
+        ts.preferences.forEach((p) => {
+          votes.push(p);
+        });
+      });
+        setVotes(votes);
         setAreVotesLoading(false);
         setIsPoolLoading(false);
     });

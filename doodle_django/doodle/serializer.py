@@ -15,8 +15,6 @@ class UserFakeSerializer(serializers.ModelSerializer):
 
 
 class TimeSlotSerializer(serializers.ModelSerializer):
-    #user = UserFakeSerializer()
-
     class Meta:
         model = TimeSlot
         fields = ['id', 'start_time', 'schedule_pool', 'end_time', 'user']
@@ -85,7 +83,13 @@ class CompleteSchedulePoolSerializer(serializers.ModelSerializer):
         model = SchedulePool
         fields = ['id', 'voting_start_date', 'voting_deadline', 'pool_link', 'meeting', 'time_slots']
 
+class DetailedSchedulePoolSerializer(serializers.ModelSerializer):
+    time_slots = DetailedTimeSlotSerializer(many=True, read_only=True, source='timeslot_set')
+    meeting = MeetingSerializer()
 
+    class Meta:
+        model = SchedulePool
+        fields = ['id', 'voting_start_date', 'voting_deadline', 'pool_link', 'meeting', 'time_slots']
 class CompleteMeetingSerializer(serializers.ModelSerializer):
     user = UserFakeSerializer()
     schedule_pool = SchedulePoolSerializer(many=True, read_only=True, source='schedulepool_set')

@@ -107,7 +107,7 @@ class SchedulePoolView(APIView):
 
     def get(self, request, link):
         schedule_pool = SchedulePool.objects.filter(pool_link=link)
-        serializer_result = CompleteSchedulePoolSerializer(schedule_pool, many=True)
+        serializer_result = DetailedSchedulePoolSerializer(schedule_pool, many=True)
         return Response(serializer_result.data)
 
 
