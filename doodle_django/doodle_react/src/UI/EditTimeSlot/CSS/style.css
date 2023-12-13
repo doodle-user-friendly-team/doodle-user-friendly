@@ -1,0 +1,45 @@
+.MuiDialog-root {
+    position: absolute;
+  }
+  
+  /* Stili per la larghezza massima del dialogo */
+  .MuiDialog-paperWidthXs {
+    max-width: 1000px;
+  }
+  
+  /* Stili per la barra del titolo del dialogo */
+ .MuiDialogTitle-root {
+    background-color: #5f6ec7;
+    color: #fff; /* Colore del testo bianco */
+  }
+  
+  /* Stili per il contenuto del dialogo */
+  .MuiDialogContent-root {
+    padding: 50px;
+    margin-top: 30px;
+    margin-bottom: 30px;
+  }
+  
+  /* Stili per le azioni del dialogo (pulsanti) */
+  .MuiDialogActions-root {
+    padding: 8px;
+    justify-content: space-between;
+  }
+  
+  /* Stili per il pulsante "Close" */
+  .MuiButton-containedError {
+    background-color: #ff1744;
+    color: #fff; 
+  }
+  
+  /* Stili per il pulsante "Modify" */
+  .MuiButton-containedPrimary {
+    background-color: #1976D2; 
+    color: #fff; 
+  }
+
+  h3{
+    text-align: center;
+  }
+  
+  
