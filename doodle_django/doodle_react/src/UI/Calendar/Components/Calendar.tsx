@@ -252,26 +252,23 @@ export default function Calendar() {
 
   useEffect(() => {
     setIsPoolLoading(true);
-    axios
-      .get("http://localhost:8000/api/v1/schedule_pool/" + pool_link)
-      .then((response) => response.data)
-      .then((sp: SchedulePool[]) => {
-        setPool(sp[0]);
-        console.log(sp[0]);
-        axios
-          .get("http://localhost:8000/api/v1/schedule_pool/timeslots/"+ sp[0].id )
-          .then((response) => response.data)
-          .then((votes: Preference[]) => {
-            console.log(votes);
-            let schedulepool_votes = votes.filter((v) =>
-              sp[0].time_slots.some((t) => t.id === v.time_slot)
-            );
-            console.log(schedulepool_votes);
-            setVotes(schedulepool_votes);
-            setAreVotesLoading(false);
-          });
+
+    axios.get("http://localhost:8000/api/v1/schedule_pool/" + pool_link).then
+    ((response) => {
+      console.log(response.data);
+      setPool(response.data[0]);
+      /*axios.get("http://localhost:8000/api/v1/votes/timeslot/" + response.data[0].id).then
+      ((response) => response.data).then((votes: Preference[]) => {
+        console.log(votes);
+        let schedulepool_votes = votes.filter((v) =>
+            response.data[0].time_slots.some((t) => t.id === v.time_slot)
+        );
+        console.log(schedulepool_votes);
+        setVotes(schedulepool_votes);
+      });*/
+        setAreVotesLoading(false);
         setIsPoolLoading(false);
-      });
+    });
   }, []);
 
   if (isPoolLoading && areVotesLoading) {

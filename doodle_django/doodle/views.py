@@ -365,6 +365,8 @@ def get_timeslot(request, time_slot_id):
 @csrf_exempt
 @api_view(('GET',))
 def get_timeslot_from_schedule_pool(request, schedule_pool_id):
+    print("Ciao")
+    print(TimeSlot.objects.all())
     if TimeSlot.objects.filter(schedule_pool=schedule_pool_id).exists():
         specified_time_slot = TimeSlot.objects.get(schedule_pool=schedule_pool_id)
         serializer_result = DetailedTimeSlotSerializer(specified_time_slot)
