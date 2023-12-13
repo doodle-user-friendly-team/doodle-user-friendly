@@ -115,6 +115,9 @@ export default function Calendar() {
 
   //util function to count number of users's preferences in a specific timeslot, grouped by availability
   function countAvailability(ts_id: number): PreferencesCount {
+    if (!votes) {
+      return { available: 0, maybe: 0, unavailable: 0 };
+    }
     return {
       available: votes!.filter(
         (v) => v.time_slot === ts_id && v.preference === "Available"
