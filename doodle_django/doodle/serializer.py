@@ -74,7 +74,11 @@ class MeetingSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'description', 'location', 'duration', 'period_start_date', 'period_end_date',
                   'organizer_link', 'user']
 
-
+class simpleSchedulePoolSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SchedulePool
+        fields = ['id', 'voting_start_date', 'voting_deadline', 'pool_link', 'meeting']
+        
 class CompleteSchedulePoolSerializer(serializers.ModelSerializer):
     time_slots = TimeSlotSerializer(many=True, read_only=True, source='timeslot_set')
     meeting = MeetingSerializer()

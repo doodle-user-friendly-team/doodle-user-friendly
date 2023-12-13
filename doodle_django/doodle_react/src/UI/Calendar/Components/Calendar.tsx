@@ -35,7 +35,7 @@ import { NewTimeslotDialog, PreferencesListDialog } from "./UserRecapDialog";
 import { MofifyPreferenceForm } from "../../Preference/Components/ModifyPreferenceForm";
 
 //DATA INTERFACES
-interface SchedulePool {
+export interface SchedulePool {
   id: number;
   voting_start_date: Date;
   voting_deadline: Date;

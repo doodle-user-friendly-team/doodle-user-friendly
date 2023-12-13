@@ -24,9 +24,10 @@ from django.contrib.auth.views import LogoutView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("api/v1/meetings/", MeetingView.as_view()),
+    path("api/v1/meetings/<str:user_id>", MeetingView.as_view()),
     path("api/v1/meetings/timeslots/<str:link>", MeetingTimeSlotsView.as_view()),
-    path("api/v1/meetings/<str:link>", MeetingDetailView.as_view(), name="meeting_detail"),
+    path("api/v1/meetings/details/<str:link>", MeetingDetailView.as_view(), name="meeting_detail"),
+    
     path("api/v1/authenticatedMeetings/", AuthMeetingView.as_view()),
     path("api-auth/", include("rest_framework.urls")),
     path("api/v1/auth/", include("dj_rest_auth.urls")),
@@ -43,6 +44,7 @@ urlpatterns = [
     path('api/v1/votes/timeslot/<str:time_slot_id>', get_preferences, name='timeslot_vote_list'),
 
     path('api/v1/users/<int:user_id>', UserByIdView.as_view(), name='get_user_by_id'),
+    path('api/v1/users/schedulepool/<int:user_id>', get_schedule_pool_from_user_id, name='get_schedule_pool_from_user_id'),
 
     path('api/v1/authenticate/', djangoUsers.as_view(), name='user_authentication'),
     path('api/v1/auth/registration/', include('dj_rest_auth.registration.urls')),

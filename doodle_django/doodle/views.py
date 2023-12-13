@@ -78,6 +78,12 @@ class MeetingTimeSlotsView(APIView):
 
 
 class MeetingView(APIView):
+    
+    def get(self, request, user_id):
+        meetings = Meeting.objects.filter(user=user_id)
+        serializer_result = MeetingSerializer(meetings, many=True)
+        return Response(serializer_result.data)
+    
 
     def post(self, request):
         if not UserFake.objects.filter(email=request.data['organizer_email']).exists():
@@ -262,6 +268,7 @@ class UserRegistrationView(CreateAPIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
+
 class CheckUser(APIView):
 
     def login_view(request):
@@ -383,6 +390,23 @@ def get_schedule_pool(request, code_schedule_pool):
         return Response(serializer_result)
     return Response(serializer_result.errors, status=status.HTTP_400_BAD_REQUEST)
 
+@csrf_exempt
+@api_view(('GET',))
+def get_schedule_pool_from_user_id(request, user_id):
+    try:
+        meetings_user = Meeting.objects.filter(user=user_id)
+        schedule_pool = SchedulePool.objects.filter(pool_link=meetings_user[0].organizer_link)
+        serializer_result = DetailedSchedulePoolSerializer(schedule_pool, many=True)
+        return Response(serializer_result.data)
+    except Meeting.DoesNotExist:
+        return Response({"error": "Meeting not found for the given user ID"}, status=status.HTTP_404_NOT_FOUND)
+    except SchedulePool.DoesNotExist:
+        return Response({"error": "SchedulePool not found for the given user ID"}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+
 class djangoUsers(APIView):
 
     serializers_class = djangoUserSerializer
@@ -406,7 +430,7 @@ class djangoUsers(APIView):
         if user.exists():
             user_obj = user.first()
             if user_obj.check_password(password):
-                login(request, user_obj)
+                login(request, user_obj, backend='django.contrib.auth.backends.ModelBackend')
                 return Response(requests.post("http://localhost:8000/api/v1/auth/login/", data={'username': user_obj, 'password': password}).json())
             return Response({'message': 'wrong password'}, status=status.HTTP_401_UNAUTHORIZED)
         else:

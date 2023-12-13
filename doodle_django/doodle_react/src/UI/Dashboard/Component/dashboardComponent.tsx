@@ -16,28 +16,114 @@ import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import {TopBarComponent} from "./TopBarComponent";
+import axios from "axios";
+
+interface MeetingInterface {
+    id: number;
+    name: string;
+    description: string;
+    location: string;
+    duration: number;
+    period_start_date: string;
+    period_end_date: string;
+    organizer_link: string;
+}
+
+interface SchedulePool {
+    id: number;
+    voting_start_date: Date;
+    voting_deadline: Date;
+    meeting: MeetingInterface;
+    pool_link: string;
+}   
+
+let others_meetings: MeetingInterface[] = [];
+let my_meetings: SchedulePool[] = [];
 
 export function DashboardComponent() {
+    
+    const [updateMeetings, setupdateMeetings] = React.useState(false);
+    
+    if (!updateMeetings) {
+        
+        axios.get('http://localhost:8000/api/v1/meetings/1').then((response) => {
+            others_meetings = [];
+            response.data.forEach((meeting: MeetingInterface) => {
+                others_meetings.push(meeting);
+            });
+
+            axios.get('http://localhost:8000/api/v1/users/schedulepool/1').then((response) => {
+                
+                my_meetings = [];
+                response.data.forEach((meeting: SchedulePool) => {
+                    my_meetings.push(meeting);
+                });
+                
+                setupdateMeetings(true)
+            })
+        })
+    }
 
     return (
         <>
             <TopBarComponent/>
+            
+            <Paper elevation={3} sx={{ p: 2, width: 300, height: 300, position: 'fixed', marginTop: '5%', marginLeft: '2%'}}>
+                <Typography variant="h6" component="h2">
+                    Planning
+                </Typography>
+                <Typography sx={{ mb: 1.5 }} color="text.secondary">
+                    Manage your planning
+                </Typography>
+                <Button variant="contained" onClick={() => window.location.assign("/create-meeting")}>Create meeting</Button>
+            </Paper>
+            
             <Stack
-                direction="column"
+                direction="row"
                 divider={<Divider orientation="vertical" flexItem />}
                 spacing={2}
-                sx = {{paddingTop: "5%", paddingLeft: "2em"}}
+                sx = {{paddingTop: "5%", paddingLeft: "25%"}}
             >
-                
-                <Paper elevation={3} sx={{ p: 2, width: 300, height: 300}}>
-                    <Typography variant="h6" component="h2">
-                        Planning
-                    </Typography>
-                    <Typography sx={{ mb: 1.5 }} color="text.secondary">
-                        Manage your planning
-                    </Typography>
-                    <Button variant="contained" onClick={() => window.location.assign("/create-meeting")}>Create meeting</Button>
+
+                <Paper elevation={3} sx={{ p: 2, width: "75%", height: "auto"}}>
+                    {
+                        others_meetings.map((meeting: MeetingInterface) => {
+                            
+                            return (
+                                <Box key={meeting.id}>
+                                    <Typography variant="h6" component="h2">
+                                        {meeting.name}
+                                    </Typography>
+                                    <Typography sx={{ mb: 1.5 }} color="text.secondary">
+                                        {meeting.description}
+                                    </Typography>
+                                    <Button variant="contained" onClick={() => window.location.assign("/recap-meeting/" + meeting.organizer_link)}>Recap</Button>
+                                </Box>
+                            );
+                        })
+                    }
+                    
+                    <Paper elevation={3} sx={{ p: 2, width: "75%", height: "auto", marginTop: "5%"}}>
+                        {
+                            my_meetings.map((meeting: SchedulePool) => {
+                                
+                                return (
+                                    <Box key={meeting.id}>
+                                        <Typography variant="h6" component="h2">
+                                            {meeting.meeting.name}
+                                        </Typography>
+                                        <Typography sx={{ mb: 1.5 }} color="text.secondary">
+                                            {meeting.meeting.description}
+                                        </Typography>
+                                        <Button variant="contained" onClick={() => window.location.assign("/schedulePool/" + meeting.pool_link)}>Recap</Button>
+                                    </Box>
+                                );
+                            })
+                        }
+                    </Paper>
                 </Paper>
+                
+                
                 
             </Stack>
         </>

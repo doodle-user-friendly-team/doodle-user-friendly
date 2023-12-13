@@ -153,7 +153,7 @@ export function RecapOrganizer() {
 
         const fetchData = async () => {
         try {
-            const response = await axios.get<MeetingResponse>(`http://localhost:8000/api/v1/meetings/${link_meeting}`);
+            const response = await axios.get<MeetingResponse>(`http://localhost:8000/api/v1/meetings/details/${link_meeting}`);
 
             const transformedMeeting = convertMeetingResponseToMeeting(response.data);
             const transformedMeetingData = extractContainerTitleProps(response.data);
@@ -178,7 +178,7 @@ export function RecapOrganizer() {
                     display="flex"
                     flexDirection="column"
                     alignItems="center"
-                    sx={{ marginTop: '3.5em', padding: '2.5em', backgroundColor: '#0088d2' }}
+                    sx={{ marginTop: '0.5em', padding: '2.5em', paddingBottom: '0'}}
                 >
                     {loading && <CircularProgress />}
                     {meetingInfo && !loading && (
