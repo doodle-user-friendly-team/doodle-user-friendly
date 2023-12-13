@@ -7,7 +7,7 @@ import { Paper, Box, CircularProgress } from '@mui/material';
 import {TopBarComponent} from "../../../Dashboard/Component/TopBarComponent";
 import * as React from "react";
 import { ContainerTitle } from "./ViewMeeting";
-
+import Backdrop from '@mui/material/Backdrop';
 
 
 
@@ -153,14 +153,28 @@ export function RecapOrganizer() {
 
     const {link_meeting} = useParams();
 
-
+    //script che se è in loading fa una richiesta ogni 5 secondi se no visualizza subito i dati
     useEffect(() => {
-
         if (!link_meeting) {
+            return ;
+        }   
+        fetchData();
+        if (!loading) {
             return ;
         }
 
-        const fetchData = async () => {
+        const interval = setInterval(() => {
+            fetchData();
+        }, 5000);
+        
+        return () => clearInterval(interval);
+    }, []);
+
+
+    const fetchData = async () => {
+        if (!link_meeting) {
+            return ;
+        }
         try {
             const response = await axios.get<MeetingResponse>(`http://localhost:8000/api/v1/meetings/details/${link_meeting}`);
             console.log(response.data)
@@ -173,10 +187,8 @@ export function RecapOrganizer() {
         } catch (error) {
             console.error('Errore nella richiesta HTTP:', error);
         }
-        };
+    };
 
-        fetchData();
-    }, [link_meeting]);
 
     
     return (
@@ -188,7 +200,14 @@ export function RecapOrganizer() {
                     alignItems="center"
                     sx={{ marginTop: '0.5em', padding: '2.5em', paddingBottom: '0'}}
                 >
-                    {loading && <CircularProgress />}
+                    {loading && 
+                    <Backdrop
+                        sx={{ color: '#fff', zIndex: (theme:any) => theme.zIndex.drawer + 1 }}
+                        open={loading}
+                    >
+                        <CircularProgress color="inherit" />
+                    </Backdrop>
+                    }
                     {meetingInfo && !loading && (
                     <Paper elevation={3} style={{ padding: 8, backgroundColor: '#f5f5f5', marginTop: '2em', width:'100%' }}>
                         <Box textAlign="center">

@@ -73,3 +73,34 @@
     margin: 0;
     font-weight: bold;
 }
+
+
+
+/* Icon Button */
+.icon-button-info, .icon-button-modify, .icon-button-delete, .icon-button-link, .icon-button-more{
+  border-radius: 8px !important;  /* Angoli arrotondati */
+  width: 40px !important;
+  height: 40px !important;
+  margin-right:8px !important;; 
+}
+/* icon button info che eredita da icon button description */
+.icon-button-info{background-color: #4CAF50 !important;}
+.icon-button-modify{background-color: #2196F3 !important;}
+.icon-button-delete{background-color: #F44336 !important;}
+.icon-button-link{background-color: #DAA520 !important;}
+.icon-button-more{background-color: #55da20 !important;}
+
+.icon-button-color-white{color: #FFFFFF !important;}
+
+.icon-button-finish{
+  background-color: #701e2c !important;
+  border-radius: 8px !important;
+  height: 40px !important;
+  margin-right: 10px !important;
+}
+
+.icon-text-finish{
+  margin-left: 8px !important;
+  margin-right: 8px !important;
+  font-weight: bold !important;
+}

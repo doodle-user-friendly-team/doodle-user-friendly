@@ -23,7 +23,17 @@ import {
     Event as EventIcon,
     AccessTime as AccessTimeIcon, } from '@mui/icons-material';
 import '../CSS/ViewMeeting.css';
+import Tooltip from '@mui/material/Tooltip';
 import { SuccessSave,SuccessDelete,FailedSave,FailedDelete } from './Alert';
+import useMediaQuery from '@mui/material/useMediaQuery';
+
+import{
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  ListItemText,
+  } from '@mui/material';
+  import MoreVertIcon from '@mui/icons-material/MoreVert';
 
 
 
@@ -180,12 +190,12 @@ function ModifyDialog({ details, onClose, isOpen ,onSaveChanges}: EditDialog) {
   const handleSaveChanges = async () => {
     try{
       // controlla se effettivamente è cambiato qualcosa
-      /*if (editedDetails.title === details.title &&
+      if (editedDetails.title === details.title &&
           editedDetails.description === details.description &&
           editedDetails.location === details.location) {
         onSaveChanges(details);
         return;
-      }*/
+      }
 
       // converte l'oggetto InfoMeeting in MeetinData
       const meetingData:MeetingData=convertInfoMeetingToMeetingData(editedDetails);
@@ -330,6 +340,8 @@ export function ContainerTitle(info:InfoMeeting) {
     const [successSave, setSuccessSave] = useState(false);
     const [failedSave, setFailedSave] = useState(false);
 
+    const [isMenuOpen, setMenuOpen] = useState(false);
+    const isMobile = useMediaQuery('(max-width:450px)');  
 
     const handleCopyLink = () => {
         // Copia il link nella clipboard
@@ -363,26 +375,91 @@ export function ContainerTitle(info:InfoMeeting) {
                 {data.title}
             </Typography>
         </Box>
+        {isMobile ? (
+        <IconButton
+          onClick={() => setMenuOpen((prev) => !prev)}
+          className='icon-button-more'
+        >
+          <MoreVertIcon style={{ color: '#FFFFFF' }} />
+        </IconButton>
+      ) : (
         <Box display="flex" alignItems="center">
-            <IconButton onClick={() => setInfoDialogOpen(true)} style={{ borderRadius: '8px', backgroundColor: '#4CAF50', width: '40px', height: '40px', marginRight:'8px' }}>
-                <InfoIcon style={{ color: '#FFFFFF' }} />
+          <Tooltip title="Info">
+            <IconButton
+              onClick={() => setInfoDialogOpen(true)}
+              className='icon-button-info'
+            >
+              <InfoIcon style={{ color: '#FFFFFF' }} />
             </IconButton>
-            <IconButton onClick={() => setEditDialogOpen(true)} style={{ borderRadius: '8px', backgroundColor: '#2196F3', width: '40px', height: '40px', marginRight:'8px' }}>
-                <EditIcon style={{ color: '#FFFFFF' }} />
+          </Tooltip>
+          <Tooltip title="Edit">
+            <IconButton
+              onClick={() => setEditDialogOpen(true)}
+              className='icon-button-modify'
+            >
+              <EditIcon style={{ color: '#FFFFFF' }} />
             </IconButton>
-            <IconButton onClick={() => setDeleteDialogOpen(true)} style={{ borderRadius: '8px', backgroundColor: '#F44336', width: '40px', height: '40px',marginRight:'8px' }}>
-                <DeleteIcon style={{ color: '#FFFFFF' }} />
+          </Tooltip>
+          <Tooltip title="Delete">
+            <IconButton
+              onClick={() => setDeleteDialogOpen(true)}
+              className='icon-button-delete'
+            >
+              <DeleteIcon style={{ color: '#FFFFFF' }} />
             </IconButton>
-            <IconButton onClick={handleCopyLink} style={{ borderRadius: '8px', backgroundColor: '#DAA520', width: '40px', height: '40px', marginRight:'8px' }}>
+          </Tooltip>
+          <Tooltip title="Copy Link">
+            <IconButton onClick={handleCopyLink} className='icon-button-link'>
               {linkCopied ? (
-                <DoneIcon style={{ color: '#FFFFFF' }} />
+                <DoneIcon className='icon-button-color-white' />
               ) : (
-                <LinkIcon style={{ color: '#FFFFFF' }} />
+                <LinkIcon className='icon-button-color-white' />
               )}
             </IconButton>
-            {successSave && <SuccessSave onClose={()=>setSuccessSave(false)}/>}
-            {failedSave && <FailedSave onClose={()=>setFailedSave(false)}/>}
+          </Tooltip>
+          {successSave && <SuccessSave onClose={()=>setSuccessSave(false)}/>}
+          {failedSave && <FailedSave onClose={()=>setFailedSave(false)}/>}
         </Box>
+      )}
+      {/* Menu a tendina per le finestre più piccole */}
+      {isMobile && (
+          <Menu
+            anchorEl={isMenuOpen ? document.body : null}
+            keepMounted
+            open={isMenuOpen}
+            onClose={() => setMenuOpen(false)}
+          >
+            <MenuItem onClick={() => {setMenuOpen(false);setInfoDialogOpen(true)}}>
+              <ListItemIcon>
+                <InfoIcon style={{ color: '#2196F3' }} />
+              </ListItemIcon>
+              <ListItemText primary="Info" />
+            </MenuItem>
+            <MenuItem onClick={() => {setMenuOpen(false);setEditDialogOpen(true)}}>
+              <ListItemIcon>
+                <EditIcon style={{ color: '#4CAF50' }} />
+              </ListItemIcon>
+              <ListItemText primary="Edit" />
+            </MenuItem>
+            <MenuItem onClick={() => {setMenuOpen(false);setDeleteDialogOpen(true)}}>
+              <ListItemIcon>
+                <DeleteIcon style={{ color: '#F44336' }} />
+              </ListItemIcon>
+              <ListItemText primary="Delete" />
+            </MenuItem>
+            <MenuItem onClick={handleCopyLink}>
+              <ListItemIcon>
+                {linkCopied ? (
+                <DoneIcon style={{ color: '#FF9800' }} />
+                ) : (
+                <LinkIcon style={{ color: '#FF9800' }} />
+                )}
+              </ListItemIcon>
+              <ListItemText primary="Copy Link" />
+            </MenuItem>
+          </Menu>
+
+      )}
         {infoDialogOpen && data && (
             <ViewInfoDialog
                 details={data!}
