@@ -26,7 +26,6 @@ import {
   DateNavigator,
 } from '@devexpress/dx-react-scheduler-material-ui';
 import { ViewState } from '@devexpress/dx-react-scheduler';
-import {PreferenceBarComponent} from "./PreferenceBar";
 // provate: npm install @devexpress/dx-react-core @devexpress/dx-react-scheduler @devexpress/dx-react-scheduler-material-ui
 
 
