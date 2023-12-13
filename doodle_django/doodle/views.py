@@ -85,7 +85,7 @@ class MeetingView(APIView):
         return Response(serializer_result.data)
     
 
-    def post(self, request):
+    def post(self, request, user_id):
         if not UserFake.objects.filter(email=request.data['organizer_email']).exists():
             user = UserFake.objects.create(name=request.data['organizer_name'],
                                            surname=request.data['organizer_surname'],

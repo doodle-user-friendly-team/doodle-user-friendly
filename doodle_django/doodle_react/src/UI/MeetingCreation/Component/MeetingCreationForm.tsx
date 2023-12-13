@@ -154,7 +154,7 @@ export class MeetingCreation extends React.Component<{}, MeetingFormState & Aler
         'Content-Type': 'application/json',
       };
 
-      axios.post('http://localhost:8000/api/v1/meetings/', postData, {headers})
+      axios.post('http://localhost:8000/api/v1/meetings/0', postData, {headers})
           .then((response) => {
             console.log("res:" + response);
           })

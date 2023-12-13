@@ -17,6 +17,7 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import {TopBarComponent} from "./TopBarComponent";
 import axios from "axios";
+import { Grid } from '@mui/material';
 
 interface MeetingInterface {
     id: number;
@@ -37,8 +38,8 @@ interface SchedulePool {
     pool_link: string;
 }   
 
-let others_meetings: MeetingInterface[] = [];
-let my_meetings: SchedulePool[] = [];
+let my_meetings: MeetingInterface[] = [];
+let others_meetings: SchedulePool[] = [];
 
 export function DashboardComponent() {
     
@@ -47,16 +48,18 @@ export function DashboardComponent() {
     if (!updateMeetings) {
         
         axios.get('http://localhost:8000/api/v1/meetings/1').then((response) => {
-            others_meetings = [];
+            
+            my_meetings = [];
+            
             response.data.forEach((meeting: MeetingInterface) => {
-                others_meetings.push(meeting);
+                my_meetings.push(meeting);
             });
 
             axios.get('http://localhost:8000/api/v1/users/schedulepool/1').then((response) => {
+                others_meetings = [];
                 
-                my_meetings = [];
                 response.data.forEach((meeting: SchedulePool) => {
-                    my_meetings.push(meeting);
+                    others_meetings.push(meeting);
                 });
                 
                 setupdateMeetings(true)
@@ -82,46 +85,67 @@ export function DashboardComponent() {
                 direction="row"
                 divider={<Divider orientation="vertical" flexItem />}
                 spacing={2}
-                sx = {{paddingTop: "5%", paddingLeft: "25%"}}
-            >
-
-                <Paper elevation={3} sx={{ p: 2, width: "75%", height: "auto"}}>
-                    {
-                        others_meetings.map((meeting: MeetingInterface) => {
-                            
-                            return (
-                                <Box key={meeting.id}>
-                                    <Typography variant="h6" component="h2">
-                                        {meeting.name}
-                                    </Typography>
-                                    <Typography sx={{ mb: 1.5 }} color="text.secondary">
-                                        {meeting.description}
-                                    </Typography>
-                                    <Button variant="contained" onClick={() => window.location.assign("/recap-meeting/" + meeting.organizer_link)}>Recap</Button>
-                                </Box>
-                            );
-                        })
-                    }
-                    
-                    <Paper elevation={3} sx={{ p: 2, width: "75%", height: "auto", marginTop: "5%"}}>
+                sx = {{paddingTop: "5%", paddingLeft: "25%"}}>
+                <>
+                    <Paper elevation={3} sx={{ p: 2, width: "40%", height: "auto"}}>
+                        <Typography variant="h6" component="h2" sx={{textAlign: "center", marginBottom: "25px", marginTop: "10px"}}>
+                            Your Meetings
+                        </Typography>
+                        <Grid container rowSpacing={3} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
                         {
-                            my_meetings.map((meeting: SchedulePool) => {
+                            my_meetings.map((meeting: MeetingInterface) => {
                                 
                                 return (
-                                    <Box key={meeting.id}>
-                                        <Typography variant="h6" component="h2">
-                                            {meeting.meeting.name}
-                                        </Typography>
-                                        <Typography sx={{ mb: 1.5 }} color="text.secondary">
-                                            {meeting.meeting.description}
-                                        </Typography>
-                                        <Button variant="contained" onClick={() => window.location.assign("/schedulePool/" + meeting.pool_link)}>Recap</Button>
-                                    </Box>
+                                    <Grid item  xs={6}>
+                                        <Paper elevation={3} sx={{height: 150, textAlign: "center"}}>
+                                            <Typography variant="h6" component="h2">
+                                                {meeting.name}
+                                            </Typography>
+                                            <Typography sx={{ mb: 1.5 }} color="text.secondary">
+                                                {meeting.description}
+                                            </Typography>
+                                            <Button variant="contained" 
+                                                    onClick={() => window.location.assign("/recap-meeting/" + meeting.organizer_link)}
+                                                    sx={{top: 45}}>
+                                                Recap
+                                            </Button>
+                                        </Paper>
+                                    </Grid>
                                 );
                             })
                         }
+                        </Grid>
                     </Paper>
-                </Paper>
+
+
+                    <Paper elevation={3} sx={{ p: 2, width: "40%", height: "auto"}}>
+                        <Typography variant="h6" component="h2" sx={{textAlign: "center", marginBottom: "25px", marginTop: "10px"}}>
+                            Meetings to vote
+                        </Typography>
+                        <Grid container rowSpacing={3} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
+                            {
+                                others_meetings.map((meeting: SchedulePool) => {
+
+                                    return (
+                                        <Grid item key={meeting.pool_link} xs={6}>
+                                            <Paper elevation={3} sx={{height: 150, textAlign: "center"}}>
+                                                <Typography variant="h6" component="h2">
+                                                    {meeting.meeting.name}
+                                                </Typography>
+                                                <Typography sx={{ mb: 1.5 }} color="text.secondary">
+                                                    {meeting.meeting.description}
+                                                </Typography>
+                                                <Button variant="contained" onClick={() => window.location.assign("/schedulePool/" + meeting.pool_link)}sx={{top: 45}}>
+                                                    Recap
+                                                </Button>
+                                            </Paper>
+                                        </Grid>
+                                    );
+                                })
+                            }
+                        </Grid>
+                    </Paper>
+                </>
                 
                 
                 
