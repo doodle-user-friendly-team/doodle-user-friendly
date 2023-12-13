@@ -19,6 +19,9 @@ interface TimeSlot{
     start_time: string;
     end_time: string;
     user: string; // nome della persona
+    count_available: number;
+    count_unavailable: number;
+    count_maybe: number;
 }
 interface Meeting{
     start_meeting:string;
@@ -75,6 +78,9 @@ interface TimeSlotResponse{
     end_time: string;
     user: NameUserResponse; // nome della persona
     schedule_pool: number;
+    count_available: number;
+    count_unavailable: number;
+    count_maybe: number;
 }
 interface NameUserResponse{
     name: string;
@@ -95,7 +101,10 @@ function convertMeetingResponseToMeeting(meetingResponse: MeetingResponse): Meet
                     id: timeSlot.id,
                     start_time: timeSlot.start_time,
                     end_time: timeSlot.end_time,
-                    user: `${timeSlot.user.name} ${timeSlot.user.surname}`
+                    user: `${timeSlot.user.name} ${timeSlot.user.surname}`,
+                    count_available: timeSlot.count_available,
+                    count_unavailable: timeSlot.count_unavailable,
+                    count_maybe: timeSlot.count_maybe
                 })
             );
             // Aggiungi gli elementi della pool all'array accumulatore
@@ -154,13 +163,12 @@ export function RecapOrganizer() {
         const fetchData = async () => {
         try {
             const response = await axios.get<MeetingResponse>(`http://localhost:8000/api/v1/meetings/details/${link_meeting}`);
-
+            console.log(response.data)
             const transformedMeeting = convertMeetingResponseToMeeting(response.data);
             const transformedMeetingData = extractContainerTitleProps(response.data);
 
             setMeetingData(transformedMeeting);
             setMeetingInfo(transformedMeetingData);
-            //setMeetingStateData(transformedMeetingState);
             setLoading(false);
         } catch (error) {
             console.error('Errore nella richiesta HTTP:', error);

@@ -11,7 +11,7 @@ import DialogContent from '@mui/material/DialogContent';
 import Icon from '@mui/material/Icon';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
-import { ThumbsUpDown ,ThumbDown, ThumbUp } from '@mui/icons-material';
+import { ThumbsUpDown ,ThumbDown, ThumbUp , AccessTime} from '@mui/icons-material';
 //import PersonIcon from '@mui/icons-material/Person';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import ListItemText from '@mui/material/ListItemText';
@@ -75,12 +75,47 @@ const getPreferenceIcon = (preference: string) => {
   return preferenceIcons[preference] || <ThumbsUpDown color="disabled" />;
 };
 
+// funzione che gli passi i timeslot e ti restituisce un oggetto con le preferenze divise per giorno
+const countPreferencesByDay = (timeslots: MyTimeSlot[], type: string) => {
+  const preferencesByDay: { [key: string]: number } = {};
+
+  timeslots.forEach((timeslot) => {
+    const dateKey = timeslot.startDate.toISOString().split('T')[0];
+
+    if (preferencesByDay.hasOwnProperty(dateKey)) {
+      if (type === AVAILABLE) {
+        preferencesByDay[dateKey] += timeslot.count_available;
+      }
+      if (type === UNAVAILABLE) {
+        preferencesByDay[dateKey] += timeslot.count_unavailable;
+      }
+      if (type === MAYBE_AVAILABLE) {
+        preferencesByDay[dateKey] += timeslot.count_maybe;
+      }
+    }else{
+      if (type === AVAILABLE) {
+        preferencesByDay[dateKey] = timeslot.count_available;
+      }
+      if (type === UNAVAILABLE) {
+        preferencesByDay[dateKey] = timeslot.count_unavailable;
+      }
+      if (type === MAYBE_AVAILABLE) {
+        preferencesByDay[dateKey] = timeslot.count_maybe;
+      }
+    }
+  });
+  return preferencesByDay;
+};
 
 
 const countTimeslotsByDay = (timeslots:any) => {
   const timeslotsByDay: { [key: string]: number } = {};
 
-  timeslots.forEach((timeslot:any) => {
+  const availableByDay: { [key: string]: number } = countPreferencesByDay(timeslots, AVAILABLE);
+  const unavailableByDay: { [key: string]: number } = countPreferencesByDay(timeslots, UNAVAILABLE);
+  const maybeByDay: { [key: string]: number } = countPreferencesByDay(timeslots, MAYBE_AVAILABLE);
+
+  timeslots.forEach((timeslot:MyTimeSlot) => {
     const dateKey = timeslot.startDate.toISOString().split('T')[0];
 
     if (timeslotsByDay.hasOwnProperty(dateKey)) {
@@ -88,27 +123,30 @@ const countTimeslotsByDay = (timeslots:any) => {
     } else {
       timeslotsByDay[dateKey] = 1;
     }
+
   });
   const result = Object.entries(timeslotsByDay).map(([dateKey, count]) => ({
     title: count.toString(),
     startDate: new Date(dateKey),
     endDate: new Date(dateKey + 'T23:59:59'),
     id: dateKey,
+    count_available: availableByDay[dateKey],
+    count_unavailable: unavailableByDay[dateKey],
+    count_maybe: maybeByDay[dateKey],
   }));
   return result;
 };
 
 
 
-/*const countPreferences = (listPreferences: MyPreference[],type: string) => {
-  return listPreferences.filter(pref => pref.preference === type).length;
-};*/
+
 const countPreferences = (listPreferences: MyPreference[] | undefined, type: string): number => {
   if (!listPreferences) {
     return 0;
   }
   return listPreferences.filter(pref => pref.preference === type).length;
 };
+
 
 
 const convertMeetingToMyMeetingTimeSlots = (meeting: Meeting): MyMeetingTimeSlots => {
@@ -118,6 +156,9 @@ const convertMeetingToMyMeetingTimeSlots = (meeting: Meeting): MyMeetingTimeSlot
     startDate: new Date(timeSlot.start_time),
     endDate: new Date(timeSlot.end_time),
     title: timeSlot.user, 
+    count_available: timeSlot.count_available,
+    count_unavailable: timeSlot.count_unavailable,
+    count_maybe: timeSlot.count_maybe,
   });
 
   // Converte le date di inizio e fine del meeting
@@ -188,6 +229,9 @@ interface MyTimeSlot{
   startDate: Date;
   endDate: Date;
   title: string //nome della persona
+  count_available: number;
+  count_unavailable: number;
+  count_maybe: number;
 }
 interface MyTimeSlotWithPreferences{
   id: number; // id del timeslot
@@ -211,6 +255,9 @@ interface TimeSlot{
   start_time: string;
   end_time: string;
   user: string; // nome della persona
+  count_available: number;
+  count_unavailable: number;
+  count_maybe: number;
 }
 interface Meeting{
   start_meeting:string;
@@ -269,22 +316,38 @@ const CustomAppointment = ({onClick, data }:PropAppointment) => {
   
   return (
     <Paper
-      elevation={3} // Aggiunge un'ombra per dare un effetto di sollevamento
+      elevation={3}
       onClick={() => onClick(data)}
       className='paper-app'
     >
-      <Avatar
-        className='avatar-app'
-      >
-        <AccessTimeIcon style={{ color: '#7AC3C0',fontSize: '26px' }} />
-      </Avatar>
-      <Typography 
-        variant="body1" 
-        align="center"
-        style={{ color: '#fff', fontWeight: 'bold',}}
-      >
-        {data.title}
-      </Typography>
+      <div className='first-block'>
+        <Avatar className='avatar-app'>
+          <AccessTime style={{ color: '#7AC3C0', fontSize: '22px' }} />
+        </Avatar>
+        <Typography className='title-text'>
+          {data.title}
+        </Typography>
+      </div>
+      <div className='second-block'>
+        <div className='count-block'>
+          <ThumbUp color='primary' style={{fontSize: '16px' }} />
+          <Typography className='count-text'>
+            {data.count_available}
+          </Typography>
+        </div>
+        <div className='count-block'>
+          <ThumbsUpDown color='disabled' style={{ fontSize: '16px' }} />
+          <Typography className='count-text'>
+            {data.count_maybe}
+          </Typography>
+        </div>
+        <div className='count-block'>
+          <ThumbDown color='error' style={{fontSize: '16px' }} />
+          <Typography className='count-text'>
+            {data.count_unavailable}
+          </Typography>
+        </div>
+      </div>
     </Paper>
   );
 };
@@ -554,6 +617,9 @@ function CustomAppointments ({ timeslots }:PropCustomAppointments) {
 //    - start_time: STRING, data di inizio del timeslot
 //    - end_time: STRING, data di fine del timeslot
 //    - user: STRING, nome della persona
+//    - count_available: INT, numero di persone che hanno votato disponibile
+//    - count_unavailable: INT, numero di persone che hanno votato non disponibile
+//    - count_maybe: INT, numero di persone che hanno votato forse disponibile
 
 // RISPETTARE QUESTO FORMATO PER PASSARE I DATI A QUESTO COMPONENTE*
 export function ContainerTimeSlots(meeting: Meeting) {
@@ -563,7 +629,6 @@ export function ContainerTimeSlots(meeting: Meeting) {
   START_MEETING=myMeetingTimeSlots.start_meeting;
   END_MEETING=myMeetingTimeSlots.end_meeting;
   const countTimeSlots=countTimeslotsByDay(myMeetingTimeSlots.timeslots);
-
   
   return (
     <Scheduler data={countTimeSlots}>

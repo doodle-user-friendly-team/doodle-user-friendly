@@ -190,7 +190,7 @@ function ModifyDialog({ details, onClose, isOpen ,onSaveChanges}: EditDialog) {
       // converte l'oggetto InfoMeeting in MeetinData
       const meetingData:MeetingData=convertInfoMeetingToMeetingData(editedDetails);
 
-      const response = await fetch(`http://localhost:8000/api/v1/meetings/${meetingData.organizer_link}`, {
+      const response = await fetch(`http://localhost:8000/api/v1/meetings/details/${meetingData.organizer_link}`, {
           method: 'PUT',
           headers: {
           'Content-Type': 'application/json',
@@ -266,7 +266,7 @@ function DeleteDialog({ link, isOpen, onClose }: DeleteDialog) {
     const handleDelete = async () => {
       //todo: implementa alert conferma eliminazione
         try{
-            const response = await fetch(`http://localhost:8000/api/v1/meetings/${link}`, {
+            const response = await fetch(`http://localhost:8000/api/v1/meetings/details/${link}`, {
                 method: 'DELETE',
                 headers: {
                 'Content-Type': 'application/json',
@@ -348,7 +348,7 @@ export function ContainerTitle(info:InfoMeeting) {
           return;
       }
 
-      console.log('Arrivate al componente principale:', newData);
+      //console.log('Arrivate al componente principale:', newData);
       
       setData(newData);
       setSuccessSave(true);
