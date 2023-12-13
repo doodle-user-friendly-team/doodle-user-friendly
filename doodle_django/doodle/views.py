@@ -431,7 +431,7 @@ class djangoUsers(APIView):
             user_obj = user.first()
             if user_obj.check_password(password):
                 login(request, user_obj, backend='django.contrib.auth.backends.ModelBackend')
-                return Response(requests.post("http://localhost:8000/api/v1/auth/login/", data={'username': user_obj, 'password': password}).json())
+                return Response({"key": requests.post("http://localhost:8000/api/v1/auth/login/", data={'username': user_obj, 'password': password})['key'], 'id': user_obj.id})
             return Response({'message': 'wrong password'}, status=status.HTTP_401_UNAUTHORIZED)
         else:
             return Response({'message': 'user not found'}, status=status.HTTP_401_UNAUTHORIZED)
