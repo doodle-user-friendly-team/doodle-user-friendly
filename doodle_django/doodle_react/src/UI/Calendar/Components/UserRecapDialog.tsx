@@ -79,11 +79,11 @@ export function NewTimeslotDialog(props: NewTimeslotDialogProps) {
       start_time: startDate,
       end_time: endDate,
       schedule_pool: schedulePoolId,
-      user: {id: 1}, //TODO: get current user
+      user: 1
     };
 
     axios
-      .post("http://localhost:8000/timeslots/", postData, { headers })
+      .post("http://localhost:8000/api/v1/timeslots/", postData, { headers })
       .then(() => setSnackOpen(true))
       .catch((error) => {
         console.error("Error on server response", error);
@@ -143,7 +143,7 @@ export function PreferencesListDialog(props: PreferencesListDialogProps) {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8000/votes/timeslot/" + tsId)
+      .get("http://localhost:8000/api/v1/votes/timeslot/" + tsId)
       .then((response) => response.data)
       .then((p) => {
         setPrefList(p);

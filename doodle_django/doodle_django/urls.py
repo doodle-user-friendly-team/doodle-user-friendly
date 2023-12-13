@@ -35,6 +35,8 @@ urlpatterns = [
     path('api/v1/timeslots/<str:_data>', TimeSlotView.as_view({'get': 'get_data'})),
 
     path('api/v1/timeslots/id/<int:time_slot_id>', get_timeslot, name='timeslot_vote_list'),
+    path('api/v1/schedule_pool/<str:link>', SchedulePoolView.as_view(), name='schedule_pool'),
+    path('api/v1/schedule_pool/timeslots/<int:schedule_pool_id>', get_timeslot_from_schedule_pool, name='timeslot_from_sschedule_pool'),
 
     path('api/v1/votes/', VotesView.as_view(), name="votes_api"),
     path('api/v1/update_preference/', ModifyMyPreferenceView.as_view(),name='update_preference'),

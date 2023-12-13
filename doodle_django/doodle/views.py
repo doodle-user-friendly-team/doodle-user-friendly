@@ -189,7 +189,7 @@ class TimeSlotView(viewsets.ViewSet):
         if end_time < datetime.now():
             # return Response({'detail': 'end_time deve essere maggiore di adesso'}, status=status.HTTP_400_BAD_REQUEST)
             raise TimeLessThanNowError
-
+        print(request.data)
         serializer = TimeSlotSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
@@ -343,7 +343,11 @@ class ModifyMyPreferenceView(APIView):
 @api_view(('GET',))
 @renderer_classes((TemplateHTMLRenderer, JSONRenderer))
 def get_preferences(request, time_slot_id):
+    if not TimeSlot.objects.filter(id=time_slot_id).exists():
+        return Response([], status=200)
     specified_time_slot = TimeSlot.objects.get(id=time_slot_id)
+    if not Vote.objects.filter(time_slot=specified_time_slot).exists():
+        return Response([], status=200)
     votes = Vote.objects.filter(time_slot=specified_time_slot)
     serializer_result = DetailedVoteSerializer(votes, many=True)
     return Response(serializer_result.data)
@@ -356,6 +360,26 @@ def get_timeslot(request, time_slot_id):
     specified_time_slot = TimeSlot.objects.get(id=time_slot_id)
     serializer_result = DetailedTimeSlotSerializer(specified_time_slot)
     return Response(serializer_result.data)
+
+
+@csrf_exempt
+@api_view(('GET',))
+def get_timeslot_from_schedule_pool(request, schedule_pool_id):
+    if TimeSlot.objects.filter(schedule_pool=schedule_pool_id).exists():
+        specified_time_slot = TimeSlot.objects.get(schedule_pool=schedule_pool_id)
+        serializer_result = DetailedTimeSlotSerializer(specified_time_slot)
+        return Response(serializer_result.data)
+    return Response([], status=200)
+
+@csrf_exempt
+@api_view(('GET',))
+def get_schedule_pool(request, code_schedule_pool):
+    specified_time_slot = SchedulePool.objects.get(pool_link=code_schedule_pool)
+    serializer_result = SchedulePoolSerializer(data=specified_time_slot)
+    if serializer_result.is_valid():
+        print(serializer_result.data)
+        return Response(serializer_result)
+    return Response(serializer_result.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class djangoUsers(APIView):
 

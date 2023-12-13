@@ -253,13 +253,13 @@ export default function Calendar() {
   useEffect(() => {
     setIsPoolLoading(true);
     axios
-      .get("http://localhost:8000/schedulePools/" + pool_link)
+      .get("http://localhost:8000/api/v1/schedule_pool/" + pool_link)
       .then((response) => response.data)
       .then((sp: SchedulePool[]) => {
         setPool(sp[0]);
         console.log(sp[0]);
         axios
-          .get("http://localhost:8000/votes/")
+          .get("http://localhost:8000/api/v1/schedule_pool/timeslots/"+ sp[0].id )
           .then((response) => response.data)
           .then((votes: Preference[]) => {
             console.log(votes);

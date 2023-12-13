@@ -15,14 +15,11 @@ class UserFakeSerializer(serializers.ModelSerializer):
 
 
 class TimeSlotSerializer(serializers.ModelSerializer):
-    user = UserFakeSerializer()
+    #user = UserFakeSerializer()
 
     class Meta:
         model = TimeSlot
         fields = ['id', 'start_time', 'schedule_pool', 'end_time', 'user']
-
-
-
 
 class TimeSlotUserSerializer(serializers.ModelSerializer):
     class Meta:
