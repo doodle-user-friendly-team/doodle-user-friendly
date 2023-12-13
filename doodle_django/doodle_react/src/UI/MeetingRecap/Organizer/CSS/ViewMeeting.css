@@ -1,0 +1,75 @@
+
+
+.button-exit{
+    background-color: #6c757d!important;  /* Colore di sfondo del pulsante */
+    color: #fff !important;  /* Colore del testo */
+    padding: 10px 20px !important;  /* Spaziatura interna del pulsante */
+    border: none !important;  /* Rimuovi il bordo */
+    border-radius: 8px !important;  /* Angoli arrotondati */
+    cursor: pointer !important;  /* Cambia il cursore al passaggio del mouse */
+    transition: box-shadow 0.3s ease !important;  /* Aggiungi una transizione all'ombreggiatura */
+  }
+  
+.button-exit:hover {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3) !important;  /* Ombreggiatura 3D al passaggio del mouse */
+}
+
+.button-delete{
+    background-color: #dc3545!important;  /* Colore di sfondo del pulsante */
+    color: #fff !important;  /* Colore del testo */
+    padding: 10px 20px !important;  /* Spaziatura interna del pulsante */
+    border: none !important;  /* Rimuovi il bordo */
+    border-radius: 8px !important;  /* Angoli arrotondati */
+    cursor: pointer !important;  /* Cambia il cursore al passaggio del mouse */
+    transition: box-shadow 0.3s ease !important;  /* Aggiungi una transizione all'ombreggiatura */
+  }
+.button-delete:hover {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3) !important;  /* Ombreggiatura 3D al passaggio del mouse */
+}
+
+.button-save{
+    background-color: #4CAF50!important;  /* Colore di sfondo del pulsante */
+    color: #fff !important;  /* Colore del testo */
+    padding: 10px 20px !important;  /* Spaziatura interna del pulsante */
+    border: none !important;  /* Rimuovi il bordo */
+    border-radius: 8px !important;  /* Angoli arrotondati */
+    cursor: pointer !important;  /* Cambia il cursore al passaggio del mouse */
+    transition: box-shadow 0.3s ease !important;  /* Aggiungi una transizione all'ombreggiatura */
+  }
+.button-save:hover {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3) !important;  /* Ombreggiatura 3D al passaggio del mouse */
+}
+
+
+.button-cancel{
+    background-color: #ff5c5c!important;  /* Colore di sfondo del pulsante */
+    color: #fff !important;  /* Colore del testo */
+    padding: 10px 20px !important;  /* Spaziatura interna del pulsante */
+    border: none !important;  /* Rimuovi il bordo */
+    border-radius: 8px !important;  /* Angoli arrotondati */
+    cursor: pointer !important;  /* Cambia il cursore al passaggio del mouse */
+    transition: box-shadow 0.3s ease !important;  /* Aggiungi una transizione all'ombreggiatura */
+  }
+.button-cancel:hover {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3) !important;  /* Ombreggiatura 3D al passaggio del mouse */
+}
+
+
+  
+  /* Data box styles */
+.dataBox {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin: 8px 0;
+    padding: 8px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+  
+.dataBox:hover {
+    transform: scale(1.05);
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+}
+.p{
+    margin: 0;
+    font-weight: bold;
+}

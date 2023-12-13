@@ -12,10 +12,12 @@ import Icon from '@mui/material/Icon';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import { ThumbsUpDown ,ThumbDown, ThumbUp } from '@mui/icons-material';
-import PersonIcon from '@mui/icons-material/Person';
+//import PersonIcon from '@mui/icons-material/Person';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Avatar from '@mui/material/Avatar';
+import '../CSS/ViewTimeSlots.css';
 import {
   Scheduler,
   MonthView,
@@ -268,37 +270,18 @@ const CustomAppointment = ({onClick, data }:PropAppointment) => {
   return (
     <Paper
       elevation={3} // Aggiunge un'ombra per dare un effetto di sollevamento
-      style={{
-        backgroundColor: '#7AC3C0',
-        borderRadius: '8px',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        cursor: 'pointer',
-        width: '70%',
-        height: '60%',
-        margin: 'auto',
-        padding: '8px',
-      }}
       onClick={() => onClick(data)}
+      className='paper-app'
     >
       <Avatar
-        style={{
-          backgroundColor: '#fff',
-          marginRight: '8px', // Aggiunge uno spazio tra l'icona e il numero
-          width: '24px',
-          height: '24px'
-        }}
+        className='avatar-app'
       >
-        <PersonIcon style={{ color: '#7AC3C0',fontSize: '16px' }} />
+        <AccessTimeIcon style={{ color: '#7AC3C0',fontSize: '26px' }} />
       </Avatar>
       <Typography 
         variant="body1" 
         align="center"
-        style={{
-          color: '#fff',
-          fontWeight: 'bold',
-        }}
+        style={{ color: '#fff', fontWeight: 'bold',}}
       >
         {data.title}
       </Typography>
@@ -365,7 +348,7 @@ function CustomDialogPreferences({ isOpen, handleClose, timeslot, preferences }:
         {preferences&&preferences.map((preference: MyPreference) => (
           <ListItem
             key={preference.id}
-            style={{ border: '1px solid #ccc', borderRadius: 8, marginBottom: 8 }}
+            className='list-item-pref'
           >
             <Icon color="primary" style={{ marginRight: 8 }}>
               {getPreferenceIcon(preference.preference)}
@@ -474,7 +457,7 @@ function CustomDialogTimeSlots ({ isOpen, handleClose, timeslots }:PropDialog) {
             <ListItem
               key={timeslot.id}
               onClick={() => handleItemClick(timeslot)}
-              style={{ border: '1px solid #ccc', borderRadius: 8, marginBottom: 8 }}
+              className='list-item-timeslot'
             >
               <ListItemText
                 primary={timeslot.title}
