@@ -54,6 +54,19 @@ class MeetingTimeSlotSerializer(serializers.ModelSerializer):
         return count_maybe
 
 
+class TopTimeSlotSerializer(serializers.ModelSerializer):
+    count_available = serializers.IntegerField()
+    count_unavailable = serializers.IntegerField()
+    count_maybe = serializers.IntegerField()
+    score=serializers.IntegerField()
+    user = TimeSlotUserSerializer()
+
+    class Meta:
+        model = TimeSlot
+        fields = ['id', 'start_time', 'end_time', 'user', 'count_available', 'count_unavailable', 'count_maybe', 'score']
+
+
+
 class DetailedVoteSerializer(serializers.ModelSerializer):
     user = UserFakeSerializer()
 
@@ -77,7 +90,7 @@ class SchedulePoolSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SchedulePool
-        fields = ['id', 'voting_start_date', 'voting_deadline', 'pool_link', 'meeting', 'time_slots']
+        fields = ['id', 'voting_start_date', 'voting_deadline', 'final_date', 'pool_link', 'meeting', 'time_slots']
 
 
 
@@ -96,10 +109,10 @@ class MeetingSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'description', 'location', 'duration', 'period_start_date', 'period_end_date',
                   'organizer_link', 'user']
 
-class simpleSchedulePoolSerializer(serializers.ModelSerializer):
+class SimpleSchedulePoolSerializer(serializers.ModelSerializer):
     class Meta:
         model = SchedulePool
-        fields = ['id', 'voting_start_date', 'voting_deadline', 'pool_link', 'meeting']
+        fields = ['id', 'voting_start_date', 'voting_deadline', 'final_date' ,'pool_link', 'meeting']
         
 class CompleteSchedulePoolSerializer(serializers.ModelSerializer):
     time_slots = TimeSlotSerializer(many=True, read_only=True, source='timeslot_set')

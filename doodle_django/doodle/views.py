@@ -13,6 +13,8 @@ from .serializer import *
 from django.shortcuts import get_object_or_404
 from rest_framework import status, generics
 from .utils import *
+from django.db.models import Count
+
 
 from rest_framework.permissions import IsAuthenticated
 
@@ -109,6 +111,77 @@ class MeetingView(APIView):
         return Response(serializer.data)
 
 
+class TopTimeSlotsView(APIView):
+    serializer_class = TopTimeSlotSerializer
+
+
+    def get(self, request, link):
+        try:
+            # Ottieni i time slot del schedule pool con il link specificato
+            schedule_pool = SchedulePool.objects.get(pool_link=link)
+            time_slots = TimeSlot.objects.filter(schedule_pool=schedule_pool.id)
+
+            results = []
+            max_score = 0
+
+            # Trova il punteggio massimo
+            for time_slot in time_slots:
+                preferences_count = Vote.objects.filter(time_slot=time_slot).values('preference').annotate(count=Count('preference'))
+
+                preferences = {
+                    'Available': 0,
+                    'Unavailable': 0,
+                    'Maybe available': 0
+                }
+
+                for entry in preferences_count:
+                    preferences[entry['preference']] = entry['count']
+
+                score = preferences['Available'] * 2 + preferences['Maybe available']
+
+                if score > max_score:
+                    max_score = score
+
+            # Raccogli tutti i time slot con il punteggio massimo
+            for time_slot in time_slots:
+                preferences_count = Vote.objects.filter(time_slot=time_slot).values('preference').annotate(count=Count('preference'))
+
+                preferences = {
+                    'Available': 0,
+                    'Unavailable': 0,
+                    'Maybe available': 0
+                }
+
+                for entry in preferences_count:
+                    preferences[entry['preference']] = entry['count']
+
+                score = preferences['Available'] * 2 + preferences['Maybe available']
+
+                if score == max_score:
+                    result_entry = {
+                        'id': time_slot.id,
+                        'start_time': time_slot.start_time,
+                        'end_time': time_slot.end_time,
+                        'user': {
+                            'name': time_slot.user.name,
+                            'surname': time_slot.user.surname
+                        },
+                        'count_available': preferences['Available'],
+                        'count_unavailable': preferences['Unavailable'],
+                        'count_maybe': preferences['Maybe available'],
+                        'score': score
+                    }
+                    results.append(result_entry)
+
+            # Serializza i risultati
+            serializer = self.serializer_class(results, many=True)
+
+            # Restituisci la risposta JSON con i dati serializzati
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except SchedulePool.DoesNotExist:
+            return Response({'error': 'Schedule not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+
 class SchedulePoolView(APIView):
     serializer_class = SchedulePoolSerializer
     queryset = SchedulePool.objects.all()
@@ -117,7 +190,21 @@ class SchedulePoolView(APIView):
         schedule_pool = SchedulePool.objects.filter(pool_link=link)
         serializer_result = DetailedSchedulePoolSerializer(schedule_pool, many=True)
         return Response(serializer_result.data)
+    
+    # Patch per aggiornare la data finale
+    def patch(self, request, link):
+        schedule_pool = SchedulePool.objects.get(pool_link=link)
+        # Estrae il campo 
+        new_final_date = request.data.get('final_date')
+        # Verifica che il campo sia presente nei dati della richiesta
+        if new_final_date is not None:
+            # Aggiorna solo il campo specificato
+            schedule_pool.final_date = new_final_date
+            schedule_pool.save()
 
+            serializer = SchedulePoolSerializer(schedule_pool)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response({'error': 'Campo final_date errato'}, status=status.HTTP_400_BAD_REQUEST)
 
 class AuthMeetingView(APIView):
     serializer_class = MeetingSerializer

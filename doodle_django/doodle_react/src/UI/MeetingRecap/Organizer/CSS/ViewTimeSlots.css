@@ -61,7 +61,18 @@
     background-color: #fff !important;
 }
 
-
+@media (max-width: 700px) {
+    .first-block {
+        background-color: transparent;
+        border: none;
+        margin-left: 0px;
+        margin-right: 0px;
+    }
+    .second-block {
+        display: none;
+    }
+}
+  
 
 
 
