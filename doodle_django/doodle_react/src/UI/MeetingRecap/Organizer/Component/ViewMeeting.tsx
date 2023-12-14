@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
     Box,
@@ -17,16 +17,24 @@ import EditIcon from '@mui/icons-material/Edit';
 import InfoIcon from '@mui/icons-material/Info';
 import IconButton from '@mui/material/IconButton';
 import DoneIcon from '@mui/icons-material/Done';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import { ThumbsUpDown ,ThumbDown, ThumbUp } from '@mui/icons-material';
 import {   
     Description as DescriptionIcon,
     LocationOn as LocationIcon,
     Event as EventIcon,
     AccessTime as AccessTimeIcon, } from '@mui/icons-material';
+import {
+  Card,
+  CardContent,
+  Badge,
+  Stack
+} from '@mui/material';
 import '../CSS/ViewMeeting.css';
 import Tooltip from '@mui/material/Tooltip';
 import { SuccessSave,SuccessDelete,FailedSave,FailedDelete } from './Alert';
 import useMediaQuery from '@mui/material/useMediaQuery';
-
+import axios from 'axios';
 import{
   Menu,
   MenuItem,
@@ -34,8 +42,15 @@ import{
   ListItemText,
   } from '@mui/material';
   import MoreVertIcon from '@mui/icons-material/MoreVert';
+import { ca } from 'date-fns/locale';
 
 
+
+//------------------------VARIABLES------------------------
+const SCREEN_680PX = '(max-width:680px)';
+const SCREEN_450PX = '(max-width:450px)';
+
+//------------------------END-VARIABLES------------------------
 
 
 //------------------------PROPS------------------------
@@ -47,8 +62,9 @@ interface InfoMeeting {
     location: string;
     date: string; //data decisa dal creatore, default: "In fase di votazione"
     duration: number; //durata meeting
-    period_start_date: string; //data inizio periodo votazione
-    period_end_date: string; //data fine periodo votazione
+    period_start_date: string; //data inizio periodo 
+    period_end_date: string; //data fine periodo 
+    voting_deadline: string; //data fine votazione
     organizer_link: string; // link per l'organizzatore
     link: string; //link per i partecipanti
     user: number; //user_id
@@ -77,8 +93,16 @@ interface DeleteDialog {
     isOpen: boolean;
 }
 
+// PROP per FinalTimeSlotDialog
+interface FinalTimeSlotDialog {
+  details: InfoMeeting;
+  onClose: () => void;
+  onSaveChanges: (newData:InfoMeeting|null) => void;
+  isOpen: boolean;
+}
 
-// Per PUT al backend
+
+// Per PUT al backend dek meeting
 interface MeetingData{
     name: string;
     description: string; 
@@ -89,6 +113,43 @@ interface MeetingData{
     organizer_link: string;
     user: number;
 }
+
+// Per PATCH al backend del schedule pool
+interface SchedulePoolData{
+  pool_link: string;
+  final_date: string;
+}
+
+// Per timeslot migliri
+interface User{
+  name: string;
+  surname: string;
+}
+interface TimeSlotResponse{
+  id: number;
+  start_time: string;
+  end_time: string;
+  user: User; // nome della persona
+  count_available: number;
+  count_unavailable: number;
+  count_maybe: number;
+  score: number;
+}
+
+
+// Altri tipi
+interface TimeSlot{
+  id: number;
+  start_time: string;
+  end_time: string;
+  user: string; // nome della persona
+  available: number;
+  unavailable: number;
+  maybe_available: number;
+}
+
+
+
 
 //------------------------END-PROPS-----------------------
 
@@ -109,11 +170,116 @@ function convertInfoMeetingToMeetingData(info:InfoMeeting):MeetingData{
     return meetingData;
 }
 
+
+function convertTimeSlotResponseToTimeSlot(timeSlot:TimeSlotResponse):TimeSlot{
+  const user:string=timeSlot.user.name+" "+timeSlot.user.surname;
+  const timeSlotData:TimeSlot={
+    id: timeSlot.id,
+    start_time: timeSlot.start_time,
+    end_time: timeSlot.end_time,
+    user: user,
+    available: timeSlot.count_available,
+    unavailable: timeSlot.count_unavailable,
+    maybe_available: timeSlot.count_maybe,
+  }
+  return timeSlotData;
+}
+
+// Funzione per convertire l'oggetto InfoMeeting in SchedulePoolData
+function convertInfoMeetingToSchedulePoolData(info:InfoMeeting):SchedulePoolData{
+  const schedulePoolData:SchedulePoolData={
+      pool_link: info.link,
+      final_date: info.date,
+  }
+  return schedulePoolData;
+}
+
+// Funzione per formattare le date per la visualizzazione
+function formatDates(date1: string, date2: string): string {
+  const date1Obj = new Date(date1);
+  const date2Obj = new Date(date2);
+
+  const padStart = (value: number): string => value.toString().padStart(2, '0');
+
+  const formattedDate1 = `${padStart(date1Obj.getDate())}/${padStart(date1Obj.getMonth() + 1)}/${date1Obj.getFullYear()}`;
+  const formattedTime1 = `${padStart(date1Obj.getHours())}:${padStart(date1Obj.getMinutes())}`;
+
+  const formattedDate2 = `${padStart(date2Obj.getDate())}/${padStart(date2Obj.getMonth() + 1)}/${date2Obj.getFullYear()}`;
+  const formattedTime2 = `${padStart(date2Obj.getHours())}:${padStart(date2Obj.getMinutes())}`;
+
+  if (date1Obj.toDateString() === date2Obj.toDateString()) {
+    return `${formattedDate1}, ${formattedTime1} - ${formattedTime2}`;
+  } else {
+    return `${formattedDate1}, ${formattedTime1} - ${formattedDate2}, ${formattedTime2}`;
+  }
+}
+
+function formatDate(date: string): string {
+  const dateObj = new Date(date);
+
+  const padStart = (value: number): string => value.toString().padStart(2, '0');
+
+  const formattedDate = `${padStart(dateObj.getDate())}/${padStart(dateObj.getMonth() + 1)}/${dateObj.getFullYear()}`;
+  const formattedTime = `${padStart(dateObj.getHours())}:${padStart(dateObj.getMinutes())}`;
+
+  return `${formattedDate}, ${formattedTime}`;
+
+}
+
 //------------------------END-FUNCTION------------------------
+
+
+//-------------------------COMPONENT------------------------
+
+function TimeSlotCard( timeslot:TimeSlot ) {
+  return (
+    <Card>
+      <CardContent>
+        {/* User */}
+        <Typography variant="h6" gutterBottom>
+          {timeslot.user}
+        </Typography>
+
+        {/* Date */}
+        <Typography variant="h5" color="textPrimary" align="center" gutterBottom>
+          {formatDates(timeslot.start_time, timeslot.end_time)}
+        </Typography>
+
+        {/* Icons and Numbers */}
+        <Box display="flex" justifyContent="space-around">
+          <Stack direction="row" alignItems="center">
+            <ThumbUp color="primary" style={{marginRight:"7px"}}/>
+            <Typography variant="body2" color="textSecondary">
+              {timeslot.available}
+            </Typography>
+          </Stack>
+
+          <Stack direction="row" alignItems="center">
+            <ThumbsUpDown color="disabled" style={{marginRight:"7px"}}/>
+            <Typography variant="body2" color="textSecondary">
+              {timeslot.maybe_available}
+            </Typography>
+          </Stack>
+
+          <Stack direction="row" alignItems="center">
+            <ThumbDown color="error" style={{marginRight:"7px"}}/>
+            <Typography variant="body2" color="textSecondary">
+              {timeslot.unavailable}
+            </Typography>
+          </Stack>
+        </Box>
+      </CardContent>
+    </Card>
+  );
+};
+
+
+//------------------------END-COMPONENT------------------------
 
 // ------------------------DIALOG------------------------
 // Dialog per visualizzare le informazioni del meeting
 function ViewInfoDialog({ details, onClose, isOpen }: InfoDialog) {
+    const TEXT = "In fase di votazione"
     return (
         <Dialog open={isOpen} onClose={onClose} fullWidth maxWidth="sm" >
           <DialogTitle>
@@ -138,7 +304,9 @@ function ViewInfoDialog({ details, onClose, isOpen }: InfoDialog) {
               <Typography variant="h6">
                 <EventIcon fontSize="small" className='icon' /> <p className='p'>Date:</p>
               </Typography>
-              <Typography variant="body1">{details.date}</Typography>
+              <Typography variant="body1">{
+                details.date ? formatDate(details.date) : TEXT
+              }</Typography>
             </Box>
             <Box className="dataBox">
               <Typography variant="h6">
@@ -319,6 +487,150 @@ function DeleteDialog({ link, isOpen, onClose }: DeleteDialog) {
 }
 
 
+
+
+
+//Dialog per decidere il time slot finale
+function FinalTimeSlot({ details, onClose, isOpen, onSaveChanges }: FinalTimeSlotDialog) {
+
+  const getTimeSlots = async () => {
+    try{
+      const response = await axios.get<TimeSlotResponse[]>(`http://localhost:8000/api/v1/top_timeslots/${details.link}`);
+      const transformedTimeSlots = response.data.map(convertTimeSlotResponseToTimeSlot);
+      setTimeslots(transformedTimeSlots);
+    }catch(err){
+      console.error(err);
+    }
+  }
+
+  useEffect(() => {
+    getTimeSlots();
+  }, []);
+  
+  const [timeslots, setTimeslots] = useState<TimeSlot[]>([]);
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState<TimeSlot|null>(null);
+
+  // Funzione per gestire la selezione del timeslot
+  const handleSelectTimeSlot = (timeSlot:any) => {
+    setSelectedTimeSlot(timeSlot);
+  };
+
+  // Funzione per gestire la conferma
+  const handleConfirm = () => {
+    if (!selectedTimeSlot) {
+      return;
+    }
+    saveDecision();
+    onClose();
+  };
+
+
+
+  const saveDecision = async () => {
+    try{
+
+      // converte l'oggetto InfoMeeting in MeetinData
+      if(!selectedTimeSlot) return;
+      const updatedDetails = { ...details, date: selectedTimeSlot.start_time };
+
+      const schedule_pool:SchedulePoolData=convertInfoMeetingToSchedulePoolData(updatedDetails);
+
+      const response = await fetch(`http://localhost:8000/api/v1/schedule_pool/${schedule_pool.pool_link}`, {
+          method: 'PATCH',
+          headers: {
+          'Content-Type': 'application/json',
+          },
+            body: JSON.stringify(
+              {["final_date"]:schedule_pool.final_date}
+            ),
+          });
+
+      if (response.ok) {
+        onSaveChanges(updatedDetails);
+      } else {
+        console.error('Error '+response.status+'\nImpossibile salvare i dati nel database: '+response.statusText);
+        onSaveChanges(null);
+      }
+
+    }catch(err){
+      console.error(err);
+      onSaveChanges(null);
+      return;
+    }
+  };
+
+
+
+  return (
+    <Dialog open={isOpen} onClose={onClose} fullWidth maxWidth="md">
+      <DialogTitle>
+        <Typography variant="h4" align="center" style={{ fontWeight: 'bold' }}>
+          Final timetable decision
+        </Typography>
+      </DialogTitle>
+      <DialogContent>
+        <Typography variant="body1" paragraph style={{marginBottom:"10px"}}>
+          {timeslots.length === 1
+            ? 'You have only one timeslot available. Confirm it to finalize the decision.'
+            : 'You have multiple timeslots available. Choose the one with the highest availability and confirm your decision.'}
+        </Typography>
+        <Box className="card-container">
+          {timeslots.map((timeSlot, index) => (
+            <Box key={index} mb={2} className={"card"}>
+              <Card className={`card-not-selected ${selectedTimeSlot === timeSlot ? 'card-selected' : ''}`} >
+                <CardContent className="card-content">
+                  <Typography variant="h6" gutterBottom>
+                    {timeSlot.user}
+                  </Typography>
+                  <Typography variant="h5" align="center" gutterBottom>
+                    {formatDates(timeSlot.start_time, timeSlot.end_time)}
+                  </Typography>
+                  <Box display="flex" justifyContent="space-around" marginBottom={2}>
+                    <Stack direction="row" alignItems="center">
+                      <ThumbUp color="primary" style={{ marginRight: '7px' }} />
+                      <Typography variant="body2" >
+                        {timeSlot.available}
+                      </Typography>
+                    </Stack>
+                    <Stack direction="row" alignItems="center">
+                      <ThumbsUpDown color="disabled" style={{ marginRight: '7px' }} />
+                      <Typography variant="body2" >
+                        {timeSlot.maybe_available}
+                      </Typography>
+                    </Stack>
+                    <Stack direction="row" alignItems="center">
+                      <ThumbDown color="error" style={{ marginRight: '7px' }} />
+                      <Typography variant="body2" >
+                        {timeSlot.unavailable}
+                      </Typography>
+                    </Stack>
+                  </Box>
+                  <Button
+                    className={selectedTimeSlot === timeSlot ? "selected-button" : "not-selected-button"}
+                    disabled={selectedTimeSlot === timeSlot}
+                    onClick={() => handleSelectTimeSlot(timeSlot)}
+                  >
+                    {selectedTimeSlot === timeSlot ? 'Selected' : 'Select'}
+                  </Button>
+                </CardContent>
+              </Card>
+            </Box>
+          ))}
+        </Box>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose} className="button-exit">
+          Close
+        </Button>
+        {/* Abilita il pulsante di conferma solo se è stato selezionato un timeslot */}
+        <Button onClick={handleConfirm} className='button-save' disabled={!selectedTimeSlot}>
+          Confirm
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+}
+
 // ------------------------END-DIALOG------------------------
 
 
@@ -336,12 +648,39 @@ export function ContainerTitle(info:InfoMeeting) {
     const [editDialogOpen, setEditDialogOpen] = React.useState(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
     const [linkCopied, setLinkCopied] = React.useState(false);
+    const [decisions, setDecisions] = useState(false);
 
     const [successSave, setSuccessSave] = useState(false);
     const [failedSave, setFailedSave] = useState(false);
 
+    const endVoting = () => {
+      const today = new Date();
+      const votingDeadline = new Date(info.voting_deadline);
+      if (today > votingDeadline) 
+        return true;
+      else 
+        return false;
+    }
+    const [endOfVoting, setEndOfVoting] = useState(endVoting());
+    
+    const checkDateDecided = () => {
+      if (info.date != null) 
+        return true;
+      else 
+        return false;
+    }
+    const [dateDecided, setDateDecided] = useState(checkDateDecided());
+
+
     const [isMenuOpen, setMenuOpen] = useState(false);
-    const isMobile = useMediaQuery('(max-width:450px)');  
+    const checkScreenSize = () => {
+      if (endOfVoting || dateDecided)
+        return SCREEN_680PX;
+      else
+        return SCREEN_450PX;
+    }
+    let isMobile=useMediaQuery(checkScreenSize());
+
 
     const handleCopyLink = () => {
         // Copia il link nella clipboard
@@ -358,10 +697,7 @@ export function ContainerTitle(info:InfoMeeting) {
       if (!newData) {
           setFailedSave(true);
           return;
-      }
-
-      //console.log('Arrivate al componente principale:', newData);
-      
+      }      
       setData(newData);
       setSuccessSave(true);
     }
@@ -384,6 +720,19 @@ export function ContainerTitle(info:InfoMeeting) {
         </IconButton>
       ) : (
         <Box display="flex" alignItems="center">
+          {
+            endOfVoting&&
+            <Tooltip title="End of voting">
+             <Button variant="contained" className='icon-button-finish' onClick={()=>setDecisions(true)}>
+              <Box display="flex" alignItems="center">
+                <CheckCircleOutlineIcon className='icon-button-color-white'/>
+                  <Typography variant="body2" className='icon-text-finish'>
+                    Decide final date
+                  </Typography>
+              </Box>
+              </Button>
+            </Tooltip>
+          }
           <Tooltip title="Info">
             <IconButton
               onClick={() => setInfoDialogOpen(true)}
@@ -424,11 +773,19 @@ export function ContainerTitle(info:InfoMeeting) {
       {/* Menu a tendina per le finestre più piccole */}
       {isMobile && (
           <Menu
-            anchorEl={isMenuOpen ? document.body : null}
             keepMounted
             open={isMenuOpen}
             onClose={() => setMenuOpen(false)}
           >
+            {
+              endOfVoting&&
+              <MenuItem onClick={()=>setDecisions(true)}>
+                <ListItemIcon>
+                  <CheckCircleOutlineIcon style={{ color: '#FF9800' }} />
+                </ListItemIcon>
+                <ListItemText style={{fontWeight:"bold"}} primary="Decide final date" />
+              </MenuItem>
+            }
             <MenuItem onClick={() => {setMenuOpen(false);setInfoDialogOpen(true)}}>
               <ListItemIcon>
                 <InfoIcon style={{ color: '#2196F3' }} />
@@ -481,6 +838,14 @@ export function ContainerTitle(info:InfoMeeting) {
                 onClose={() => setDeleteDialogOpen(false)}
                 isOpen={deleteDialogOpen}
             />
+        )}
+        {decisions && data && (
+          <FinalTimeSlot
+              details={data!}
+              onClose={() => setDecisions(false)}
+              isOpen={decisions}
+              onSaveChanges={handleSaveChanges}
+          />
         )}
     </Box>
     );
