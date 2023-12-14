@@ -229,52 +229,6 @@ function formatDate(date: string): string {
 //------------------------END-FUNCTION------------------------
 
 
-//-------------------------COMPONENT------------------------
-
-function TimeSlotCard( timeslot:TimeSlot ) {
-  return (
-    <Card>
-      <CardContent>
-        {/* User */}
-        <Typography variant="h6" gutterBottom>
-          {timeslot.user}
-        </Typography>
-
-        {/* Date */}
-        <Typography variant="h5" color="textPrimary" align="center" gutterBottom>
-          {formatDates(timeslot.start_time, timeslot.end_time)}
-        </Typography>
-
-        {/* Icons and Numbers */}
-        <Box display="flex" justifyContent="space-around">
-          <Stack direction="row" alignItems="center">
-            <ThumbUp color="primary" style={{marginRight:"7px"}}/>
-            <Typography variant="body2" color="textSecondary">
-              {timeslot.available}
-            </Typography>
-          </Stack>
-
-          <Stack direction="row" alignItems="center">
-            <ThumbsUpDown color="disabled" style={{marginRight:"7px"}}/>
-            <Typography variant="body2" color="textSecondary">
-              {timeslot.maybe_available}
-            </Typography>
-          </Stack>
-
-          <Stack direction="row" alignItems="center">
-            <ThumbDown color="error" style={{marginRight:"7px"}}/>
-            <Typography variant="body2" color="textSecondary">
-              {timeslot.unavailable}
-            </Typography>
-          </Stack>
-        </Box>
-      </CardContent>
-    </Card>
-  );
-};
-
-
-//------------------------END-COMPONENT------------------------
 
 // ------------------------DIALOG------------------------
 // Dialog per visualizzare le informazioni del meeting
@@ -570,12 +524,14 @@ function FinalTimeSlot({ details, onClose, isOpen, onSaveChanges }: FinalTimeSlo
       </DialogTitle>
       <DialogContent>
         <Typography variant="body1" paragraph style={{marginBottom:"10px"}}>
-          {timeslots.length === 1
+        {timeslots.length === 0
+          ? 'There are no timeslots available.'
+          : timeslots.length === 1
             ? 'You have only one timeslot available. Confirm it to finalize the decision.'
             : 'You have multiple timeslots available. Choose the one with the highest availability and confirm your decision.'}
         </Typography>
         <Box className="card-container">
-          {timeslots.map((timeSlot, index) => (
+          {timeslots&&timeslots.map((timeSlot, index) => (
             <Box key={index} mb={2} className={"card"}>
               <Card className={`card-not-selected ${selectedTimeSlot === timeSlot ? 'card-selected' : ''}`} >
                 <CardContent className="card-content">
