@@ -5,9 +5,12 @@ import Button from "@mui/material/Button";
 import React, {FormEvent} from "react";
 import Cookies from "js-cookie";
 import axios from "axios";
-import {Alert, Box} from "@mui/material";
+import {Alert, Box, IconButton, Typography} from "@mui/material";
+import { RecoverPasswordComponent } from "./RecoverPasswordFormComponent";
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 export const LoginFormComponent = () => {
+    const [isRecovering, setIsRecovering] = React.useState(false);
     const [errorString, setErrorString] = React.useState('');
     const handleSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
         e.preventDefault();
@@ -29,8 +32,9 @@ export const LoginFormComponent = () => {
             error.response.data['message'] && setErrorString(error.response.data['message']);
         });
     };
-    
+
     return (
+        !isRecovering ?
         <Box
         component="form"
         noValidate
@@ -58,6 +62,7 @@ export const LoginFormComponent = () => {
                 autoComplete="current-password"
             />
             {errorString !== '' && <Alert severity="error">{errorString}</Alert>}
+            <Button color='secondary' size="small" onClick={() => setIsRecovering(true)}>Forgot your password?</Button>
             <Button
                 type="submit"
                 fullWidth
@@ -67,6 +72,12 @@ export const LoginFormComponent = () => {
                 Log In
             </Button>
 
+        </Box>
+        : <Box>
+            <IconButton  onClick={() => setIsRecovering(false)}>
+                <ArrowBackIcon />
+            </IconButton>
+            <RecoverPasswordComponent /> 
         </Box>
         );
 }
