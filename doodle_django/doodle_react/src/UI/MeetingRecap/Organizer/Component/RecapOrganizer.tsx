@@ -37,8 +37,9 @@ interface ContainerTitleProps {
     location: string;
     date: string; //data decisa dal creatore, default: "In fase di votazione"
     duration: number; //durata meeting
-    period_start_date: string; //data inizio periodo votazione
-    period_end_date: string; //data fine periodo votazione
+    period_start_date: string; //data inizio periodo 
+    period_end_date: string; //data fine periodo 
+    voting_deadline: string; //data fine votazione
     organizer_link: string; //pool_link
     link: string; //meeting_link
     user: number; //user_id
@@ -68,6 +69,7 @@ interface SchedulePoolResponse{
     id: number;
     voting_start_date: string;
     voting_deadline: string;
+    final_date: string;
     pool_link: string;
     meeting: number
     time_slots: TimeSlotResponse[];
@@ -132,7 +134,8 @@ function extractContainerTitleProps(meeting: MeetingResponse): ContainerTitlePro
         title: meeting.name,
         description: meeting.description,
         location: meeting.location,
-        date: 'In fase di votazione (possibile tra: ' + meeting.period_start_date + ' e ' + meeting.period_end_date + ')',
+        date: pool.final_date,
+        voting_deadline: pool.voting_deadline,
         duration:  meeting.duration,
         period_start_date: meeting.period_start_date,
         period_end_date: meeting.period_end_date,
@@ -155,37 +158,46 @@ export function RecapOrganizer() {
 
     //script che se è in loading fa una richiesta ogni 5 secondi se no visualizza subito i dati
     useEffect(() => {
-        if (!link_meeting) {
-            return ;
-        }   
-        fetchData();
-        if (!loading) {
-            return ;
-        }
-
-        const interval = setInterval(() => {
-            fetchData();
+        let fetchDataTimeout:any;
+      
+        const fetchDataNow = async () => {
+            const data = await fetchData();
+            // Verifica se hai ricevuto i dati
+            if (data) {
+                // Se hai ricevuto i dati, cancella l'intervallo
+                clearInterval(fetchDataTimeout);
+            }
+        };
+      
+        fetchDataNow(); // Esegui subito al montaggio del componente
+      
+        // Imposta un intervallo che chiama fetchData ogni 5 secondi solo se i dati non sono stati ricevuti
+        fetchDataTimeout = setInterval(() => {
+          fetchDataNow();
         }, 5000);
-        
-        return () => clearInterval(interval);
-    }, []);
+      
+        return () => {
+          clearInterval(fetchDataTimeout);
+        };
+      }, []);
 
 
     const fetchData = async () => {
         if (!link_meeting) {
-            return ;
+            return false;
         }
         try {
             const response = await axios.get<MeetingResponse>(`http://localhost:8000/api/v1/meetings/details/${link_meeting}`);
-            console.log(response.data)
             const transformedMeeting = convertMeetingResponseToMeeting(response.data);
             const transformedMeetingData = extractContainerTitleProps(response.data);
 
             setMeetingData(transformedMeeting);
             setMeetingInfo(transformedMeetingData);
             setLoading(false);
+            return true;
         } catch (error) {
             console.error('Errore nella richiesta HTTP:', error);
+            return false
         }
     };
 

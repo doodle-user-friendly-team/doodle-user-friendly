@@ -32,6 +32,7 @@ urlpatterns = [
     path("api-auth/", include("rest_framework.urls")),
     path("api/v1/auth/", include("dj_rest_auth.urls")),
 
+    path('api/v1/top_timeslots/<str:link>', TopTimeSlotsView.as_view(), name='top_timeslots'),
     path('api/v1/timeslots/', TimeSlotView.as_view({'get': 'get_all'})),
     path('api/v1/timeslots/<str:_data>', TimeSlotView.as_view({'get': 'get_data'})),
 

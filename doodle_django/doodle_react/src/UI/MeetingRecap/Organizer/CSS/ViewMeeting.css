@@ -40,6 +40,13 @@
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3) !important;  /* Ombreggiatura 3D al passaggio del mouse */
 }
 
+.button-save:disabled{
+    background-color: #c9dfca!important;  /* Colore di sfondo del pulsante */
+    color: #fff !important;  /* Colore del testo */
+    padding: 10px 20px !important;  /* Spaziatura interna del pulsante */
+    border-radius: 8px !important;  /* Angoli arrotondati */
+}
+
 
 .button-cancel{
     background-color: #ff5c5c!important;  /* Colore di sfondo del pulsante */
@@ -53,6 +60,70 @@
 .button-cancel:hover {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3) !important;  /* Ombreggiatura 3D al passaggio del mouse */
 }
+
+
+/*Final date*/
+.selected-button{
+  background-color: #164d19 !important; /* Colore di sfondo quando selezionato */
+  color: #fff !important; /* Colore del testo quando selezionato */
+  border: 1px solid hsl(108, 100%, 35%) !important; /* Bordo quando selezionato */
+  padding: 10px !important; /* Spaziatura interna */
+  cursor:default !important; /* Cambia il cursore al passaggio del mouse */
+}
+
+.not-selected-button{
+  background-color: #ccc !important; /* Colore di sfondo normale */
+  color: #333 !important; /* Colore del testo normale */
+  border: 1px solid #666 !important; /* Bordo normale */
+  padding: 10px !important; /* Spaziatura interna */
+  cursor: pointer !important; /* Cambia il cursore al passaggio del mouse */
+}
+
+.not-selected-button:hover{
+  scale: 1.02 !important; /* Effetto di ingrandimento al passaggio del mouse */
+  background-color: rgb(190, 228, 190) !important; /* Colore di sfondo al passaggio del mouse */
+}
+
+.card-container {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+}
+
+.card {
+  width: 80% !important;
+  margin-bottom: 20px !important;
+  border: 1px solid #ccc !important;
+  border-radius: 8px !important;
+  transition: box-shadow 0.3s !important;
+}
+
+.card:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+.card-content {
+  padding: 16px !important;
+}
+
+.card-not-selected{
+  background-color: #fff !important;
+  color: #333 !important;
+}
+
+.card-selected {
+  background-color: #4caf50 !important;
+  color: #fff !important;
+}
+
+.button-container {
+  display: flex !important;
+  justify-content: center !important;
+  margin-top: 10px !important;
+}
+
+
+
 
 
   

@@ -90,6 +90,10 @@ class SchedulePool(models.Model):
         max_length=100,
         null=True
     )
+    final_date = models.DateTimeField(
+        db_column="final_date",
+        null=True
+    )
     meeting = models.ForeignKey(
         to=Meeting,
         on_delete=models.CASCADE,
