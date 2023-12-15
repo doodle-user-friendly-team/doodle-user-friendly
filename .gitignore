@@ -136,3 +136,5 @@ GitHub.sublime-settings
 !.vscode/extensions.json 
 .history
 doodle_django/doodle_react/node_modules/
+doodle_django/doodle_react/package-lock.json
+doodle_django/doodle_react/package.json

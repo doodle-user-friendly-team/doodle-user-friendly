@@ -25,6 +25,7 @@ class UserFake(models.Model):
         on_delete=models.CASCADE,
         null=True
     )
+    
 
 class Meeting(models.Model):
     id = models.AutoField(
@@ -147,3 +148,5 @@ class Vote(models.Model):
 
     class Meta:
         unique_together = ('time_slot', 'user')
+        
+        

@@ -1,0 +1,49 @@
+/* ProfileBox.css */
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  
+}
+
+.card {
+  width: 500px; /* Larghezza della card */
+  height: 500px;
+  text-align: center;
+ 
+}
+
+.circle {
+  background: lightblue;
+  border-radius: 50%;
+  width: 100px;
+  height: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
+  margin-top: 16px;
+  
+}
+
+.labelStyleLeft{
+
+  text-align-last: left;
+  
+}
+
+
+.labelStyleRight{
+  
+  color: gray;
+  margin-left: 80px;
+  text-align-last: left;
+
+}
+
+
+.labelStyleBotton{
+  margin-top: 168px;
+  color: green;
+}
