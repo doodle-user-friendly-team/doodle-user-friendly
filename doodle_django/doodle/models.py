@@ -1,5 +1,5 @@
 from django.contrib.auth import get_user_model
-from django.core.validators import EmailValidator
+from django.core.validators import EmailValidator, MinValueValidator
 from django.db import models
 
 
@@ -54,7 +54,8 @@ class Meeting(models.Model):
     duration = models.IntegerField(
         db_column="duration",
         blank=False,
-        null=False
+        null=False,
+        validators=[MinValueValidator(1)]
     )
     period_start_date = models.DateField(
         db_column="period_start_date",
@@ -107,11 +108,11 @@ class TimeSlot(models.Model):
     )
     start_time = models.DateTimeField(
         db_column="start_time",
-        default=None
+        null=False,
     )
     end_time = models.DateTimeField(
         db_column="end_time",
-        default=None
+        null=False,
     )
     schedule_pool = models.ForeignKey(
         to=SchedulePool,
@@ -133,7 +134,8 @@ class Vote(models.Model):
     )
     preference = models.CharField(
         db_column="preference",
-        max_length=100
+        max_length=100,
+        null=False
     )
     time_slot = models.ForeignKey(
         db_column="time_slot",
