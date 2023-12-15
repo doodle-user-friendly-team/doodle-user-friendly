@@ -3,33 +3,21 @@ from urllib import response
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view, renderer_classes, action
 from rest_framework.views import APIView
-from .models import *
 from rest_framework.response import Response
 from .serializer import *
 from django.shortcuts import get_object_or_404
-from rest_framework import status, generics
 from .utils import *
 from rest_framework import permissions
-
-from django.db.models import Subquery, OuterRef
-
-from rest_framework.permissions import IsAuthenticated
-from django.http import JsonResponse
 
 import requests
 
 from django.db.models import Q, IntegerField
 from django.contrib.auth import get_user_model
-from django.contrib.auth.backends import ModelBackend
 
 # per l'autenticazione
 from django.contrib.auth import authenticate, login
-from rest_framework.decorators import permission_classes, authentication_classes
-from rest_framework.permissions import AllowAny
 from rest_framework import status
 from datetime import datetime, timedelta
-
-from rest_framework.generics import CreateAPIView
 
 from rest_framework import viewsets
 
@@ -51,18 +39,15 @@ class MeetingView(viewsets.ModelViewSet):
     
     def get_queryset(self):
         link = self.request.query_params.get("link")
-        userId = self.request.query_params.get("id")
+        userId = self.request.user.id
         if link is not None:
             if not Meeting.objects.filter(organizer_link=link).exists():
                 return None
             meeting = Meeting.objects.filter(organizer_link=link)
             return meeting
-        elif userId is not None:
-            if not Meeting.objects.filter(user=userId).exists():
-                return None
-            meetings = Meeting.objects.filter(user=userId)
-            return meetings
-        return None
+        
+        meetings = Meeting.objects.filter(user=userId)
+        return meetings
     
     def create(self, request):
         self.check_object_permissions(request, None)
@@ -111,16 +96,18 @@ class SchedulePoolView(viewsets.ModelViewSet):
     def get_queryset(self):
         link = self.request.query_params.get("link")
         schedule_pool_id = self.request.query_params.get("schedule_pool_id")
-        user_id = self.request.query_params.get("user_id")
         if schedule_pool_id is not None:
             specified_schedule_pool = SchedulePool.objects.filter(id=schedule_pool_id)
             return specified_schedule_pool
         elif link is not None:
             schedule_pool = SchedulePool.objects.filter(pool_link=link)
             return schedule_pool
-        elif user_id is not None:
-            schedule_pool = SchedulePool.objects.filter(user=user_id)
-            return schedule_pool
+        
+        # get all schedule pools of the meetings of the user
+        user = self.request.user.id
+        meetings = Meeting.objects.filter(user=user)
+        schedule_pool = SchedulePool.objects.filter(meeting__in=meetings)
+        return schedule_pool
 
 
 class TimeSlotView(viewsets.ModelViewSet):
@@ -304,7 +291,7 @@ class UserView(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def get_queryset(self):
-        user_id = self.request.query_params.get("id")
+        user_id = self.request.user.id
         if not UserFake.objects.filter(id=user_id).exists():
             return Response([], status=200)
         user = UserFake.objects.get(id=user_id)
@@ -353,7 +340,9 @@ class djangoUsers(APIView):
             user_obj = user.first()
             if user_obj.check_password(password):
                 login(request, user_obj, backend='django.contrib.auth.backends.ModelBackend')
-                return Response(requests.post("http://localhost:8000/api/v1/auth/login/", data={'username': user_obj, 'password': password}))
+                data = requests.post("http://localhost:8000/api/v1/auth/login/", data={'username': user_obj, 'password': password})
+                
+                return Response({'data': data.json()['key']})
             return Response({'message': 'wrong password'}, status=status.HTTP_401_UNAUTHORIZED)
         else:
             return Response({'message': 'user not found'}, status=status.HTTP_401_UNAUTHORIZED)

@@ -21,13 +21,10 @@ export const LoginFormComponent = () => {
             'Content-Type': 'application/json', // Specifica il tipo di contenuto
         };
         
-        axios.post(`http://localhost:8000/api/v1/authenticate/`, {
-            email: data.get('email'),
-            password: data.get('password')
-        },
+        axios.get(`http://localhost:8000/api/v1/authenticate/?email=${data.get('email')}&password=${data.get('password')}`,
             {headers}).then((response) => {
-            Cookies.set('token', response.data['key']);
-            Cookies.set('user_id', response.data['id']);
+             //   console.log(response.data)
+            Cookies.set('token', response.data['data']);
             window.location.assign("/dashboard")
         }).catch((error) => {
             error.response.data['message'] && setErrorString(error.response.data['message']);

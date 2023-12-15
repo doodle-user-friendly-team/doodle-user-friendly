@@ -50,15 +50,17 @@ export function DashboardComponent() {
     
     if (!updateMeetings) {
         
-        axios.get('http://localhost:8000/api/v1/meetings/', {params: {token : token}}).then((response) => {
+        axios.get('http://localhost:8000/api/v1/meetings/', {headers: { 'authorization': `Token ${token}`}}).then((response) => {
             
             my_meetings = [];
             
             response.data.forEach((meeting: MeetingInterface) => {
                 my_meetings.push(meeting);
             });
+            
+            console.log(my_meetings);
 
-            axios.get('http://localhost:8000/api/v1/users/schedulepool/', {params: {token : token}}).then((response) => {
+            axios.get('http://localhost:8000/api/v1/schedulepool/', {headers: { 'authorization': `Token ${token}`}}).then((response) => {
                 others_meetings = [];
                 
                 response.data.forEach((meeting: SchedulePool) => {
