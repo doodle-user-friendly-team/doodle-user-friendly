@@ -1,5 +1,6 @@
 from urllib import response
 from django.shortcuts import render
+from django.urls import reverse_lazy
 from django.utils import timezone
 from django.utils.timezone import get_current_timezone
 from django.contrib.auth.models import BaseUserManager, AbstractUser
@@ -21,7 +22,8 @@ import requests
 from django.db.models import Q
 from django.contrib.auth import get_user_model
 from django.contrib.auth.backends import ModelBackend
-
+from django.contrib.auth.views import PasswordChangeView
+from django.contrib.auth.forms import PasswordChangeForm
 # per l'autenticazione
 from django.contrib.auth import authenticate, login
 from rest_framework.decorators import permission_classes, authentication_classes
@@ -234,6 +236,7 @@ class GetUserByIdView(APIView):
         user_id = request.GET.get('id', '')
         user = get_object_or_404(UserFake, id=user_id)
         serializer = UserFakeSerializer(user)
+        print(request.data)
         return Response(serializer.data)
 
 
@@ -265,6 +268,7 @@ class UserRegistrationView(CreateAPIView):
 
         # Ritorniamo una risposta di successo con i dati dell'utente appena creato
         headers = self.get_success_headers(serializer.data)
+        
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
@@ -280,8 +284,9 @@ class CheckUser(APIView):
 class UserByIdView(APIView):
 
     def get(self, request, user_id):
+        print(f"Trying to get user with ID: {user_id}")
         user = get_object_or_404(UserFake, id = user_id)
-
+        print(f"User found: {user}")
         serializer = UserFakeSerializer(user)
 
         return Response(serializer.data)
@@ -436,3 +441,18 @@ class djangoUsers(APIView):
         else:
             return Response({'message': 'user not found'}, status=status.HTTP_401_UNAUTHORIZED)
 
+class PasswordChangeAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        print("Request received at PasswordChangeAPIView") 
+        
+        new_password1 = request.data.get('new_password1', '')
+        new_password2 = request.data.get('new_password2', '')
+
+        user = request.user
+
+        user.set_password(new_password1)
+        user.save()
+        return Response({'detail': 'Password changed successfully.'}, status=status.HTTP_200_OK)
+        
