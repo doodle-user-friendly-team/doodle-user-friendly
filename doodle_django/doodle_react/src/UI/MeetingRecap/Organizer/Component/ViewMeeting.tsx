@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { ChangeEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+//aggiunto l'impor di alert e alertTitle
 import {
     Box,
     Button,
@@ -9,6 +10,8 @@ import {
     DialogActions,
     TextField,
     Typography,
+    Alert,
+    AlertTitle,
   } from '@mui/material';
 
 import LinkIcon from '@mui/icons-material/Link';
@@ -17,11 +20,16 @@ import EditIcon from '@mui/icons-material/Edit';
 import InfoIcon from '@mui/icons-material/Info';
 import IconButton from '@mui/material/IconButton';
 import DoneIcon from '@mui/icons-material/Done';
+// aggiunto per invio email
+import AttachEmailIcon from '@mui/icons-material/AttachEmail';
+import Grid from '@mui/material/Grid';
+// di seguito aggiunta l'icona alternateEmail
 import {   
     Description as DescriptionIcon,
     LocationOn as LocationIcon,
     Event as EventIcon,
-    AccessTime as AccessTimeIcon, } from '@mui/icons-material';
+    AccessTime as AccessTimeIcon,
+    AlternateEmail as AlternateEmailIcon } from '@mui/icons-material';
 import '../CSS/ViewMeeting.css';
 import { SuccessSave,SuccessDelete,FailedSave,FailedDelete } from './Alert';
 
@@ -65,6 +73,14 @@ interface DeleteDialog {
     link: string;
     onClose: () => void;
     isOpen: boolean;
+}
+
+//aggiunto per invio email
+// PROP per SendEmailDialog
+interface SendEmailDialog {
+  onClose: () => void;
+  isOpen: boolean;
+  meetingId: number | null;
 }
 
 
@@ -309,6 +325,158 @@ function DeleteDialog({ link, isOpen, onClose }: DeleteDialog) {
 }
 
 
+//aggiunto per invio email
+// Dialog per inviare il link del meeting tramite email
+function EmailDialog({ onClose, isOpen, meetingId }: SendEmailDialog) {
+
+  const [inputValue, setInputValue] = useState<string>('');
+  const [inputEmailArray, setInputEmailArray] = useState<string[]>([]);
+  const [showSendAlert, setShowSendAlert] = useState(false)
+  const [errorAlert, setErrorAlert] = useState(false);
+ 
+
+  const onChangeInput = (event: ChangeEvent<HTMLInputElement>) => {
+    setErrorAlert(false)
+    // Aggiorna lo stato del text field con il nuovo valore dell'input
+    setInputValue(event.target.value);
+    console.log("Il valore di setInputValue è: " + inputValue)
+  };
+
+  const onAddInputArray = () => {
+    // Verifica che l'input non sia vuoto prima di aggiungerlo all'array
+    if (inputValue.trim() !== '') {
+      setInputEmailArray((prevArray) => [...prevArray, inputValue]);
+      setInputValue(''); // Resetta il valore dell'input dopo l'aggiunta
+    }
+    console.log("Le email nell'array sono: " + [...inputEmailArray, inputValue]);
+  };
+
+
+  const validateEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+
+  const handleSendEmail = async () => {
+
+    onAddInputArray()
+
+    console.log("L'id del meeting è: " + meetingId);
+
+    try {
+
+      let arraySplitEmails: string[] = [];
+
+      await new Promise<void>((resolve) => {
+        setInputEmailArray((prevArray) => {
+          // Divide ogni stringa nell'array in sottostringhe separate ogni volta che viene trovata una virgola, così prendo le email singolarmente
+          // La combinazione di map e trim rimuove gli spazi prima e dopo le virgole a ciascuna sottostringa
+          arraySplitEmails = prevArray.flatMap((email) => email.split(',').map(subEmail => subEmail.trim()));
+          console.log("Array di email separate da virgola: " + arraySplitEmails);
+          resolve(); // Risolve la Promise quando lo stato è stato aggiornato
+          return [];
+        });
+      });
+
+      if (arraySplitEmails.length === 0) {
+        console.error('Nessuna email inserita.');
+        setErrorAlert(true);
+        return;
+      }
+      
+      // Validazione delle email
+      const areEmailsValid = arraySplitEmails.every(validateEmail);
+
+      if (!areEmailsValid) {
+        console.error('Una o più email non sono valide.');
+        setErrorAlert(true);
+        return;
+    }
+
+      console.log("Dati inviati:", JSON.stringify({ emails: arraySplitEmails }));
+
+      const response = await fetch(`http://localhost:8000/send_link_by_email/${meetingId}/`,{
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          emails: arraySplitEmails,
+        }),
+      });
+  
+      if (response.ok) {
+        console.log('Richiesta POST riuscita!');
+        setShowSendAlert(true)
+        setTimeout(() => {
+          setShowSendAlert(false);
+          onClose()
+        }, 3000); // Chiudi l'alert dopo 3 secondi
+      } else {
+        console.error('Errore nella richiesta POST:', response.statusText);
+      }
+    } catch (error: any) {
+      console.error('Errore nella richiesta POST:', error.message || 'Errore sconosciuto');
+    }
+    
+  };
+
+
+  return (
+    <Dialog open={isOpen} onClose={onClose} fullWidth maxWidth="sm" >
+      <DialogTitle>
+        <Typography variant='h5' align="center" style={{fontWeight:"bold" }}>
+          Send the meeting link by email
+        </Typography>
+      </DialogTitle>
+      <DialogContent>
+        <Box className="box">
+          <Typography>
+            <p className='p'>Enter emails:</p>
+          </Typography>
+          <Grid container alignItems="left" spacing={2}>
+            <Grid item>
+              <AlternateEmailIcon fontSize="small" className='icon' />
+            </Grid>
+            <Grid item>
+              <TextField
+                multiline
+                maxRows={4}
+                onChange={onChangeInput}
+                fullWidth
+                style={{ width: '500px' }}
+              />
+            </Grid>
+          </Grid>
+        </Box>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose} className="button-cancel">
+          Close
+        </Button>
+        <Button onClick= {handleSendEmail} className='button-save'>
+          Send
+        </Button>
+      </DialogActions>
+      {showSendAlert && (
+        <Alert severity="success" className='successAlert' style={{ width: '560px' }}>
+            <AlertTitle>Success</AlertTitle>
+            Successful e-mailing
+        </Alert>
+      )}
+      {errorAlert && (
+        <Alert severity="error" className='errorAlert' style={{ width: '560px' }}>
+          <AlertTitle>Error</AlertTitle>
+          One or more emails are invalid.
+        </Alert>
+      )}
+    </Dialog>
+    
+  );
+}
+
+
 // ------------------------END-DIALOG------------------------
 
 
@@ -326,6 +494,8 @@ export function ContainerTitle(info:InfoMeeting) {
     const [editDialogOpen, setEditDialogOpen] = React.useState(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
     const [linkCopied, setLinkCopied] = React.useState(false);
+    //aggiunto per invio email
+    const [emailDialogOpen, setEmailDialogOpen] = React.useState(false);
 
     const [successSave, setSuccessSave] = useState(false);
     const [failedSave, setFailedSave] = useState(false);
@@ -380,6 +550,10 @@ export function ContainerTitle(info:InfoMeeting) {
                 <LinkIcon style={{ color: '#FFFFFF' }} />
               )}
             </IconButton>
+            {/* aggiunto per invio email */}
+            <IconButton onClick={() => setEmailDialogOpen(true)} style={{ borderRadius: '8px', backgroundColor: '#8e44ad', width: '40px', height: '40px',marginRight:'8px' }}>
+                <AttachEmailIcon style={{ color: '#FFFFFF' }} />
+            </IconButton>
             {successSave && <SuccessSave onClose={()=>setSuccessSave(false)}/>}
             {failedSave && <FailedSave onClose={()=>setFailedSave(false)}/>}
         </Box>
@@ -403,6 +577,14 @@ export function ContainerTitle(info:InfoMeeting) {
                 link={data.organizer_link}
                 onClose={() => setDeleteDialogOpen(false)}
                 isOpen={deleteDialogOpen}
+            />
+        )}
+        {/* aggiunto per invio email */}
+        {emailDialogOpen && data && (
+            <EmailDialog
+                onClose={() => setEmailDialogOpen(false)}
+                isOpen={emailDialogOpen}
+                meetingId={data.id}
             />
         )}
     </Box>
