@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.core.validators import EmailValidator
 from django.db import models
 
 
@@ -9,16 +10,20 @@ class UserFake(models.Model):
     )
     name = models.CharField(
         db_column="name",
-        max_length=100,
+        max_length=20,
+        null=False
     )
     surname = models.CharField(
         db_column="surname",
-        max_length=100,
+        max_length=20,
+        null=False
     )
-    email = models.CharField(
+    email = models.EmailField(
         db_column="email",
+        unique=True,
+        null=False,
         max_length=100,
-        unique = True
+        validators=[EmailValidator(message="Enter a valid email address.")]
     )
     auth_user = models.ForeignKey(
         to=get_user_model(),
