@@ -8,9 +8,10 @@ import axios from "axios";
 import {Alert, Box, IconButton, Typography} from "@mui/material";
 import { RecoverPasswordComponent } from "./RecoverPasswordFormComponent";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { Link } from "react-router-dom";
 
 export const LoginFormComponent = () => {
-    const [isRecovering, setIsRecovering] = React.useState(false);
+    // const [isRecovering, setIsRecovering] = React.useState(false);
     const [errorString, setErrorString] = React.useState('');
     const handleSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
         e.preventDefault();
@@ -34,7 +35,7 @@ export const LoginFormComponent = () => {
     };
 
     return (
-        !isRecovering ?
+        // !isRecovering ?
         <Box
         component="form"
         noValidate
@@ -62,7 +63,8 @@ export const LoginFormComponent = () => {
                 autoComplete="current-password"
             />
             {errorString !== '' && <Alert severity="error">{errorString}</Alert>}
-            <Button color='secondary' size="small" onClick={() => setIsRecovering(true)}>Forgot your password?</Button>
+            <Typography variant='subtitle1'>Forgot your password? <Link reloadDocument to='http://localhost:8000/api/v1/auth/resetpwd/'>Click here.</Link></Typography>
+            {/* <Button color='secondary' size="small" onClick={() => setIsRecovering(true)} >Forgot your password?</Button> */}
             <Button
                 type="submit"
                 fullWidth
@@ -73,11 +75,11 @@ export const LoginFormComponent = () => {
             </Button>
 
         </Box>
-        : <Box>
-            <IconButton  onClick={() => setIsRecovering(false)}>
-                <ArrowBackIcon />
-            </IconButton>
-            <RecoverPasswordComponent /> 
-        </Box>
+        // : <Box>
+        //     <IconButton  onClick={() => setIsRecovering(false)}>
+        //         <ArrowBackIcon />
+        //     </IconButton>
+        //     <RecoverPasswordComponent /> 
+        // </Box>
         );
 }
