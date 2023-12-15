@@ -108,6 +108,8 @@ class MeetingView(APIView):
                                                         request.data['period_start_date'],
                                                         '%Y-%m-%d').date() - timedelta(days=2),
                                                     pool_link=genera_codice_invito(), meeting=meeting)
+
+        send_meeting_creation_email(meeting)
         return Response(serializer.data)
 
 
