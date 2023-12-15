@@ -19,7 +19,8 @@ export function SigninFormComponent () {
 
         const headers = {
             'X-CSRFToken': csrfToken,
-            'Content-Type': 'application/json' // Specifica il tipo di contenuto
+            'Content-Type': 'application/json',// Specifica il tipo di contenuto
+            "Authorization": "Token " + Cookies.get('token')
         };
 
         axios.post('http://localhost:8000/api/v1/auth/registration/', {

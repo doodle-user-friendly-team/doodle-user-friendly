@@ -73,13 +73,13 @@ export function NewTimeslotDialog(props: NewTimeslotDialogProps) {
     const headers = {
       "X-CSRFToken": csrfToken,
       "Content-Type": "application/json",
+      "Authorization": "Token " + Cookies.get("token")
     };
 
     const postData = {
       start_time: startDate,
       end_time: endDate,
-      schedule_pool: schedulePoolId,
-      user: 1
+      schedule_pool: schedulePoolId
     };
 
     axios

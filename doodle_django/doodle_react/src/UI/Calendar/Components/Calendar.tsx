@@ -33,6 +33,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { NewTimeslotDialog, PreferencesListDialog } from "./UserRecapDialog";
 import { MofifyPreferenceForm } from "../../Preference/Components/ModifyPreferenceForm";
+import Cookies from "js-cookie";
 
 //DATA INTERFACES
 export interface SchedulePool {
@@ -265,7 +266,12 @@ export default function Calendar() {
   useEffect(() => {
     setIsPoolLoading(true);
 
-    axios.get("http://localhost:8000/api/v1/schedule_pool/" + pool_link).then
+    
+    axios.get("http://localhost:8000/api/v1/schedule_pool/" ,  {
+      params: {
+        link: pool_link,
+      },
+    }).then
     ((response) => {
       console.log(response.data);
       setPool(response.data[0]);

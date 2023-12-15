@@ -162,7 +162,9 @@ export function RecapOrganizer() {
 
         const fetchData = async () => {
         try {
-            const response = await axios.get<MeetingResponse>(`http://localhost:8000/api/v1/meetings/details/${link_meeting}`);
+            const response = await axios.get<MeetingResponse>(`http://localhost:8000/api/v1/meetings/details/`, {params:{
+                   link: link_meeting
+                }});
             console.log(response.data)
             const transformedMeeting = convertMeetingResponseToMeeting(response.data);
             const transformedMeetingData = extractContainerTitleProps(response.data);

@@ -18,12 +18,16 @@ export const LoginFormComponent = () => {
 
         const headers = {
             'X-CSRFToken': csrfToken,
-            'Content-Type': 'application/json' // Specifica il tipo di contenuto
+            'Content-Type': 'application/json', // Specifica il tipo di contenuto
         };
-
-        const queryString = `?email=${data.get('email')}&password=${data.get('password')}`;
-        axios.get(`http://localhost:8000/api/v1/authenticate/${queryString}`,
+        
+        axios.post(`http://localhost:8000/api/v1/authenticate/`, {
+            email: data.get('email'),
+            password: data.get('password')
+        },
             {headers}).then((response) => {
+            Cookies.set('token', response.data['key']);
+            Cookies.set('user_id', response.data['id']);
             window.location.assign("/dashboard")
         }).catch((error) => {
             error.response.data['message'] && setErrorString(error.response.data['message']);
