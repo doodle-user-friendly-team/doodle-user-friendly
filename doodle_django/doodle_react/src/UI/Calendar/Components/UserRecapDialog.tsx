@@ -143,7 +143,7 @@ export function PreferencesListDialog(props: PreferencesListDialogProps) {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8000/api/v1/votes/timeslot/" + tsId)
+      .get("http://localhost:8000/api/v1/votes/?id=" + tsId)
       .then((response) => response.data)
       .then((p) => {
         setPrefList(p);

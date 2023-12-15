@@ -81,7 +81,6 @@ interface PreferencesCount {
 //Taken from AndreaYpmY
 interface ModifyPreferenceProps {
   id: number;
-  user: number;
   time_slot: number;
   selectedPreference: string;
   onClose: () => void;
@@ -108,7 +107,6 @@ export default function Calendar() {
   const [modifyDialogProps, setModifyDialogProps] =
     useState<ModifyPreferenceProps>({
       id: 0,
-      user: 1,
       time_slot: 1,
       selectedPreference: "Available",
       onClose: () => setModifyDialogOpen(false),
@@ -156,12 +154,11 @@ export default function Calendar() {
 
   function modifyPreference(ts_id: number) {
     const preference = votes!.find(
-      (v) => v.time_slot === ts_id && v.user === 1
+      (v) => v.time_slot === ts_id
     );
     const ts = pool!.time_slots.find((ts) => ts.id === ts_id);
     setModifyDialogProps({
-      id: preference!.id, //TODO: get preference based on current user,
-      user: 1, //TODO: get current user,
+      id: preference!.id,
       time_slot: ts_id,
       selectedPreference: preference!.preference,
       onClose: () => setModifyDialogOpen(false),
@@ -266,11 +263,13 @@ export default function Calendar() {
   useEffect(() => {
     setIsPoolLoading(true);
 
+    const token = Cookies.get('token');
     
-    axios.get("http://localhost:8000/api/v1/schedule_pool/" ,  {
+    axios.get("http://localhost:8000/api/v1/schedulepool/" ,  {
       params: {
         link: pool_link,
       },
+        headers: { 'authorization': `Token ${token}`}
     }).then
     ((response) => {
       console.log(response.data);

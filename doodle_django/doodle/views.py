@@ -34,7 +34,7 @@ class TimeLessThanNowError(Exception):
 
 
 class MeetingView(viewsets.ModelViewSet):
-    serializer_class = MeetingSerializer
+    serializer_class = CompleteMeetingSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     
     def get_queryset(self):
@@ -252,12 +252,13 @@ class VotesView(viewsets.ModelViewSet):
             serializer.save()
             return Response(serializer.data)
 
-    def update(self, request, *args, **kwargs):
+    def put(self, request, *args, **kwargs):
         self.check_object_permissions(request, None)
         
+        user_id = request.user.id
+
         voto_id = request.data.get('id')
         preference = request.data.get('preference')
-        user_id = request.data.get('user')
         timeslot_id = request.data.get('time_slot')
         
         print(voto_id, preference, user_id, timeslot_id)

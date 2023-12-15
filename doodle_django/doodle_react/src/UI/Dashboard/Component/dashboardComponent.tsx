@@ -57,8 +57,6 @@ export function DashboardComponent() {
             response.data.forEach((meeting: MeetingInterface) => {
                 my_meetings.push(meeting);
             });
-            
-            console.log(my_meetings);
 
             axios.get('http://localhost:8000/api/v1/schedulepool/', {headers: { 'authorization': `Token ${token}`}}).then((response) => {
                 others_meetings = [];

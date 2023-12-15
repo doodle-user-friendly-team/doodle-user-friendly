@@ -32,15 +32,17 @@ export function MofifyPreferenceForm ({id,user,time_slot, selectedPreference, on
     const preference = selectedButton;
       const csrfToken = Cookies.get('csrftoken');
 
+      const token = Cookies.get('token');
+      
       const headers = {
           'X-CSRFToken': csrfToken,
-          'Content-Type': 'application/json' // Specifica il tipo di contenuto
+          'Content-Type': 'application/json', // Specifica il tipo di contenuto
+          'Authorization': `Token ${token}`
       };
       
-    axios.put('http://localhost:8000/api/update_preference/', {
+    axios.put('http://localhost:8000/api/v1/votes/', {
         id,
         preference,
-        user,
         time_slot
       }, { headers })
       .then((response) => {
