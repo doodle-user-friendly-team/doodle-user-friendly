@@ -11,11 +11,14 @@ from rest_framework import status, generics
 from .utils import *
 from rest_framework import permissions
 
+from django.db.models import Subquery, OuterRef
+
 from rest_framework.permissions import IsAuthenticated
+from django.http import JsonResponse
 
 import requests
 
-from django.db.models import Q
+from django.db.models import Q, IntegerField
 from django.contrib.auth import get_user_model
 from django.contrib.auth.backends import ModelBackend
 
@@ -52,7 +55,7 @@ class MeetingView(viewsets.ModelViewSet):
         if link is not None:
             if not Meeting.objects.filter(organizer_link=link).exists():
                 return None
-            meeting = Meeting.objects.get(organizer_link=link)
+            meeting = Meeting.objects.filter(organizer_link=link)
             return meeting
         elif userId is not None:
             if not Meeting.objects.filter(user=userId).exists():
@@ -102,7 +105,7 @@ class MeetingView(viewsets.ModelViewSet):
 
 
 class SchedulePoolView(viewsets.ModelViewSet):
-    serializer_class = SchedulePoolSerializer
+    serializer_class = DetailedSchedulePoolSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def get_queryset(self):
@@ -110,27 +113,19 @@ class SchedulePoolView(viewsets.ModelViewSet):
         schedule_pool_id = self.request.query_params.get("schedule_pool_id")
         user_id = self.request.query_params.get("user_id")
         if schedule_pool_id is not None:
-            if not SchedulePool.objects.filter(id=schedule_pool_id).exists():
-                return Response([], status=200)
-            specified_schedule_pool = SchedulePool.objects.get(id=schedule_pool_id)
-            serializer_result = DetailedSchedulePoolSerializer(specified_schedule_pool)
-            return Response(serializer_result.data)
+            specified_schedule_pool = SchedulePool.objects.filter(id=schedule_pool_id)
+            return specified_schedule_pool
         elif link is not None:
-            if not SchedulePool.objects.filter(pool_link=link).exists():
-                return Response([], status=200)
-            schedule_pool = SchedulePool.objects.get(pool_link=link)
-            serializer_result = DetailedSchedulePoolSerializer(schedule_pool, many=True)
-            return Response(serializer_result.data)
+            schedule_pool = SchedulePool.objects.filter(pool_link=link)
+            return schedule_pool
         elif user_id is not None:
-            if not SchedulePool.objects.filter(user=user_id).exists():
-                return Response([], status=200)
             schedule_pool = SchedulePool.objects.filter(user=user_id)
-            serializer_result = DetailedSchedulePoolSerializer(schedule_pool, many=True)
-            return Response(serializer_result.data)
+            return schedule_pool
+
 
 class TimeSlotView(viewsets.ModelViewSet):
 
-    serializer_class = TimeSlotSerializer
+    serializer_class = DetailedTimeSlotSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def get_queryset(self):
@@ -146,6 +141,8 @@ class TimeSlotView(viewsets.ModelViewSet):
             return Response(serializer_result.data)
         elif _data is not None:
             day, month, year = _data.split('_')
+            
+            print(day, month, year)
 
             start_time = f"{int(year):04d}-{int(month) + 1:02d}-{int(day) :02d}T23:59:59Z"
             end_time = f"{int(year):04d}-{int(month) + 1:02d}-{(int(day)):02d}T23:59:59Z"
@@ -155,20 +152,15 @@ class TimeSlotView(viewsets.ModelViewSet):
                 end_time = datetime.strptime(end_time, "%Y-%m-%dT%H:%M:%SZ")
             except:
                 raise FormatError
-    
-            ts = [ {"id": timeslot.id,"start_time": timeslot.start_time, "end_time": timeslot.end_time, "user": timeslot.user.id}
-                   for timeslot in TimeSlot.objects.raw(f'SELECT * FROM doodle_timeslot WHERE start_time between "{start_time}" and  "{end_time}"')]
-    
-            return Response(ts)
+            
+            return TimeSlot.objects.raw(f'SELECT * FROM doodle_timeslot WHERE start_time between "{start_time}" and  "{end_time}"')
         elif link is not None:
             meeting = Meeting.objects.get(organizer_link=link)
             schedule_pool = SchedulePool.objects.get(meeting=meeting)
             time_slots = TimeSlot.objects.filter(schedule_pool=schedule_pool)
-            serializer_result = DetailedTimeSlotSerializer(time_slots, many=True)
-            return Response(serializer_result.data)
+            return time_slots
         
         timeslots = TimeSlot.objects.all()
-        serializer_result = TimeSlotSerializer(timeslots, many=True)
         return timeslots
 
 
@@ -200,11 +192,10 @@ class TimeSlotView(viewsets.ModelViewSet):
         if end_time < datetime.now():
             # return Response({'detail': 'end_time deve essere maggiore di adesso'}, status=status.HTTP_400_BAD_REQUEST)
             raise TimeLessThanNowError
-        print(request.data)
+        
         serializer = TimeSlotSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
-            return Response(serializer.data)
 
     def update(self, request):
 
@@ -277,11 +268,12 @@ class VotesView(viewsets.ModelViewSet):
     def update(self, request, *args, **kwargs):
         self.check_object_permissions(request, None)
         
-        serializer = VoteSerializer(data=request.data)
         voto_id = request.data.get('id')
         preference = request.data.get('preference')
         user_id = request.data.get('user')
         timeslot_id = request.data.get('time_slot')
+        
+        print(voto_id, preference, user_id, timeslot_id)
 
         try:
             # Verifica se esiste il voto e il time slot
@@ -298,15 +290,13 @@ class VotesView(viewsets.ModelViewSet):
 
     def get_queryset(self):
         time_slot_id = self.request.query_params.get("id")
-        print(time_slot_id)
         if not TimeSlot.objects.filter(id=time_slot_id).exists():
-            return Response(None, status=200)
+            return None
         specified_time_slot = TimeSlot.objects.get(id=time_slot_id)
         if not Vote.objects.filter(time_slot=specified_time_slot).exists():
-            return Response(None, status=200)
+            return None
         votes = Vote.objects.filter(time_slot=specified_time_slot)
-        serializer_result = DetailedVoteSerializer(votes, many=True)
-        return Response(serializer_result.data)
+        return votes
     
 
 class UserView(viewsets.ModelViewSet):
