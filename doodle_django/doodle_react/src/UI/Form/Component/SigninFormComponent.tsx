@@ -7,6 +7,10 @@ import Cookies from "js-cookie";
 import axios from "axios";
 import {Alert, Box } from "@mui/material";
 
+
+import GoogleButton from 'react-google-button'
+import { handleAuthClick } from "../../../Google/Google";
+
 export function SigninFormComponent () {
     
     const [errorString, setErrorString] = React.useState('');
@@ -96,6 +100,8 @@ export function SigninFormComponent () {
             >
                 Sign up
             </Button>
+
+            
 
         </Box>
     );

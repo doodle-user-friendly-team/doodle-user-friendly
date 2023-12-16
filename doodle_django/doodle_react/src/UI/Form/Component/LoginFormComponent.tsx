@@ -6,6 +6,8 @@ import React, {FormEvent} from "react";
 import Cookies from "js-cookie";
 import axios from "axios";
 import {Alert, Box} from "@mui/material";
+import GoogleButton from "react-google-button";
+import { handleAuthClick } from "../../../Google/Google";
 
 export const LoginFormComponent = () => {
     const [errorString, setErrorString] = React.useState('');
@@ -59,6 +61,7 @@ export const LoginFormComponent = () => {
                 autoComplete="current-password"
             />
             {errorString !== '' && <Alert severity="error">{errorString}</Alert>}
+            <GoogleButton onClick={() => { handleAuthClick() }}/>
             <Button
                 type="submit"
                 fullWidth
@@ -67,6 +70,7 @@ export const LoginFormComponent = () => {
             >
                 Log In
             </Button>
+
 
         </Box>
         );

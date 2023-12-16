@@ -31,7 +31,6 @@ export const FormComponent = (props: propsInterface) => {
 
     if (Cookies.get('token') != undefined) {
         window.location.assign("/dashboard");
-        
     }
   
   return (

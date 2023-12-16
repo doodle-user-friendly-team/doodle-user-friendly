@@ -115,6 +115,11 @@ class TimeSlotView(viewsets.ModelViewSet):
     serializer_class = DetailedTimeSlotSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
+    def get_serializer_class(self):
+        if self.action == "post":
+            return TimeSlotSerializer
+        return DetailedTimeSlotSerializer
+
     def get_queryset(self):
         time_slot_id = self.request.query_params.get("time_slot_id")
         _data = self.request.query_params.get("data")
@@ -157,6 +162,8 @@ class TimeSlotView(viewsets.ModelViewSet):
 
         start_time = None
         end_time = None
+
+
 
         try:
             start_time = datetime.strptime(request.data['start_time'], "%Y-%m-%dT%H:%M:%SZ")
