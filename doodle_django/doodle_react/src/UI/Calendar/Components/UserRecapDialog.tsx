@@ -32,6 +32,7 @@ interface NewTimeslotDialogProps {
   open: boolean;
   schedulePoolId: number;
   onClose: () => void;
+  meetingDuration: number;
 }
 
 interface PreferenceTSUser {
@@ -47,7 +48,7 @@ interface User {
 }
 
 export function NewTimeslotDialog(props: NewTimeslotDialogProps) {
-  const { open, schedulePoolId, onClose } = props;
+  const { open, schedulePoolId, onClose, meetingDuration } = props;
 
   const placeholderDate = dayjs(Date.now()).set("second", 0);
   const [dateValue, setDateValue] = useState<Dayjs | null>(placeholderDate);
@@ -55,6 +56,20 @@ export function NewTimeslotDialog(props: NewTimeslotDialogProps) {
   const [endTime, setEndTime] = useState<Dayjs | null>(placeholderDate);
 
   const [snackOpen, setSnackOpen] = useState<boolean>(false);
+
+  const handleChangeStartTime = (newDate: Dayjs | null) => {
+    console.log('start_time: ' + startTime?.toISOString());
+    setStartTime(newDate);
+    console.log('start_time mod: ' + startTime?.toISOString());
+    console.log('end_time: ' + endTime?.toISOString());
+    setEndTime(newDate!.add(meetingDuration, 'minute'))
+    console.log('end_time mod: ' + endTime?.toISOString());
+  }
+
+  const handleChangeEndTime = (newDate: Dayjs | null) => {
+    setEndTime(newDate);
+    setStartTime(newDate!.subtract(meetingDuration, 'minute'))
+  }
 
   const handleClose = () => onClose();
   const handleSubmit = () => {
@@ -106,13 +121,13 @@ export function NewTimeslotDialog(props: NewTimeslotDialogProps) {
           />
           <TimePicker
             value={startTime}
-            onChange={(newValue) => setStartTime(newValue)}
+            onChange={(newValue) => handleChangeStartTime(newValue)}
             label="Start Time"
           />
           <Typography variant="h3"> - </Typography>
           <TimePicker
             value={endTime}
-            onChange={(newValue) => setEndTime(newValue)}
+            onChange={(newValue) => handleChangeEndTime(newValue)}
             label="End Time"
           />
         </Stack>

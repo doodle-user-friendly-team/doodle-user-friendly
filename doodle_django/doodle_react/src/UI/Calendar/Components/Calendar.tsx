@@ -40,10 +40,11 @@ export interface SchedulePool {
   voting_start_date: Date;
   voting_deadline: Date;
   time_slots: DetailedTimeSlot[];
-  meeting: MeetingStartDate;
+  meeting: Meeting;
 }
-interface MeetingStartDate {
+interface Meeting {
   period_start_date: Date;
+  duration: number;
 }
 interface TimeSlot {
   id: number;
@@ -318,6 +319,7 @@ export default function Calendar() {
           open={newTimeslotOpen}
           schedulePoolId={pool!.id}
           onClose={() => setNewTimeslotOpen(false)}
+          meetingDuration={pool!.meeting.duration}
         />
         {modifyDialogOpen ? (
           <MofifyPreferenceForm {...modifyDialogProps} />
