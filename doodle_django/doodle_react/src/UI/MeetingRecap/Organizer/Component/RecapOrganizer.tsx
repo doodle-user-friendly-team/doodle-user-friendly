@@ -7,6 +7,7 @@ import { Paper, Box, CircularProgress } from '@mui/material';
 import {TopBarComponent} from "../../../Dashboard/Component/TopBarComponent";
 import * as React from "react";
 import { ContainerTitle } from "./ViewMeeting";
+import Cookies from "js-cookie";
 
 
 
@@ -160,16 +161,27 @@ export function RecapOrganizer() {
             return ;
         }
 
+        const token = Cookies.get('token');
+
         const fetchData = async () => {
         try {
-            const response = await axios.get<MeetingResponse>(`http://localhost:8000/api/v1/meetings/details/${link_meeting}`);
-            console.log(response.data)
-            const transformedMeeting = convertMeetingResponseToMeeting(response.data);
-            const transformedMeetingData = extractContainerTitleProps(response.data);
+            axios.get<MeetingResponse>(`http://localhost:8000/api/v1/meetings/`, 
+                {
+                    params:{
+                        link: link_meeting
+                    },
+                    headers: { 'authorization': `Token ${token}`}
+                }).then((response : {data: MeetingResponse}) => {
+                    
+                // @ts-ignore
+                const transformedMeeting = convertMeetingResponseToMeeting(response.data[0]);
+                // @ts-ignore
+                const transformedMeetingData = extractContainerTitleProps(response.data[0]);
 
-            setMeetingData(transformedMeeting);
-            setMeetingInfo(transformedMeetingData);
-            setLoading(false);
+                setMeetingData(transformedMeeting);
+                setMeetingInfo(transformedMeetingData);
+                setLoading(false);
+            });
         } catch (error) {
             console.error('Errore nella richiesta HTTP:', error);
         }

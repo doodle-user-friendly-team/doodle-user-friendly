@@ -149,12 +149,16 @@ export class MeetingCreation extends React.Component<{}, MeetingFormState & Aler
 
       const csrfToken = Cookies.get('csrftoken');
 
+      const token = Cookies.get('token');
+      
       const headers = {
-        'X-CSRFToken': csrfToken,
-        'Content-Type': 'application/json',
+          'X-CSRFToken': csrfToken,
+          'Content-Type': 'application/json', // Specifica il tipo di contenuto
+          'Authorization': `Token ${token}`
       };
+      
 
-      axios.post('http://localhost:8000/api/v1/meetings/0', postData, {headers})
+      axios.post('http://localhost:8000/api/v1/meetings/', postData, {headers})
           .then((response) => {
             console.log("res:" + response);
           })

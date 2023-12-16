@@ -45,6 +45,8 @@ import {
 import '../CSS/ViewMeeting.css';
 import Tooltip from '@mui/material/Tooltip';
 import { SuccessSave,SuccessDelete,FailedSave,FailedDelete } from './Alert';
+import Cookies from "js-cookie";
+
 import useMediaQuery from '@mui/material/useMediaQuery';
 import axios from 'axios';
 import{
@@ -344,21 +346,22 @@ function ModifyDialog({ details, onClose, isOpen ,onSaveChanges}: EditDialog) {
 
       // converte l'oggetto InfoMeeting in MeetinData
       const meetingData:MeetingData=convertInfoMeetingToMeetingData(editedDetails);
-
-      const response = await fetch(`http://localhost:8000/api/v1/meetings/details/${meetingData.organizer_link}`, {
+      
+      const response = await fetch(`http://localhost:8000/api/v1/meetings/details/`, {
           method: 'PUT',
           headers: {
-          'Content-Type': 'application/json',
+                'Authorization': 'Token ' + Cookies.get('token'), 
+                'Content-Type': 'application/json',
           },
             body: JSON.stringify(meetingData),
           });
 
-      if (response.ok) {
-        onSaveChanges(editedDetails);
-      } else {
-        console.error('Error '+response.status+'\nImpossibile salvare i dati nel database: '+response.statusText);
-        onSaveChanges(null);
-      }
+          if (response.ok) {
+            onSaveChanges(editedDetails);
+          } else {
+            console.error('Error '+response.status+'\nImpossibile salvare i dati nel database: '+response.statusText);
+            onSaveChanges(null);
+          }
 
     }catch(err){
       console.error(err);

@@ -1,4 +1,5 @@
 from urllib import response
+
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.utils import timezone
@@ -6,34 +7,28 @@ from django.utils.timezone import get_current_timezone
 from django.contrib.auth.models import BaseUserManager, AbstractUser
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view, renderer_classes, action
-from rest_framework.renderers import TemplateHTMLRenderer, JSONRenderer
 from rest_framework.views import APIView
-from .models import *
 from rest_framework.response import Response
 from .serializer import *
 from django.shortcuts import get_object_or_404
-from rest_framework import status, generics
 from .utils import *
+from rest_framework import permissions
 from django.db.models import Count
 
 
-from rest_framework.permissions import IsAuthenticated
 
 import requests
 
-from django.db.models import Q
+from django.db.models import Q, IntegerField
 from django.contrib.auth import get_user_model
+
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth.views import PasswordChangeView
 from django.contrib.auth.forms import PasswordChangeForm
 # per l'autenticazione
 from django.contrib.auth import authenticate, login
-from rest_framework.decorators import permission_classes, authentication_classes
-from rest_framework.permissions import AllowAny
 from rest_framework import status
 from datetime import datetime, timedelta
-
-from rest_framework.generics import CreateAPIView
 
 from rest_framework import viewsets
 
@@ -46,50 +41,27 @@ class TimeError(Exception):
 
 
 class TimeLessThanNowError(Exception):
-    pass
+    pass 
 
 
-class MeetingDetailView(APIView):
-    serializer_class = MeetingSerializer
-
-    def get(self, request, link):
-        meeting = Meeting.objects.get(organizer_link=link)
-        serializer = CompleteMeetingSerializer(meeting)
-        return Response(serializer.data)
-
-    def put(self, request, link):
-        meeting = Meeting.objects.get(organizer_link=link)
-        serializer = MeetingSerializer(meeting, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-
-    def delete(self, request, link):
-        meeting = Meeting.objects.get(organizer_link=link)
-        meeting.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-class MeetingTimeSlotsView(APIView):
-    serializer_class = TimeSlotSerializer
-
-    def get(self, request, link):
-        meeting = Meeting.objects.get(organizer_link=link)
-        schedule_pool = SchedulePool.objects.get(meeting=meeting)
-        time_slots = TimeSlot.objects.filter(schedule_pool=schedule_pool)
-        serializer_result = DetailedTimeSlotSerializer(time_slots, many=True)
-        return Response(serializer_result.data)
-
-
-class MeetingView(APIView):
+class MeetingView(viewsets.ModelViewSet):
+    serializer_class = CompleteMeetingSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     
-    def get(self, request, user_id):
-        meetings = Meeting.objects.filter(user=user_id)
-        serializer_result = MeetingSerializer(meetings, many=True)
-        return Response(serializer_result.data)
+    def get_queryset(self):
+        link = self.request.query_params.get("link")
+        userId = self.request.user.id
+        if link is not None:
+            if not Meeting.objects.filter(organizer_link=link).exists():
+                return None
+            meeting = Meeting.objects.filter(organizer_link=link)
+            return meeting
+        
+        meetings = Meeting.objects.filter(user=userId)
+        return meetings
     
-
-    def post(self, request, user_id):
+    def create(self, request):
+        self.check_object_permissions(request, None)
         if not UserFake.objects.filter(email=request.data['organizer_email']).exists():
             user = UserFake.objects.create(name=request.data['organizer_name'],
                                            surname=request.data['organizer_surname'],
@@ -112,6 +84,14 @@ class MeetingView(APIView):
         send_meeting_creation_email(meeting)
         return Response(serializer.data)
 
+    def update(self, request):
+        print(request.data)
+        self.check_object_permissions(request, None)
+        link = request.data['link']
+        meeting = Meeting.objects.get(organizer_link=link)
+        serializer = MeetingSerializer(meeting, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
 
 class TopTimeSlotsView(APIView):
     serializer_class = TopTimeSlotSerializer
@@ -232,38 +212,90 @@ class AuthMeetingView(APIView):
                                                             '%Y-%m-%d').date() - timedelta(days=2),
                                                         pool_link=genera_codice_invito(), meeting=meeting)
             return Response(serializer.data)
+        
+    def destroy(self, request):
+        self.check_object_permissions(request, None)
+        link = request.data['link']
+        meeting = Meeting.objects.get(organizer_link=link)
+        meeting.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class TimeSlotView(viewsets.ViewSet):
+class SchedulePoolView(viewsets.ModelViewSet):
+    serializer_class = DetailedSchedulePoolSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
-    serializer_class = TimeSlotSerializer
+    def get_queryset(self):
+        link = self.request.query_params.get("link")
+        schedule_pool_id = self.request.query_params.get("schedule_pool_id")
+        if schedule_pool_id is not None:
+            specified_schedule_pool = SchedulePool.objects.filter(id=schedule_pool_id)
+            return specified_schedule_pool
+        elif link is not None:
+            schedule_pool = SchedulePool.objects.filter(pool_link=link)
+            return schedule_pool
+        
+        # get all schedule pools of the meetings of the user
+        user = self.request.user.id
+        meetings = Meeting.objects.filter(user=user)
+        schedule_pool = SchedulePool.objects.filter(meeting__in=meetings)
+        return schedule_pool
 
-    def get_all(self, request):
+
+class TimeSlotView(viewsets.ModelViewSet):
+
+    serializer_class = DetailedTimeSlotSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def get_serializer_class(self):
+        if self.action == "post":
+            return TimeSlotSerializer
+        return DetailedTimeSlotSerializer
+
+    def get_queryset(self):
+        time_slot_id = self.request.query_params.get("time_slot_id")
+        _data = self.request.query_params.get("data")
+        link = self.request.query_params.get("link")
+        print(time_slot_id)
+        if time_slot_id is not None:
+            if not TimeSlot.objects.filter(id=time_slot_id).exists():
+                return Response([], status=200)
+            specified_time_slot = TimeSlot.objects.get(id=time_slot_id)
+            serializer_result = DetailedTimeSlotSerializer(specified_time_slot)
+            return Response(serializer_result.data)
+        elif _data is not None:
+            day, month, year = _data.split('_')
+            
+            print(day, month, year)
+
+            start_time = f"{int(year):04d}-{int(month) + 1:02d}-{int(day) :02d}T23:59:59Z"
+            end_time = f"{int(year):04d}-{int(month) + 1:02d}-{(int(day)):02d}T23:59:59Z"
+    
+            try:
+                start_time = datetime.strptime(start_time, "%Y-%m-%dT%H:%M:%SZ") - timedelta(days=1)
+                end_time = datetime.strptime(end_time, "%Y-%m-%dT%H:%M:%SZ")
+            except:
+                raise FormatError
+            
+            return TimeSlot.objects.raw(f'SELECT * FROM doodle_timeslot WHERE start_time between "{start_time}" and  "{end_time}"')
+        elif link is not None:
+            meeting = Meeting.objects.get(organizer_link=link)
+            schedule_pool = SchedulePool.objects.get(meeting=meeting)
+            time_slots = TimeSlot.objects.filter(schedule_pool=schedule_pool)
+            return time_slots
+        
         timeslots = TimeSlot.objects.all()
-        serializer_result = TimeSlotSerializer(timeslots, many=True)
-        return Response(serializer_result.data)
+        return timeslots
 
-    def get_data(self, request, _data):
-        day, month, year = _data.split('_')
 
-        start_time = f"{int(year):04d}-{int(month) + 1:02d}-{int(day) :02d}T23:59:59Z"
-        end_time = f"{int(year):04d}-{int(month) + 1:02d}-{(int(day)):02d}T23:59:59Z"
+    def create(self, request):
 
-        try:
-            start_time = datetime.strptime(start_time, "%Y-%m-%dT%H:%M:%SZ") - timedelta(days=1)
-            end_time = datetime.strptime(end_time, "%Y-%m-%dT%H:%M:%SZ")
-        except:
-            raise FormatError
-
-        ts = [ {"id": timeslot.id,"start_time": timeslot.start_time, "end_time": timeslot.end_time, "user": timeslot.user.id}
-               for timeslot in TimeSlot.objects.raw(f'SELECT * FROM doodle_timeslot WHERE start_time between "{start_time}" and  "{end_time}"')]
-
-        return Response(ts)
-
-    def post(self, request):
+        self.check_object_permissions(request, None)
 
         start_time = None
         end_time = None
+
+
 
         try:
             start_time = datetime.strptime(request.data['start_time'], "%Y-%m-%dT%H:%M:%SZ")
@@ -286,15 +318,17 @@ class TimeSlotView(viewsets.ViewSet):
         if end_time < datetime.now():
             # return Response({'detail': 'end_time deve essere maggiore di adesso'}, status=status.HTTP_400_BAD_REQUEST)
             raise TimeLessThanNowError
-        print(request.data)
+        
         serializer = TimeSlotSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
-            return Response(serializer.data)
 
-    def put(self, request, pk, format=None):
+    def update(self, request):
+
+        self.check_object_permissions(request, None)
+        
         try:
-            timeslot = TimeSlot.objects.get(pk=pk)
+            timeslot = TimeSlot.objects.get(pk=request.data['id'])
             print('Data received:', request.data)
 
             # Usa request.data invece di updated_data
@@ -319,6 +353,10 @@ class TimeSlotView(viewsets.ViewSet):
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
+class AuthMeetingView(APIView):
+    queryset = Meeting.objects.all()
+    serializer_class = MeetingSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 class GetUserByIdView(APIView):
     @permission_classes([AllowAny])
     def get(self, request):
@@ -396,36 +434,48 @@ class VotesView(APIView):
     serializers_class = VoteSerializer
 
     def get(self, request):
-        votes = Vote.objects.all()
-        serializer_result = VoteSerializer(votes, many=True)
+        meetings = Meeting.objects.all()
+        serializer_result = MeetingSerializer(meetings, many=True)
         return Response(serializer_result.data)
 
     def post(self, request):
+        self.check_object_permissions(request, None)
+        meeting = Meeting.objects.create(name=request.data['name'], description=request.data['description'],
+                                         location=request.data['location'], duration=request.data['duration'],
+                                         period_start_date=request.data['period_start_date'],
+                                         period_end_date=request.data['period_end_date'],
+                                         organizer_link=genera_codice_recap(),
+                                         user=UserFake.objects.get(id=request.data['user']))
+        serializer = MeetingSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            schedule_pool = SchedulePool.objects.create(voting_start_date=datetime.now().date(),
+                                                        voting_deadline=datetime.strptime(
+                                                            request.data['period_start_date'],
+                                                            '%Y-%m-%d').date() - timedelta(days=2),
+                                                        pool_link=genera_codice_invito(), meeting=meeting)
+            return Response(serializer.data)
+
+class VotesView(viewsets.ModelViewSet):
+    serializer_class = VoteSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def create(self, request, *args, **kwargs):
+        self.check_object_permissions(request, None)
         serializer = VoteSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data)
 
-
-class ModifyMyPreferenceView(APIView):
-    serializer_class = VoteSerializer
-
-    serializer_class = VoteSerializer
-
-    #@permission_classes([IsAuthenticated])
-    #@authentication_classes([SessionAuthentication, BasicAuthentication])
-    def put(self, request):
-
-        #todo: sistemare con serializer
-
-        serializer = VoteSerializer(data=request.data)
-        #print(request.data)
-        #print(serializer)
+    def put(self, request, *args, **kwargs):
+        self.check_object_permissions(request, None)
+        
+        user_id = request.user.id
 
         voto_id = request.data.get('id')
         preference = request.data.get('preference')
-        user_id = request.data.get('user')
         timeslot_id = request.data.get('time_slot')
+        
+        print(voto_id, preference, user_id, timeslot_id)
 
         try:
             # Verifica se esiste il voto e il time slot
@@ -440,39 +490,33 @@ class ModifyMyPreferenceView(APIView):
         except (Vote.DoesNotExist, TimeSlot.DoesNotExist):
             return Response({'message': 'Voto o time slot non trovato'}, status=404)
 
-@csrf_exempt
-@api_view(('GET',))
-@renderer_classes((TemplateHTMLRenderer, JSONRenderer))
-def get_preferences(request, time_slot_id):
-    if not TimeSlot.objects.filter(id=time_slot_id).exists():
-        return Response([], status=200)
-    specified_time_slot = TimeSlot.objects.get(id=time_slot_id)
-    if not Vote.objects.filter(time_slot=specified_time_slot).exists():
-        return Response([], status=200)
-    votes = Vote.objects.filter(time_slot=specified_time_slot)
-    serializer_result = DetailedVoteSerializer(votes, many=True)
-    return Response(serializer_result.data)
+    def get_queryset(self):
+        time_slot_id = self.request.query_params.get("id")
+        if not TimeSlot.objects.filter(id=time_slot_id).exists():
+            return None
+        specified_time_slot = TimeSlot.objects.get(id=time_slot_id)
+        if not Vote.objects.filter(time_slot=specified_time_slot).exists():
+            return None
+        votes = Vote.objects.filter(time_slot=specified_time_slot)
+        return votes
+    
 
+class UserView(viewsets.ModelViewSet):
+    serializers_class = UserFakeSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
-@csrf_exempt
-@api_view(('GET',))
-@renderer_classes((TemplateHTMLRenderer, JSONRenderer))
-def get_timeslot(request, time_slot_id):
-    specified_time_slot = TimeSlot.objects.get(id=time_slot_id)
-    serializer_result = DetailedTimeSlotSerializer(specified_time_slot)
-    return Response(serializer_result.data)
-
-
-@csrf_exempt
-@api_view(('GET',))
-def get_timeslot_from_schedule_pool(request, schedule_pool_id):
-    print("Ciao")
-    print(TimeSlot.objects.all())
-    if TimeSlot.objects.filter(schedule_pool=schedule_pool_id).exists():
-        specified_time_slot = TimeSlot.objects.get(schedule_pool=schedule_pool_id)
-        serializer_result = DetailedTimeSlotSerializer(specified_time_slot)
+    def get_queryset(self):
+        user_id = self.request.user.id
+        if not UserFake.objects.filter(id=user_id).exists():
+            return Response([], status=200)
+        user = UserFake.objects.get(id=user_id)
+        serializer_result = UserFakeSerializer(user)
         return Response(serializer_result.data)
-    return Response([], status=200)
+    
+    def get(self, request, user_id):
+        user = get_object_or_404(UserFake, id = user_id)
+        serializer = UserFakeSerializer(user)
+        return Response(serializer.data) 
 
 @csrf_exempt
 @api_view(('GET',))
@@ -484,22 +528,6 @@ def get_schedule_pool(request, code_schedule_pool):
         return Response(serializer_result)
     return Response(serializer_result.errors, status=status.HTTP_400_BAD_REQUEST)
 
-@csrf_exempt
-@api_view(('GET',))
-def get_schedule_pool_from_user_id(request, user_id):
-    try:
-        meetings_user = Meeting.objects.filter(user=user_id)
-        schedule_pool = SchedulePool.objects.filter(pool_link=meetings_user[0].organizer_link)
-        serializer_result = DetailedSchedulePoolSerializer(schedule_pool, many=True)
-        return Response(serializer_result.data)
-    except Meeting.DoesNotExist:
-        return Response({"error": "Meeting not found for the given user ID"}, status=status.HTTP_404_NOT_FOUND)
-    except SchedulePool.DoesNotExist:
-        return Response({"error": "SchedulePool not found for the given user ID"}, status=status.HTTP_404_NOT_FOUND)
-    except Exception as e:
-        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
 
 class djangoUsers(APIView):
 
@@ -508,6 +536,8 @@ class djangoUsers(APIView):
     def get(self, request):
         email = request.GET.get('email', '')
         password = request.GET.get('password', '')
+        
+        print(email)
         
         UserModel = get_user_model()
     
@@ -525,10 +555,13 @@ class djangoUsers(APIView):
             user_obj = user.first()
             if user_obj.check_password(password):
                 login(request, user_obj, backend='django.contrib.auth.backends.ModelBackend')
-                return Response({"key": requests.post("http://localhost:8000/api/v1/auth/login/", data={'username': user_obj, 'password': password})['key'], 'id': user_obj.id})
+                data = requests.post("http://localhost:8000/api/v1/auth/login/", data={'username': user_obj, 'password': password})
+                
+                return Response({'data': data.json()['key']})
             return Response({'message': 'wrong password'}, status=status.HTTP_401_UNAUTHORIZED)
         else:
             return Response({'message': 'user not found'}, status=status.HTTP_401_UNAUTHORIZED)
+ 
 
 class PasswordChangeAPIView(APIView):
     permission_classes = [IsAuthenticated]

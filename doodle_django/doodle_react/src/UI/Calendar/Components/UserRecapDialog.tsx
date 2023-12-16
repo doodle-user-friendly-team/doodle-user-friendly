@@ -73,13 +73,13 @@ export function NewTimeslotDialog(props: NewTimeslotDialogProps) {
     const headers = {
       "X-CSRFToken": csrfToken,
       "Content-Type": "application/json",
+      "Authorization": "Token " + Cookies.get("token")
     };
 
     const postData = {
       start_time: startDate,
       end_time: endDate,
-      schedule_pool: schedulePoolId,
-      user: 1
+      schedule_pool: schedulePoolId
     };
 
     axios
@@ -143,7 +143,7 @@ export function PreferencesListDialog(props: PreferencesListDialogProps) {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8000/api/v1/votes/timeslot/" + tsId)
+      .get("http://localhost:8000/api/v1/votes/?id=" + tsId)
       .then((response) => response.data)
       .then((p) => {
         setPrefList(p);

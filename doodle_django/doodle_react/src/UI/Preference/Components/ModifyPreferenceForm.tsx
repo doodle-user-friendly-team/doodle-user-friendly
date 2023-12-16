@@ -13,7 +13,6 @@ import Cookies from "js-cookie";
 
 interface ModifyPreferenceProps {
     id : number;
-    user : number;
     time_slot : number;
     selectedPreference: string;
     onClose: () => void;
@@ -24,23 +23,25 @@ interface ModifyPreferenceProps {
 
 
 
-export function MofifyPreferenceForm ({id,user,time_slot, selectedPreference, onClose, start, end, date }:ModifyPreferenceProps){
+export function MofifyPreferenceForm ({id,time_slot, selectedPreference, onClose, start, end, date }:ModifyPreferenceProps){
 
   const [selectedButton, setSelectedButton] = useState(selectedPreference);
 
   const handleUpdatePreference = () => { // decidere se farlo asincrono o meno (async + await)
-    const preference = selectedButton;
+      const preference = selectedButton;
       const csrfToken = Cookies.get('csrftoken');
 
+      const token = Cookies.get('token');
+      
       const headers = {
           'X-CSRFToken': csrfToken,
-          'Content-Type': 'application/json' // Specifica il tipo di contenuto
+          'Content-Type': 'application/json', // Specifica il tipo di contenuto
+          'Authorization': `Token ${token}`
       };
       
-    axios.put('http://localhost:8000/api/update_preference/', {
+    axios.put('http://localhost:8000/api/v1/votes/', {
         id,
         preference,
-        user,
         time_slot
       }, { headers })
       .then((response) => {

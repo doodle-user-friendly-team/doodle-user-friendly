@@ -29,6 +29,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     "127.0.0.1",
+    "127.0.0.1:3000",
     "localhost"
 ]
 
@@ -165,7 +166,7 @@ CORS_ALLOWED_ORIGINS = [
 
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = 'none' #optional
-SITE_ID = 1
+SITE_ID = 2
 
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
@@ -186,4 +187,5 @@ SOCIALACCOUNT_PROVIDERS = {
         }
     }
 }
+
 
