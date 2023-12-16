@@ -161,8 +161,8 @@ ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = 'none' #optional
 SITE_ID = 2
 
-LOGIN_REDIRECT_URL = 'localhost:3000/dashboard'
-LOGOUT_REDIRECT_URL = '/welcomepage'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',

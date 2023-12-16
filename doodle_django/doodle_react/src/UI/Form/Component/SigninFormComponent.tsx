@@ -30,7 +30,7 @@ export function SigninFormComponent () {
             password2: data.get('password')
         }, {headers}).then((response) => {
             
-            window.location.assign("/")
+            window.location.assign("/dashboard")
         }).catch((error) => {
            //get the first error and display it
             
