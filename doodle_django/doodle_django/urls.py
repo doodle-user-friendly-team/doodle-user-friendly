@@ -19,7 +19,7 @@ from django.urls import path, include
 from doodle.views import *
 from rest_framework.documentation import include_docs_urls
 from rest_framework.schemas import get_schema_view
-from django.contrib.auth.views import LogoutView
+from django.contrib.auth.views import LogoutView, PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
 
 
 urlpatterns = [
@@ -49,7 +49,11 @@ urlpatterns = [
 
     path('api/v1/authenticate/', djangoUsers.as_view(), name='user_authentication'),
     path('api/v1/auth/registration/', include('dj_rest_auth.registration.urls')),
-
+    path('api/v1/auth/resetpwd/', PasswordResetView.as_view(), name='password_reset'),
+    path('api/v1/auth/resetpwd/done', PasswordResetDoneView.as_view(), name='password_reset_done'),
+    path('api/v1/auth/resetpwd/<uidb64>/<token>/', PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
+    path('api/v1/auth/resetpwd/complete', PasswordResetCompleteView.as_view(), name="password_reset_complete"),
+    
     path('accounts/', include('allauth.urls')),
     path('logout', LogoutView.as_view()),
     
