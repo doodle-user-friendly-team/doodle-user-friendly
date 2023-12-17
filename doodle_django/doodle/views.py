@@ -291,7 +291,14 @@ class TimeSlotView(viewsets.ViewSet):
         serializer = TimeSlotSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
-            return Response(serializer.data)
+            first_vote_serializer = VoteSerializer(data={
+                'preference': "Available",
+                'time_slot': serializer.data['id'],
+                'user': serializer.data['user'] 
+            })
+            if first_vote_serializer.is_valid(raise_exception=True):
+                first_vote_serializer.save()
+                return Response(serializer.data)
 
     def put(self, request, pk, format=None):
         try:
