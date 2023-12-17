@@ -40,10 +40,11 @@ export interface SchedulePool {
   voting_start_date: Date;
   voting_deadline: Date;
   time_slots: DetailedTimeSlot[];
-  meeting: MeetingStartDate;
+  meeting: Meeting;
 }
-interface MeetingStartDate {
+interface Meeting {
   period_start_date: Date;
+  duration: number;
 }
 interface TimeSlot {
   id: number;
@@ -241,7 +242,7 @@ export default function Calendar() {
     children,
     ...restProps
   }) => {
-    let availability : PreferencesCount = countAvailability(Number(data.id!)); 
+    let availability : PreferencesCount = countAvailability(Number(data.id!));
     return (
     <Appointments.Appointment data={data} {...restProps}>
       {children}
@@ -253,11 +254,11 @@ export default function Calendar() {
        <QuestionMarkIcon />
         <Typography variant="body1">
           {availability.maybe}
-       </Typography>   
+       </Typography>
        <CloseIcon />
         <Typography variant="body1">
           {availability.unavailable}
-       </Typography> 
+       </Typography>
       </div>
     </Appointments.Appointment>
   )};
@@ -269,7 +270,7 @@ export default function Calendar() {
     ((response) => {
       console.log(response.data);
       setPool(response.data[0]);
-      
+
       let scp: SchedulePool = response.data[0];
       var votes: Preference[] = [];
       scp.time_slots.forEach((ts: DetailedTimeSlot) => {
@@ -318,6 +319,7 @@ export default function Calendar() {
           open={newTimeslotOpen}
           schedulePoolId={pool!.id}
           onClose={() => setNewTimeslotOpen(false)}
+          meetingDuration={pool!.meeting.duration}
         />
         {modifyDialogOpen ? (
           <MofifyPreferenceForm {...modifyDialogProps} />
