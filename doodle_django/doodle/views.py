@@ -82,7 +82,9 @@ class MeetingTimeSlotsView(APIView):
 class MeetingView(APIView):
     
     def get(self, request, user_id):
-        meetings = Meeting.objects.filter(user=user_id)
+        user = UserFake.objects.get(id=user_id)
+        meetings = Meeting.objects.filter(user=user)
+        print(len(meetings))
         serializer_result = MeetingSerializer(meetings, many=True)
         return Response(serializer_result.data)
     
@@ -503,7 +505,7 @@ class djangoUsers(APIView):
     def get(self, request):
         email = request.GET.get('email', '')
         password = request.GET.get('password', '')
-        
+        print("sono qua")
         UserModel = get_user_model()
     
         try:
@@ -520,7 +522,7 @@ class djangoUsers(APIView):
             user_obj = user.first()
             if user_obj.check_password(password):
                 login(request, user_obj, backend='django.contrib.auth.backends.ModelBackend')
-                return Response({"key": requests.post("http://localhost:8000/api/v1/auth/login/", data={'username': user_obj, 'password': password})['key'], 'id': user_obj.id})
+                return Response(requests.post("http://localhost:8000/api/v1/auth/login/", data={'username': user_obj, 'password': password}))
             return Response({'message': 'wrong password'}, status=status.HTTP_401_UNAUTHORIZED)
         else:
             return Response({'message': 'user not found'}, status=status.HTTP_401_UNAUTHORIZED)
