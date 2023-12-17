@@ -7,10 +7,6 @@ import Cookies from "js-cookie";
 import axios from "axios";
 import {Alert, Box } from "@mui/material";
 
-
-import GoogleButton from 'react-google-button'
-import { handleAuthClick } from "../../../Google/Google";
-
 export function SigninFormComponent () {
     
     const [errorString, setErrorString] = React.useState('');
@@ -23,8 +19,7 @@ export function SigninFormComponent () {
 
         const headers = {
             'X-CSRFToken': csrfToken,
-            'Content-Type': 'application/json',// Specifica il tipo di contenuto
-            "Authorization": "Token " + Cookies.get('token')
+            'Content-Type': 'application/json' // Specifica il tipo di contenuto
         };
 
         axios.post('http://localhost:8000/api/v1/auth/registration/', {
@@ -34,7 +29,7 @@ export function SigninFormComponent () {
             password2: data.get('password')
         }, {headers}).then((response) => {
             
-            window.location.assign("/dashboard")
+            window.location.assign("/")
         }).catch((error) => {
            //get the first error and display it
             
@@ -100,8 +95,6 @@ export function SigninFormComponent () {
             >
                 Sign up
             </Button>
-
-            
 
         </Box>
     );

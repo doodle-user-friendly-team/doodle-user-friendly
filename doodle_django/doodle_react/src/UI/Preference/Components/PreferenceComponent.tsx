@@ -78,6 +78,7 @@ export class PreferenceComponent extends React.Component<detailPreference, state
                 <div>
                 {this.state.showForm && <MofifyPreferenceForm 
                     id={parseInt(this.state.id)}
+                    user={parseInt(this.state.user.id)}
                     time_slot={parseInt(this.state.time_slot)}
                     selectedPreference={this.state.preference} 
                     onClose={() => this.setForm(false)} 

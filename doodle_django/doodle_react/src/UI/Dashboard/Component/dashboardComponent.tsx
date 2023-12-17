@@ -18,7 +18,6 @@ import Stack from '@mui/material/Stack';
 import {TopBarComponent} from "./TopBarComponent";
 import axios from "axios";
 import { Grid } from '@mui/material';
-import Cookies from "js-cookie";
 
 interface MeetingInterface {
     id: number;
@@ -46,11 +45,9 @@ export function DashboardComponent() {
     
     const [updateMeetings, setupdateMeetings] = React.useState(false);
     
-    const token = Cookies.get('token');
-    
     if (!updateMeetings) {
         
-        axios.get('http://localhost:8000/api/v1/meetings/', {headers: { 'authorization': `Token ${token}`}}).then((response) => {
+        axios.get('http://localhost:8000/api/v1/meetings/1').then((response) => {
             
             my_meetings = [];
             
@@ -58,7 +55,7 @@ export function DashboardComponent() {
                 my_meetings.push(meeting);
             });
 
-            axios.get('http://localhost:8000/api/v1/schedulepool/', {headers: { 'authorization': `Token ${token}`}}).then((response) => {
+            axios.get('http://localhost:8000/api/v1/users/schedulepool/1').then((response) => {
                 others_meetings = [];
                 
                 response.data.forEach((meeting: SchedulePool) => {

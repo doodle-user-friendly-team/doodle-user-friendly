@@ -442,7 +442,7 @@ function CustomDialogTimeSlots ({ isOpen, handleClose, timeslots }:PropDialog) {
     const fetchData = async () => {
       try {
         for (const timeslot of timeslots) {
-          const response = await axios.get<Preference[]>(`http://localhost:8000/api/v1/votes/?id=${timeslot.id}`);
+          const response = await axios.get<Preference[]>(`http://localhost:8000/api/v1/votes/timeslot/${timeslot.id}`);
 
           const responseData: Preference[] = response.data;
           // Converte il timeslot con le preferenze in un oggetto di tipo MyTimeSlotWithPreferences

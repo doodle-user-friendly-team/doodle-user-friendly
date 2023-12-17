@@ -28,10 +28,6 @@ export const FormComponent = (props: propsInterface) => {
     const handleChange = (event: React.SyntheticEvent, newValue: string) => {
         setValue(newValue);
     };
-
-    if (Cookies.get('token') != undefined) {
-        window.location.assign("/dashboard");
-    }
   
   return (
             <Container component="main" maxWidth="lg">

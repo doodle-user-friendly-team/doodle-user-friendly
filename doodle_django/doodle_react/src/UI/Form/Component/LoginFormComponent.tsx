@@ -6,8 +6,6 @@ import React, {FormEvent} from "react";
 import Cookies from "js-cookie";
 import axios from "axios";
 import {Alert, Box} from "@mui/material";
-import GoogleButton from "react-google-button";
-import { handleAuthClick } from "../../../Google/Google";
 
 export const LoginFormComponent = () => {
     const [errorString, setErrorString] = React.useState('');
@@ -20,13 +18,12 @@ export const LoginFormComponent = () => {
 
         const headers = {
             'X-CSRFToken': csrfToken,
-            'Content-Type': 'application/json', // Specifica il tipo di contenuto
+            'Content-Type': 'application/json' // Specifica il tipo di contenuto
         };
-        
-        axios.get(`http://localhost:8000/api/v1/authenticate/?email=${data.get('email')}&password=${data.get('password')}`,
+
+        const queryString = `?email=${data.get('email')}&password=${data.get('password')}`;
+        axios.get(`http://localhost:8000/api/v1/authenticate/${queryString}`,
             {headers}).then((response) => {
-             //   console.log(response.data)
-            Cookies.set('token', response.data['data']);
             window.location.assign("/dashboard")
         }).catch((error) => {
             error.response.data['message'] && setErrorString(error.response.data['message']);
@@ -61,7 +58,6 @@ export const LoginFormComponent = () => {
                 autoComplete="current-password"
             />
             {errorString !== '' && <Alert severity="error">{errorString}</Alert>}
-            <GoogleButton onClick={() => { handleAuthClick() }}/>
             <Button
                 type="submit"
                 fullWidth
@@ -70,7 +66,6 @@ export const LoginFormComponent = () => {
             >
                 Log In
             </Button>
-
 
         </Box>
         );
