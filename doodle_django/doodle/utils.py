@@ -1,5 +1,6 @@
 import string
 import random
+from datetime import timedelta
 
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
@@ -120,3 +121,66 @@ def send_preference_creation_email(vote):
     message.send()
 
 
+def send_meeting_invitation_email(emails, meeting_id):
+
+    meeting = Meeting.objects.get(id=meeting_id)
+    schedule_pool = SchedulePool.objects.get(meeting=meeting)
+    link_participant = "http://localhost:3000/schedulePool/" + schedule_pool.pool_link
+
+    for e in emails:
+        print(e)
+        context = {
+            "meeting_name": meeting.name,
+            "pool_link": link_participant,
+        }
+
+        subject = "Doodle - Meeting invitation."
+        html_message = render_to_string("content/meeting_invitation.html", context=context)
+        plain_message = strip_tags(html_message)
+        message = EmailMultiAlternatives(
+            subject=subject,
+            body=plain_message,
+            from_email=None,
+            to=[e],
+        )
+
+        message.attach_alternative(html_message, "text/html")
+        message.send()
+
+
+def send_meeting_date_decision_email(schedule_pool):
+
+    users_emails = []
+
+    date = schedule_pool.final_date.strftime("%d/%m/%Y")
+    start_time = schedule_pool.final_date.strftime("%H:%M")
+    end = schedule_pool.final_date + timedelta(minutes=schedule_pool.meeting.duration)
+    end_time = end.strftime("%H:%M")
+
+    for ts in schedule_pool.timeslot_set:
+        if ts.user.email not in users_emails:
+            users_emails.append(ts.user.email)
+        for p in ts.vote_set:
+            if p.user.email not in users_emails:
+                users_emails.append(p.user.emails)
+
+    for u in users_emails:
+
+        context = {
+            "meeting_name": schedule_pool.meeting.name,
+            "final_date": date,
+            "final_time": start_time,
+        }
+
+        subject = "Doodle - Final date decision."
+        html_message = render_to_string("content/final_date_decision.html", context=context)
+        plain_message = strip_tags(html_message)
+        message = EmailMultiAlternatives(
+            subject=subject,
+            body=plain_message,
+            from_email=None,
+            to=[u],
+        )
+
+        message.attach_alternative(html_message, "text/html")
+        message.send()

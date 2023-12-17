@@ -204,6 +204,7 @@ class SchedulePoolView(APIView):
             schedule_pool.final_date = new_final_date
             schedule_pool.save()
 
+            send_meeting_date_decision_email(schedule_pool)
             serializer = SchedulePoolSerializer(schedule_pool)
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response({'error': 'Campo final_date errato'}, status=status.HTTP_400_BAD_REQUEST)
@@ -554,7 +555,7 @@ def send_link_by_email(request, meeting_id):
             print("L'id del meeting nella view è: ", meeting_id)
             print("Le email ottenute nella view sono: ", emails)
 
-            # LOGICA DI INVIO DEL LINK ALLE EMAIL OTTENUTE
+            send_meeting_invitation_email(emails, meeting_id)
 
             # Risposta di successo
             return Response({'message': 'Emails sent successfully'}, status=status.HTTP_200_OK)
