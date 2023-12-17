@@ -59,6 +59,8 @@ urlpatterns = [
     
     path('api/v1/auth/password/change/', PasswordChangeAPIView.as_view(), name='rest_password_change'),
 
+    path('send_link_by_email/<int:meeting_id>/', send_link_by_email, name='send_link_by_email'),
+
     # add react path
     # but I think it's better to do it when we have finished the website
     # since we have to build the react app first

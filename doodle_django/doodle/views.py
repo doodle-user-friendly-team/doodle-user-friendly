@@ -542,3 +542,24 @@ class PasswordChangeAPIView(APIView):
         user.save()
         return Response({'detail': 'Password changed successfully.'}, status=status.HTTP_200_OK)
         
+
+@api_view(['POST'])
+def send_link_by_email(request, meeting_id):
+    if request.method == 'POST':
+        try:
+            # Ottieni i dati JSON dalla richiesta
+            data = request.data
+            emails = data.get('emails', [])
+
+            print("L'id del meeting nella view è: ", meeting_id)
+            print("Le email ottenute nella view sono: ", emails)
+
+            # LOGICA DI INVIO DEL LINK ALLE EMAIL OTTENUTE
+
+            # Risposta di successo
+            return Response({'message': 'Emails sent successfully'}, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            # Gestisci eventuali eccezioni qui
+            print("Error:", str(e))
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
