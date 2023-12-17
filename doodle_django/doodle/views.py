@@ -527,3 +527,18 @@ class djangoUsers(APIView):
         else:
             return Response({'message': 'user not found'}, status=status.HTTP_401_UNAUTHORIZED)
 
+class PasswordChangeAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        print("Request received at PasswordChangeAPIView") 
+        
+        new_password1 = request.data.get('new_password1', '')
+        new_password2 = request.data.get('new_password2', '')
+
+        user = request.user
+
+        user.set_password(new_password1)
+        user.save()
+        return Response({'detail': 'Password changed successfully.'}, status=status.HTTP_200_OK)
+        

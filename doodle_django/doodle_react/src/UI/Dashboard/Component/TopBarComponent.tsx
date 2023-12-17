@@ -15,6 +15,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
+import { Link } from 'react-router-dom';
 
 const settings = ['Profile', 'Logout'];
 
@@ -79,11 +80,19 @@ export function TopBarComponent() {
                                 open={Boolean(anchorElUser)}
                                 onClose={handleCloseUserMenu}
                             >
-                                {settings.map((setting) => (
-                                    <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                                        <Typography textAlign="center">{setting}</Typography>
-                                    </MenuItem>
-                                ))}
+                               
+
+                               {settings.map((setting) => (
+        <MenuItem key={setting} onClick={handleCloseUserMenu}>
+            {setting === 'Profile' ? (
+                <Link to="/profile" style={{ textDecoration: 'none', color: 'inherit' }}>
+                    <Typography textAlign="center">{setting}</Typography>
+                </Link>
+            ) : (
+                <Typography textAlign="center">{setting}</Typography>
+            )}
+        </MenuItem>
+    ))}
                             </Menu>
                         </Box>
                     </Toolbar>

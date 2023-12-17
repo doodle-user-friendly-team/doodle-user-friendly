@@ -7,12 +7,13 @@ import {MeetingCreation} from "./UI/MeetingCreation/Component/MeetingCreationFor
 import {RecapOrganizer} from "./UI/MeetingRecap/Organizer/Component/RecapOrganizer";
 import {DashboardComponent} from "./UI/Dashboard/Component/dashboardComponent";
 import Calendar from "./UI/Calendar/Components/Calendar";
+import ProfileBox from "./UI/User/Component/UserRecap";
 
 function App() {
   return (
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <div className="App">
-            <BrowserRouter>
+          <BrowserRouter>
                 <Routes >
                     <Route path="/" element={<WelcomePage />}/>
                     <Route path="/login" element={<FormComponent startValue={"login"} />}/>
@@ -21,8 +22,13 @@ function App() {
                     <Route path='/recap-meeting/:link_meeting' element={<RecapOrganizer/>}/>
                     <Route path='/dashboard' element={<DashboardComponent/>}/>
                     <Route path='/schedulePool/:pool_link' element={<Calendar />} />
+                    <Route path='/profile' element={<ProfileBox />} />
+                
+         
+        
                 </Routes>
-            </BrowserRouter>
+            </BrowserRouter> 
+        
         </div>
     </LocalizationProvider>
   );

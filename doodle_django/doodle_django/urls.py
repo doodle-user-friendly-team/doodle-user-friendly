@@ -52,6 +52,8 @@ urlpatterns = [
 
     path('accounts/', include('allauth.urls')),
     path('logout', LogoutView.as_view()),
+    
+    path('api/v1/auth/password/change/', PasswordChangeAPIView.as_view(), name='rest_password_change'),
 
     # add react path
     # but I think it's better to do it when we have finished the website
